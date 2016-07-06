@@ -2,30 +2,27 @@ import json
 import csv
 from datetime import datetime
 import os
-import errno
 import multiprocessing
-from functools import partial
 import time
-import Data_Fields
+import Fields_and_Methods
 
 start = time.time()
 
 list_day = [i for i in range(2,3)]
 list_hour = [i for i in range(1)]
+list_month = [5]
 
 
-def crawl(hour, day):
-    p1 = str(day).rjust(2,'0')
-    p2 = str(hour).rjust(2,'0')
-    addr_in = os.path.join(Data_Fields.ADDR_IN_ROOT, p1, p2, "part-00000")
-    addr_out = make_output_addr(p1, p2)
+def crawl(list_file_dir):
+    addr_in = os.path.join(Fields_and_Methods.ADDR_ROOT, list_file_dir, "part-00000")
+    addr_out = Fields_and_Methods.make_output_addr(list_file_dir)
 
     filtered = 0
     dumped = 0
 
     with open(os.path.join(addr_out, "output.ods"), 'w') as file_out:
         wr = csv.writer(file_out, quoting = csv.QUOTE_MINIMAL)
-        wr.writerow(Data_Fields.__HEADER)
+        wr.writerow(Fields_and_Methods.__HEADER)
         with open(addr_in, "r") as file_in:
             print addr_in
             for line in file_in:
@@ -37,7 +34,8 @@ def crawl(hour, day):
                     auction = entry["auction"]
                     if_continue = filter(auction)   # Filter out auctions that do not contain any bid requests
                     if if_continue == 1:
-                        raise Exception
+                        filtered += 1
+                        continue
 
                     event_process(entry, result)
                     auction_process(auction, result)
@@ -50,7 +48,7 @@ def crawl(hour, day):
                 except:
                     dumped += 1
 
-    return dumped
+    return [dumped, filtered]
 
 
 def filter(auction):
@@ -68,7 +66,7 @@ def filter(auction):
                 imp_list = bidreq["impressions"][:]
                 for imp in imp_list:
                     # Filter out ad formats that should be ignored
-                    if Data_Fields.__FORMAT_MASK[imp["format"]] == 1:
+                    if Fields_and_Methods.__FORMAT_MASK[imp["format"]] == 1:
                         bidreq_list[index]["impressions"].remove(imp)
             if len(bidreq_list[index]["impressions"]) == 0:
                 bidreq_list.remove(bidreq)
@@ -84,9 +82,9 @@ def event_process(entry, result):
     result.append(datetime.fromtimestamp(t).hour)
     result.append(datetime.fromtimestamp(t).weekday())
     try:
-        result.append(Data_Fields.__DICT_COUNTRY[event["cc"]])
+        result.append(Fields_and_Methods.__DICT_COUNTRY[event["cc"]])
     except:
-        result.append(Data_Fields.__DICT_COUNTRY["EMPTY"])
+        result.append(Fields_and_Methods.__DICT_COUNTRY["EMPTY"])
 
 
 def auction_process(auction, result):
@@ -142,7 +140,7 @@ def IAB_parser(str):
 
 def auction_dev_process(auction, result):
     try:
-        type_index = Data_Fields.__BROWSER_TYPE.index(auction["dev"]["bti"]) + 1
+        type_index = Fields_and_Methods.__BROWSER_TYPE.index(auction["dev"]["bti"]) + 1
     except:
         type_index = 0
     result.append(type_index)
@@ -186,7 +184,7 @@ def auction_bidrequest_impressions_process(bidreq, bid_responded, result_bid, re
         result_imp.append(bid_floor)
 
         # Auction - Bidrequests - Impressions - Format
-        result_imp.append(Data_Fields.__FORMAT_INDEX[imp["format"]])
+        result_imp.append(Fields_and_Methods.__FORMAT_INDEX[imp["format"]])
 
         # Auction - Bidrequests - Impressions - Product
         result_imp.append(imp["product"])
@@ -219,25 +217,19 @@ def auction_bidrequest_impressions_process(bidreq, bid_responded, result_bid, re
         result_list.append(result_imp)
 
 
-def make_output_addr(p1, p2):
-    out_path = os.path.join(Data_Fields.ADDR_OUT_ROOT, p1, p2)
-    try:
-        os.makedirs(out_path)
-    except OSError as exception:
-        if exception.errno != errno.EEXIST:
-            raise
-    return out_path
-
-
 if __name__ == '__main__':
     cpus = multiprocessing.cpu_count()
     p = multiprocessing.Pool(cpus)
-    dumped = 0
-    for day in list_day:
-        partial_crawl = partial(crawl, day = day)
-        for result in p.imap(partial_crawl, list_hour):
-            dumped += result
+    list_file_dir = Fields_and_Methods.make_file_dir(list_month, list_day, list_hour)
 
+    dumped = 0
+    filtered = 0
+
+    for result in p.imap(crawl, list_file_dir):
+        dumped += result[0]
+        filtered += result[1]
+
+    print "{} lines filtered".format(filtered)
     print "{} lines dumped".format(dumped)
 
 print "Completed in {} seconds".format(round(time.time()-start, 2))

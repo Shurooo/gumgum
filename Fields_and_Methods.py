@@ -1,8 +1,9 @@
 import json
+import os
+import errno
 
-
-ADDR_IN_ROOT = "/home/wlu/Desktop/rips16"
-ADDR_OUT_ROOT = "/home/wlu/Desktop/rips16"
+with open("io_addr_root.txt", "r") as file_addr_root:
+    ADDR_ROOT = file_addr_root.readline().replace("\"", "").rstrip("\n")
 
 __HEADER = ["hour", "day", "country", "margin", "tmax", "bkc", "site_typeid", "browser_type",
              "bidder_id", "vertical_id", "bid_floor", "format", "product", "banner", "response"]
@@ -66,3 +67,29 @@ def create_class(indexing, length):
 
 
 __CLASSES = get_classes()
+
+
+# Some methods for both Preprocessor and Converter
+
+def make_output_addr(list_file_dir):
+    out_path = os.path.join(ADDR_ROOT, list_file_dir)
+    try:
+        os.makedirs(out_path)
+    except OSError as exception:
+        if exception.errno != errno.EEXIST:
+            raise
+    return out_path
+
+
+def make_file_dir(list_month, list_day, list_hour):
+    list_file_dir = []
+    for month in list_month:
+        for day in list_day:
+            if month == 6:
+                day += 18
+            for hour in list_hour:
+                file_dir = os.path.join(str(month).rjust(2, "0"),
+                                        str(day).rjust(2, "0"),
+                                        str(hour).rjust(2, "0"))
+                list_file_dir.append(file_dir)
+    return list_file_dir
