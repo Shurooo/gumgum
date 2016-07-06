@@ -13,7 +13,7 @@ list_month = [5]
 
 
 def crawl(list_file_dir):
-    addr_in = os.path.join(Fields_and_Methods.ADDR_ROOT, list_file_dir, "output.ods")
+    addr_in = os.path.join(Fields_and_Methods.__ADDR_ROOT, list_file_dir, "output.ods")
     addr_out = Fields_and_Methods.make_output_addr(list_file_dir)
 
     with open(os.path.join(addr_out, "output_bin.ods"), "w") as file_out:

@@ -14,7 +14,7 @@ list_month = [5]
 
 
 def crawl(list_file_dir):
-    addr_in = os.path.join(Fields_and_Methods.ADDR_ROOT, list_file_dir, "part-00000")
+    addr_in = os.path.join(Fields_and_Methods.__ADDR_ROOT, list_file_dir, "part-00000")
     addr_out = Fields_and_Methods.make_output_addr(list_file_dir)
 
     filtered = 0

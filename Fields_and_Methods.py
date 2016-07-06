@@ -3,7 +3,7 @@ import os
 import errno
 
 with open("io_addr_root.txt", "r") as file_addr_root:
-    ADDR_ROOT = file_addr_root.readline().replace("\"", "").rstrip("\n")
+    __ADDR_ROOT = file_addr_root.readline().replace("\"", "").rstrip("\n")
 
 __HEADER = ["hour", "day", "country", "margin", "tmax", "bkc", "site_typeid", "browser_type",
              "bidder_id", "vertical_id", "bid_floor", "format", "product", "banner", "response"]
@@ -72,7 +72,7 @@ __CLASSES = get_classes()
 # Some methods for both Preprocessor and Converter
 
 def make_output_addr(list_file_dir):
-    out_path = os.path.join(ADDR_ROOT, list_file_dir)
+    out_path = os.path.join(__ADDR_ROOT, list_file_dir)
     try:
         os.makedirs(out_path)
     except OSError as exception:
