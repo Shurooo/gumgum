@@ -81,15 +81,18 @@ def make_output_addr(list_file_dir):
     return out_path
 
 
-def make_file_dir(list_month, list_day, list_hour):
-    list_file_dir = []
+def make_io_addr(list_month, list_day, list_hour, filename_in, filename_out):
+    list_io_addr = []
     for month in list_month:
         for day in list_day:
             if month == 6:
                 day += 18
             for hour in list_hour:
-                file_dir = os.path.join(str(month).rjust(2, "0"),
-                                        str(day).rjust(2, "0"),
-                                        str(hour).rjust(2, "0"))
-                list_file_dir.append(file_dir)
-    return list_file_dir
+                io_addr = os.path.join(__ADDR_ROOT,
+                                       str(month).rjust(2, "0"),
+                                       str(day).rjust(2, "0"),
+                                       str(hour).rjust(2, "0"))
+                in_addr = os.path.join(io_addr, filename_in)
+                out_addr = os.path.join(io_addr, filename_out)
+                list_io_addr.append((in_addr, out_addr))
+    return list_io_addr
