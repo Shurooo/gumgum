@@ -24,7 +24,7 @@ for i in range(1,__FORMAT_COUNT+1):
 
 __BROWSER_TYPE = [1,2,5,7,10,11,12,13]
 
-ADDR_COUNTRY_DICT = "/home/wlu/Desktop/rips16/dicts/dict_country.json"
+ADDR_COUNTRY_DICT = "dict_country.json"
 with open(ADDR_COUNTRY_DICT, "r") as file_in:
     __DICT_COUNTRY = json.load(file_in)
 

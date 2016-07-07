@@ -4,8 +4,8 @@ import os
 with open("io_addr_root.txt", "r") as file_addr_root:
     __ADDR_ROOT = file_addr_root.readline().replace("\"", "").rstrip("\n")
 
-list_day = [i for i in range(2,3)]
-list_hour = [i for i in range(1)]
+list_day = [i for i in range(1, 8)]
+list_hour = [i for i in range(24)]
 list_month = [5]
 
 def make_file_dir():

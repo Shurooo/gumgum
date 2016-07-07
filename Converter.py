@@ -80,7 +80,7 @@ def get_header_bin(classes):
 if __name__ == '__main__':
     cpus = multiprocessing.cpu_count()
     p = multiprocessing.Pool(cpus)
-    list_io_addr = get_io_addr()
+    list_io_addr = get_io_addr_random_sample()
 
     for result in p.imap(crawl, list_io_addr):
         pass
