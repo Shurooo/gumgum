@@ -6,16 +6,22 @@ import multiprocessing
 
 start = time.time()
 
+__HEADER = ["hour", "day", "country", "margin", "tmax", "bkc", "site_typeid", "browser_type",
+             "bidder_id", "vertical_id", "bid_floor", "format", "product", "banner", "response"]
+__INDEX_SITE_TYPE = __HEADER.index("site_typeid")
+__HEADER[__INDEX_SITE_TYPE+1:1] = ["site_cat {}".format(i+1) for i in range(26)]
+__DSP_INDEX = __HEADER.index("bidder_id")
+
 with open("io_addr_root.txt", "r") as file_addr_root:
     __ADDR_ROOT = file_addr_root.readline().replace("\"", "").rstrip("\n")
 
 
 def get_io_addr():
-    list_day = [i for i in range(1, 8)]
-    list_hour = [i for i in range(24)]
-    list_month = [5, 6]
+    list_day = [i for i in range(1, 2)]
+    list_hour = [i for i in range(1)]
+    list_month = [5]
 
-    filename_in = "output_bin.ods"
+    filename_in = "output_num.ods"
 
     list_io_addr = []
     for month in list_month:
@@ -37,8 +43,13 @@ def crawl(io_addr):
         print io_addr
         next(file_in)
         for line in file_in:
-            entry = line.rstrip("\r\n").replace(",", "").replace(" ", "")
-            set_imp.add(entry)
+            entries = line.rstrip("\r\n").split(",")
+            entries.pop(__DSP_INDEX)
+            entries.pop(len(entries)-1)
+            str_entry = ""
+            for i in entries:
+                str_entry += i
+            set_imp.add(str_entry)
     return set_imp
 
 if __name__ == '__main__':
