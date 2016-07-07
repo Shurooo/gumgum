@@ -20,9 +20,9 @@ __HEADER.remove("bidder_id")
 
 
 def get_io_addr():
-    list_day = [i for i in range(2,3)]
-    list_hour = [i for i in range(1)]
-    list_month = [5]
+    list_day = [i for i in range(1, 8)]
+    list_hour = [i for i in range(24)]
+    list_month = [6]
 
     filename_in = "output.ods"
 
@@ -56,9 +56,11 @@ def crawl(io_addr):
         wr[i].writerow(__HEADER)
 
     with open(io_addr[0], "r") as file_in:
+        print io_addr[0]
+        next(file_in)
         for line in file_in:
             entries = line.rstrip("\r\n").split(",")
-            index = int(entries[__INDEX_DSP])
+            index = int(entries[__INDEX_DSP])-1
             entries.pop(__INDEX_DSP)
             wr[index].writerow(entries)
 

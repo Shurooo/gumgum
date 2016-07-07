@@ -11,9 +11,9 @@ with open("io_addr_root.txt", "r") as file_addr_root:
 
 
 def get_io_addr():
-    list_day = [i for i in range(2,3)]
-    list_hour = [i for i in range(1)]
-    list_month = [5]
+    list_day = [i for i in range(1, 8)]
+    list_hour = [i for i in range(24)]
+    list_month = [5, 6]
 
     filename_in = "output_bin.ods"
 
