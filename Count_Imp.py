@@ -17,11 +17,11 @@ with open("io_addr_root.txt", "r") as file_addr_root:
 
 
 def get_io_addr():
-    list_day = [i for i in range(1, 2)]
-    list_hour = [i for i in range(1)]
-    list_month = [5]
+    list_day = [i for i in range(1, 8)]
+    list_hour = [i for i in range(24)]
+    list_month = [5, 6]
 
-    filename_in = "output_num.ods"
+    filename_in = "output.ods"
 
     list_io_addr = []
     for month in list_month:
