@@ -7,12 +7,34 @@ import multiprocessing
 
 start = time.time()
 
-list_day = [i for i in range(2,3)]
-list_hour = [i for i in range(1)]
-list_month = [5]
 
-filename_in = "output.ods"
-filename_out = "output_bin.ods"
+def get_io_addr_random_sample():
+    list_io_addr = []
+    root = "/home/ubuntu/random_samples"
+    prefix = ["all", "", "new"]
+    suffix = [i for i in range(6)]
+    for i in prefix:
+        for j in suffix:
+            file_name = i+"data"+str(j)
+            addr_in = os.path.join(root, file_name+"_num.ods")
+            addr_out = os.path.join(root, file_name+"_bin.ods")
+            list_io_addr.append((addr_in, addr_out))
+    return list_io_addr
+
+
+def get_io_addr():
+    list_day = [i for i in range(2,3)]
+    list_hour = [i for i in range(1)]
+    list_month = [5]
+
+    filename_in = "output.ods"
+    filename_out = "output_bin.ods"
+
+    return Fields_and_Methods.make_io_addr(list_month,
+                                           list_day,
+                                           list_hour,
+                                           filename_in,
+                                           filename_out)
 
 
 def crawl(io_addr):
@@ -58,11 +80,7 @@ def get_header_bin(classes):
 if __name__ == '__main__':
     cpus = multiprocessing.cpu_count()
     p = multiprocessing.Pool(cpus)
-    list_io_addr = Fields_and_Methods.make_io_addr(list_month,
-                                                   list_day,
-                                                   list_hour,
-                                                   filename_in,
-                                                   filename_out)
+    list_io_addr = get_io_addr()
 
     for result in p.imap(crawl, list_io_addr):
         pass
