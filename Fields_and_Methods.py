@@ -29,6 +29,7 @@ with open(ADDR_COUNTRY_DICT, "r") as file_in:
     __DICT_COUNTRY = json.load(file_in)
 
 # For Converter:
+
 __FEATURES = ["hour", "day", "country", "margin", "tmax", "site_typeid", "browser_type",
              "bidder_id", "vertical_id", "bid_floor", "format", "product", "banner"]
 __FEATURES_LEN = len(__FEATURES)
@@ -92,7 +93,7 @@ def make_io_addr(list_month, list_day, list_hour, filename_in, filename_out):
                                        str(month).rjust(2, "0"),
                                        str(day).rjust(2, "0"),
                                        str(hour).rjust(2, "0"))
-                in_addr = os.path.join(io_addr, filename_in)
-                out_addr = os.path.join(io_addr, filename_out)
-                list_io_addr.append((in_addr, out_addr))
+                addr_in = os.path.join(io_addr, filename_in)
+                addr_out = os.path.join(io_addr, filename_out)
+                list_io_addr.append((addr_in, addr_out))
     return list_io_addr
