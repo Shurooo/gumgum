@@ -20,28 +20,13 @@ __HEADER.remove("bidder_id")
 
 
 def get_io_addr():
-    list_day = [i for i in range(1, 8)]
-    list_hour = [i for i in range(24)]
-    list_month = [6]
-
-    filename_in = "output.ods"
-
     list_io_addr = []
-    for month in list_month:
-        for day in list_day:
-            if month == 6:
-                day += 18
-            for hour in list_hour:
-                str_month = str(month).rjust(2, "0")
-                str_day = str(day).rjust(2, "0")
-                str_hour = str(hour).rjust(2, "0")
-                addr_in = os.path.join(__ADDR_ROOT,
-                                       str_month,
-                                       str_day,
-                                       str_hour,
-                                       filename_in)
-                addr_out = str_month+"_"+str_day+"_"+str_hour+".ods"
-                list_io_addr.append((addr_in, addr_out))
+    root = "/home/ubuntu/random_samples"
+    suffix = [i for i in range(6)]
+    for j in suffix:
+        file_name = "alldata"+str(j)
+        addr_in = os.path.join(root, file_name+"_num.ods")
+        list_io_addr.append((addr_in, file_name))
     return list_io_addr
 
 
@@ -50,7 +35,7 @@ def crawl(io_addr):
     file_out = []
     wr = []
     for i in range(35):
-        addr_out = os.path.join(root_out, str(i+1), io_addr[1])
+        addr_out = os.path.join(root_out, str(i+1), io_addr[1]+".ods")
         file_out.append(open(addr_out, "w"))
         wr.append(csv.writer(file_out[i], quoting = csv.QUOTE_MINIMAL))
         wr[i].writerow(__HEADER)
