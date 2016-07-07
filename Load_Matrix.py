@@ -24,8 +24,13 @@ def make_file_dir():
 list_file_dir = make_file_dir()
 
 X = []
+count = 0
 for file_dir in list_file_dir:
-    with open(os.path.join(__ADDR_ROOT, file_dir, "output.ods")) as file_in:
+    addr_in = os.path.join(__ADDR_ROOT, file_dir, "output.ods")
+    with open(addr_in, "r") as file_in:
         for line in file_in:
             entries = line.rstrip("\r\n").split(",")
             X.append(entries)
+    count += 1
+    print "{} was added".format(addr_in)
+    print "{} files added in total".format(count)
