@@ -16,7 +16,7 @@ __HEADER[__INDEX_SITE_TYPE+1:1] = ["site_cat {}".format(i+1) for i in range(26)]
 
 __INDEX_DSP = __HEADER.index("bidder_id")
 
-__HEADER_NO_DSP = __HEADER.remove("bidder_id")
+__HEADER.remove("bidder_id")
 
 
 def get_io_addr():
@@ -53,7 +53,7 @@ def crawl(io_addr):
         addr_out = os.path.join(root_out, str(i+1), io_addr[1])
         file_out.append(open(addr_out, "w"))
         wr.append(csv.writer(file_out[i], quoting = csv.QUOTE_MINIMAL))
-        wr[i].writerow(__HEADER_NO_DSP)
+        wr[i].writerow(__HEADER)
 
     with open(io_addr[0], "r") as file_in:
         for line in file_in:
