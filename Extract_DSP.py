@@ -38,7 +38,6 @@ def crawl(io_addr):
         addr_out = os.path.join(root_out, str(i+1), io_addr[1]+".ods")
         file_out.append(open(addr_out, "w"))
         wr.append(csv.writer(file_out[i], quoting = csv.QUOTE_MINIMAL))
-        wr[i].writerow(__HEADER)
 
     with open(io_addr[0], "r") as file_in:
         print io_addr[0]
