@@ -7,104 +7,116 @@ import pickle
 from scipy.sparse import csr_matrix
 
 
+def save_sparse_csr(filename, array):
+    array_sparse = csr_matrix(array)
+    np.savez(filename, data=array.data, indices=array.indices, indptr=array.indptr, shape=array.shape)
+
+
 def load_sparse_csr(filename):
     loader = np.load(filename)
-    return csr_matrix((  loader['data'], loader['indices'], loader['indptr']),
-                         shape = loader['shape'])
+    return csr_matrix((loader['data'], loader['indices'], loader['indptr']), shape=loader['shape']).toarray()
 
 
-root = "/home/wlu/Desktop/random_samples"
-suffix = "_bin.ods"
-#
-# clf = BernoulliNB()
-#
-# for i in range(5):
-#     print "Generating training set {}".format(i)
-#     path_in = os.path.join(root, "alldata"+str(i)+suffix)
-#
-#     X = []
-#     with open(path_in, "r") as file_in:
-#         next(file_in)
-#         for line in file_in:
-#             line_list = []
-#             entries = line.rstrip("\r\n").split(',')
-#             for item in entries:
-#                 line_list.append(int(item))
-#             X.append(line_list)
-#
-#     m = len(X[0])
-#     n = len(X)
-#
-#     X = np.array(X)
-#
-#     X_train = X[:, 0:m-1]
-#     y_train = X[:, m-1]
-#
-#     print "Done"
-#     print
-#
-#     sm = SMOTE(ratio=0.9)
-#     X_train_sm, y_train_sm = sm.fit_sample(X_train, y_train)
-#
-#     print
-#     print "Fitting Model"
-#     clf.partial_fit(X_train_sm, y_train_sm, classes=[0, 1])
-#     print "Done"
-#     print
-#
-# with open("/home/wlu/Desktop/model_bernoulli", "w") as file_out:
-#     pickle.dump(clf, file_out)
+def get_io_addr():
+    root = "/mnt/rips/2016"
+    filename_in = "output_bin.npy"
+    list_day = [i for i in range(1, 2)]
+    list_hour = [i for i in range(23)]
+    list_month = [5]
 
-with open("/home/wlu/Desktop/model_bernoulli", "r") as file_in:
-    clf = pickle.load(file_in)
+    list_io_addr = []
+    for month in list_month:
+        for day in list_day:
+            if month == 6:
+                day += 18
+            for hour in list_hour:
+                io_addr = os.path.join(root,
+                                       str(month).rjust(2, "0"),
+                                       str(day).rjust(2, "0"),
+                                       str(hour).rjust(2, "0"))
+                addr_in = os.path.join(io_addr, filename_in)
+                list_io_addr.append(addr_in)
+    return list_io_addr
 
-print "Generating the training set"
-with open("/home/wlu/Desktop/test_sparse.npy", "r") as file_in:
-    X = load_sparse_csr(file_in).toarray()
+clf = BernoulliNB()
 
-m = len(X[0])
-n = len(X)
+for path_in in get_io_addr():
+    print "Processing {}".format(path_in)
 
-X = np.array(X)
+    with open(path_in, "r") as file_in:
+        X = load_sparse_csr(file_in)
 
-X_test = X[:, 0:m-1]
-y_test = X[:, m-1]
+    m = len(X[0])
+    n = len(X)
 
-print "Done"
-print
+    X_train = X[:, 0:m-1]
+    y_train = X[:, m-1]
 
-probas = clf.predict_proba(X_test)
-
-for alpha in [0.99+0.001*i for i in range(10)]:
-    print "________________________________________________________"
-    print "alpha = ", alpha
+    print "Done"
     print
-    prediction = []
-    for k in range(len(y_test)):
-        if probas[k,0] > alpha:
-            prediction.append(0)
-        else:
-            prediction.append(1)
 
-    total = len(prediction)
-    tn = 0
-    tp = 0
-    fp = 0
-    fn = 0
-    for i in range(total):
-        if prediction[i]-y_test[i] == 0:
-            if  prediction[i] == 1:
-                tp+=1
-            else:
-                tn +=1
-        else:
-            if prediction[i] == 1:
-                fp +=1
-            else:
-                fn +=1
-    fitering = (tn + fn) / float(total)
-    print 'filtering = ', fitering
-    print 'recall = ', tp/ float(tp + fn)
-    print metrics.precision_recall_fscore_support(y_test, prediction, average = 'binary', beta = 12 )
-    print metrics.confusion_matrix(y_test, prediction)
-    print "________________________________________________________"
+    sm = SMOTE(ratio=0.9)
+    X_train_sm, y_train_sm = sm.fit_sample(X_train, y_train)
+
+    print
+    print "Fitting Model"
+    clf.partial_fit(X_train_sm, y_train_sm, classes=[0, 1])
+    print "Done"
+    print
+
+with open("/home/wlu/Desktop/model_bernoulli", "w") as file_out:
+    pickle.dump(clf, file_out)
+
+# with open("/home/wlu/Desktop/model_bernoulli", "r") as file_in:
+#     clf = pickle.load(file_in)
+#
+# print "Generating the training set"
+# with open("/home/wlu/Desktop/test_sparse.npy", "r") as file_in:
+#     X = load_sparse_csr(file_in).toarray()
+#
+# m = len(X[0])
+# n = len(X)
+#
+# X = np.array(X)
+#
+# X_test = X[:, 0:m-1]
+# y_test = X[:, m-1]
+#
+# print "Done"
+# print
+#
+# probas = clf.predict_proba(X_test)
+#
+# for alpha in [0.99+0.001*i for i in range(10)]:
+#     print "________________________________________________________"
+#     print "alpha = ", alpha
+#     print
+#     prediction = []
+#     for k in range(len(y_test)):
+#         if probas[k,0] > alpha:
+#             prediction.append(0)
+#         else:
+#             prediction.append(1)
+#
+#     total = len(prediction)
+#     tn = 0
+#     tp = 0
+#     fp = 0
+#     fn = 0
+#     for i in range(total):
+#         if prediction[i]-y_test[i] == 0:
+#             if  prediction[i] == 1:
+#                 tp+=1
+#             else:
+#                 tn +=1
+#         else:
+#             if prediction[i] == 1:
+#                 fp +=1
+#             else:
+#                 fn +=1
+#     fitering = (tn + fn) / float(total)
+#     print 'filtering = ', fitering
+#     print 'recall = ', tp/ float(tp + fn)
+#     print metrics.precision_recall_fscore_support(y_test, prediction, average = 'binary', beta = 12 )
+#     print metrics.confusion_matrix(y_test, prediction)
+#     print "________________________________________________________"
