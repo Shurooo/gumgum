@@ -17,8 +17,8 @@ def get_io_addr_random_sample():
     for i in prefix:
         for j in suffix:
             file_name = i+"data"+str(j)
-            addr_in = os.path.join(root, file_name+"_num.ods")
-            addr_out = os.path.join(root, file_name+"_bin.ods")
+            addr_in = os.path.join(root, file_name+"_bin.ods")
+            addr_out = os.path.join(root, file_name+"_bin.npy")
             list_io_addr.append((addr_in, addr_out))
     return list_io_addr
 
@@ -55,8 +55,6 @@ def crawl(io_addr):
     with open(addr_out, "w") as file_out:
         save_sparse_csr(file_out, csr_matrix(my_matrix))
 
-    os.remove(addr_in)
-
 
 def save_sparse_csr(filename, array):
     np.savez(filename,data = array.data ,indices=array.indices,
@@ -70,9 +68,9 @@ def load_sparse_csr(filename):
 
 
 if __name__ == '__main__':
-    cpus = multiprocessing.cpu_count()
-    p = multiprocessing.Pool(cpus)
-    list_io_addr = get_io_addr_random_sample()
+    # cpus = multiprocessing.cpu_count()
+    p = multiprocessing.Pool(6)
+    list_io_addr = get_io_addr_random_samples()
 
     for result in p.imap(crawl, list_io_addr):
         pass

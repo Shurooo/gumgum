@@ -23,8 +23,8 @@ def get_io_addr_random_sample():
 
 
 def get_io_addr():
-    list_day = [i for i in range(2,3)]
-    list_hour = [i for i in range(1)]
+    list_day = [i for i in range(1, 3)]
+    list_hour = [i for i in range(24)]
     list_month = [5]
 
     filename_in = "output.ods"
@@ -80,7 +80,7 @@ def get_header_bin(classes):
 if __name__ == '__main__':
     cpus = multiprocessing.cpu_count()
     p = multiprocessing.Pool(cpus)
-    list_io_addr = get_io_addr_random_sample()
+    list_io_addr = get_io_addr()
 
     for result in p.imap(crawl, list_io_addr):
         pass
