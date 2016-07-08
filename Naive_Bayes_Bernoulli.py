@@ -21,7 +21,7 @@ def get_io_addr():
     root = "/mnt/rips/2016"
     filename_in = "output_bin.npy"
     list_day = [i for i in range(1, 2)]
-    list_hour = [i for i in range(23)]
+    list_hour = [i for i in range(10)]
     list_month = [5]
 
     list_io_addr = []
@@ -64,7 +64,7 @@ for path_in in get_io_addr():
     print "Done"
     print
 
-with open("/home/wlu/Desktop/model_bernoulli", "w") as file_out:
+with open("/home/ubuntu/Weiyi/model_05_01", "w") as file_out:
     pickle.dump(clf, file_out)
 
 # with open("/home/wlu/Desktop/model_bernoulli", "r") as file_in:
