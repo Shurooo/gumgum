@@ -24,9 +24,9 @@ def get_io_addr_random_sample():
 
 
 def get_io_addr():
-    list_day = [i for i in range(2,3)]
+    list_day = [i for i in range(1, 8)]
     list_hour = [i for i in range(24)]
-    list_month = [5]
+    list_month = [6]
 
     filename_in = "output_bin.ods"
     filename_out = "output_bin.npy"
@@ -54,6 +54,8 @@ def crawl(io_addr):
             my_matrix.append(line_bin)
     with open(addr_out, "w") as file_out:
         save_sparse_csr(file_out, csr_matrix(my_matrix))
+
+    os.remove(addr_in)
 
 
 def save_sparse_csr(filename, array):
