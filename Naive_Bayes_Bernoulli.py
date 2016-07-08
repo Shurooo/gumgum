@@ -39,8 +39,11 @@ def get_io_addr():
     return list_io_addr
 
 clf = BernoulliNB()
+list_io_addr = get_io_addr()
 
-for path_in in get_io_addr():
+for i in range(len(list_io_addr)):
+    path_in = list_io_addr[i]
+
     print "Processing {}".format(path_in)
 
     with open(path_in, "r") as file_in:
