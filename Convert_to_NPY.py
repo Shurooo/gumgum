@@ -70,7 +70,7 @@ def load_sparse_csr(filename):
 if __name__ == '__main__':
     # cpus = multiprocessing.cpu_count()
     p = multiprocessing.Pool(6)
-    list_io_addr = get_io_addr_random_samples()
+    list_io_addr = get_io_addr_random_sample()
 
     for result in p.imap(crawl, list_io_addr):
         pass
