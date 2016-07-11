@@ -21,7 +21,7 @@ def get_io_addr():
     root = "/mnt/rips/2016"
     filename_in = "output_bin.npy"
     list_day = [i for i in range(1, 2)]
-    list_hour = [i for i in range(10)]
+    list_hour = [i for i in range(20)]
     list_month = [5]
 
     list_io_addr = []
