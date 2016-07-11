@@ -30,49 +30,48 @@ def get_io_addr():
                 list_io_addr.append(addr_in)
     return list_io_addr
 
-
-list_io_addr = get_io_addr()
+print "\nLoad Model"
 with open(__ROOT_MODEL, "r") as file_in:
     clf = pickle.load(file_in)
+print "Done"
 
+confusion_matrix_para = []
+for i in range(len(__ALPHA)):
+    confusion_matrix_para.append([0, 0, 0, 0])
+
+list_io_addr = get_io_addr()
 for addr_in in list_io_addr:
+    print "Generate testing set from {}".format(addr_in)
     with open(addr_in, "r") as file_in:
         X = Sparse_Matrix_IO.load_sparse_csr(file_in)
-
+    print "Done"
+    print "Testing"
     vector_len = len(X[0])
     X_test = X[:, 0:vector_len-1]
     y_test = X[:, vector_len-1]
     probas = clf.predict_proba(X_test)
 
-    for alpha in __ALPHA:
-
+    for i in range(len(__ALPHA)):
         prediction = []
         for k in range(len(y_test)):
-            if probas[k,0] > alpha:
+            if probas[k,0] > __ALPHA[i]:
                 prediction.append(0)
             else:
                 prediction.append(1)
+        confusion_matrix = metrics.confusion_matrix(y_test, prediction)
+        confusion_matrix_para[i][0] += confusion_matrix[1, 1]   # tp
+        confusion_matrix_para[i][1] += confusion_matrix[0, 1]   # fp
+        confusion_matrix_para[i][2] += confusion_matrix[0, 0]   # tn
+        confusion_matrix_para[i][3] += confusion_matrix[1, 0]   # fn
+    print "Done"
 
-        total = len(prediction)
-        tn = 0
-        tp = 0
-        fp = 0
-        fn = 0
-        for i in range(total):
-            if prediction[i]-y_test[i] == 0:
-                if  prediction[i] == 1:
-                    tp+=1
-                else:
-                    tn +=1
-            else:
-                if prediction[i] == 1:
-                    fp +=1
-                else:
-                    fn +=1
-        fitering = (tn + fn) / float(total)
-        print 'filtering = ', fitering
-        print 'recall = ', tp/ float(tp + fn)
-        print metrics.precision_recall_fscore_support(y_test, prediction, average='binary', beta=12 )
-        print metrics.confusion_matrix(y_test, prediction)
-
-
+print "Generate statistics"
+for i in range(len(__ALPHA)):
+    tp = confusion_matrix_para[i][0]
+    fp = confusion_matrix_para[i][1]
+    tn = confusion_matrix_para[i][2]
+    fn = confusion_matrix_para[i][3]
+    total = tp+fp+tn+fn
+    recall = tp / float(tp+fn)
+    filtering = float(tn+fn) / total
+    print "alpha = {0:.3f}, recall = {1:.4f}, filtering = {2:.4f}".format(__ALPHA[i], round(recall, 4), round(filtering, 4))
