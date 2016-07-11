@@ -4,6 +4,7 @@ import time
 from sklearn.naive_bayes import BernoulliNB
 from sklearn import metrics
 from imblearn.over_sampling import SMOTE
+import multiprocessing
 import pickle
 import Sparse_Matrix_IO
 
@@ -77,6 +78,30 @@ def train():
         pickle.dump(clf, file_out)
 
 
+def crawl(args):
+    addr_in = args[0]
+    clf = args[1]
+
+    print "\nProcess testing set from {}".format(addr_in)
+    with open(addr_in, "r") as file_in:
+        X = Sparse_Matrix_IO.load_sparse_csr(file_in)
+    vector_len = len(X[0])
+    X_test = X[:, 0:vector_len-1]
+    y_test = X[:, vector_len-1]
+    probas = clf.predict_proba(X_test)
+
+    list_confusion_matrix = []
+    for i in range(len(__ALPHA)):
+        prediction = []
+        for k in range(len(y_test)):
+            if probas[k,0] > __ALPHA[i]:
+                prediction.append(0)
+            else:
+                prediction.append(1)
+        list_confusion_matrix.append(metrics.confusion_matrix(y_test, prediction))
+    return list_confusion_matrix
+
+
 def test():
     print "\n========== Start Testing =========="
     print "\nLoad Model......"
@@ -92,29 +117,19 @@ def test():
         list_io_addr = get_io_addr(__TEST_DATA[0], __TEST_DATA[1], __TEST_DATA[2])
     else:
         list_io_addr = get_io_addr_random_sample(__TEST_DATA[0], __TEST_DATA[1])
-    for addr_in in list_io_addr:
-        print "\nGenerate testing set from {}".format(addr_in)
-        with open(addr_in, "r") as file_in:
-            X = Sparse_Matrix_IO.load_sparse_csr(file_in)
-        print "Testing......"
-        vector_len = len(X[0])
-        X_test = X[:, 0:vector_len-1]
-        y_test = X[:, vector_len-1]
-        probas = clf.predict_proba(X_test)
 
-        for i in range(len(__ALPHA)):
-            prediction = []
-            for k in range(len(y_test)):
-                if probas[k,0] > __ALPHA[i]:
-                    prediction.append(0)
-                else:
-                    prediction.append(1)
-            confusion_matrix = metrics.confusion_matrix(y_test, prediction)
-            confusion_matrix_para[i][0] += confusion_matrix[1, 1]   # tp
-            confusion_matrix_para[i][1] += confusion_matrix[0, 1]   # fp
-            confusion_matrix_para[i][2] += confusion_matrix[0, 0]   # tn
-            confusion_matrix_para[i][3] += confusion_matrix[1, 0]   # fn
-        print "Done"
+    args = []
+    for i in range(len(list_io_addr)):
+        args.append((list_io_addr[i], clf))
+
+    p = multiprocessing.Pool(4)
+    for result in p.imap(crawl, args):
+        for i in range(len(result)):
+            confusion_matrix_para[i][0] += result[i][1, 1]   # tp
+            confusion_matrix_para[i][1] += result[i][0, 1]   # fp
+            confusion_matrix_para[i][2] += result[i][0, 0]   # tn
+            confusion_matrix_para[i][3] += result[i][1, 0]   # fn
+    print "Done"
 
     print "\nGenerate statistics"
     for i in range(len(__ALPHA)):
