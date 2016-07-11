@@ -15,8 +15,8 @@ __ALPHA = [0.99+0.001*i for i in range(10)]
 # __TEST_DATA = [["all"], [5]]
 
 # Data Format = [[Month], [Day], [Hour]]
-__TRAIN_DATA = [[5], [i for i in range(2,3)], [i for i in range(20)]]
-__TEST_DATA =  [[5], [i for i in range(2,3)], [i for i in range(20,21)]]
+__TRAIN_DATA = [[5], [i for i in range(1,5)], [17]]
+__TEST_DATA =  [[5], [5], [17]]
 
 
 def get_io_addr_random_sample(prefix, suffix):
@@ -68,7 +68,7 @@ def train():
         sm = SMOTE(ratio=0.9)
         X_train_sm, y_train_sm = sm.fit_sample(X_train, y_train)
 
-        print "Fitting Model"
+        print "Fitting Model......"
         clf.partial_fit(X_train_sm, y_train_sm, classes=[0, 1])
         print "Done"
 
@@ -78,7 +78,7 @@ def train():
 
 def test():
     print "\n========== Start Testing =========="
-    print "\nLoad Model"
+    print "\nLoad Model......"
     with open(__ROOT_MODEL, "r") as file_in:
         clf = pickle.load(file_in)
     print "Done"
@@ -95,7 +95,7 @@ def test():
         print "\nGenerate testing set from {}".format(addr_in)
         with open(addr_in, "r") as file_in:
             X = Sparse_Matrix_IO.load_sparse_csr(file_in)
-        print "Testing"
+        print "Testing......"
         vector_len = len(X[0])
         X_test = X[:, 0:vector_len-1]
         y_test = X[:, vector_len-1]
