@@ -48,7 +48,7 @@ def get_io_addr(list_month, list_day, list_hour):
 
 
 def train():
-    print "\n----------Start Training----------"
+    print "\n========== Start Training =========="
     if len(__TRAIN_DATA) == 3:
         list_io_addr = get_io_addr(__TRAIN_DATA[0], __TRAIN_DATA[1], __TRAIN_DATA[2])
     else:
@@ -77,7 +77,7 @@ def train():
 
 
 def test():
-    print "\n----------Start Testing----------"
+    print "\n========== Start Testing =========="
     print "\nLoad Model"
     with open(__ROOT_MODEL, "r") as file_in:
         clf = pickle.load(file_in)
