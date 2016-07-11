@@ -6,7 +6,7 @@ import pickle
 import Sparse_Matrix_IO
 
 
-__ROOT_MODEL = "/home/ubuntu/Weiyi/model_05_01"
+__ROOT_MODEL = "/home/ubuntu/Weiyi/model_alldata_4_4"
 
 
 def get_io_addr_random_sample():
@@ -17,9 +17,8 @@ def get_io_addr_random_sample():
     for i in prefix:
         for j in suffix:
             file_name = i+"data"+str(j)
-            addr_in = os.path.join(root, file_name+".txt")
-            addr_out = os.path.join(root, file_name+"_num.ods")
-            list_io_addr.append((addr_in, addr_out))
+            addr_in = os.path.join(root, file_name+"_bin.npy")
+            list_io_addr.append(addr_in)
     return list_io_addr
 
 
@@ -76,3 +75,4 @@ for i in range(len(list_io_addr)):
 
 with open(__ROOT_MODEL, "w") as file_out:
     pickle.dump(clf, file_out)
+
