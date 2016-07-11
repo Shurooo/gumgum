@@ -3,17 +3,10 @@ import numpy as np
 from sklearn.naive_bayes import BernoulliNB
 from imblearn.over_sampling import SMOTE
 import pickle
-from scipy.sparse import csr_matrix
+import Sparse_Matrix_IO
 
 
-def save_sparse_csr(filename, array):
-    array_sparse = csr_matrix(array)
-    np.savez(filename, data=array.data, indices=array.indices, indptr=array.indptr, shape=array.shape)
-
-
-def load_sparse_csr(filename):
-    loader = np.load(filename)
-    return csr_matrix((loader['data'], loader['indices'], loader['indptr']), shape=loader['shape']).toarray()
+__ROOT_MODEL = "/home/ubuntu/Weiyi/model_05_01"
 
 
 def get_io_addr():
@@ -37,8 +30,9 @@ def get_io_addr():
                 list_io_addr.append(addr_in)
     return list_io_addr
 
-clf = BernoulliNB()
+
 list_io_addr = get_io_addr()
+clf = BernoulliNB()
 
 for i in range(len(list_io_addr)):
     path_in = list_io_addr[i]
@@ -46,7 +40,7 @@ for i in range(len(list_io_addr)):
     print "Processing {}".format(path_in)
 
     with open(path_in, "r") as file_in:
-        X = load_sparse_csr(file_in)
+        X = Sparse_Matrix_IO.load_sparse_csr(file_in)
 
     m = len(X[0])
     n = len(X)
@@ -66,6 +60,5 @@ for i in range(len(list_io_addr)):
     print "Done"
     print
 
-with open("/home/ubuntu/Weiyi/model_05_01", "w") as file_out:
+with open(__ROOT_MODEL, "w") as file_out:
     pickle.dump(clf, file_out)
-
