@@ -1,9 +1,8 @@
-import numpy as np
-from scipy.sparse import csr_matrix
 import time
 import os
 import Fields_and_Methods
 import multiprocessing
+import Sparse_Matrix_IO
 
 
 start = time.time()
@@ -53,20 +52,9 @@ def crawl(io_addr):
                 line_bin.append(int(item))
             my_matrix.append(line_bin)
     with open(addr_out, "w") as file_out:
-        save_sparse_csr(file_out, csr_matrix(my_matrix))
+        Sparse_Matrix_IO.save_sparse_csr(file_out, my_matrix)
 
     os.remove(addr_in)
-
-
-def save_sparse_csr(filename, array):
-    np.savez(filename,data = array.data ,indices=array.indices,
-             indptr =array.indptr, shape=array.shape )
-
-
-def load_sparse_csr(filename):
-    loader = np.load(filename)
-    return csr_matrix((  loader['data'], loader['indices'], loader['indptr']),
-                         shape = loader['shape'])
 
 
 if __name__ == '__main__':
