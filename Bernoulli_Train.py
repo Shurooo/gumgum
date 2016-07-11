@@ -8,21 +8,21 @@ import Sparse_Matrix_IO
 
 
 __ROOT_DATA = "/mnt/rips/2016"
-__ROOT_MODEL = "/home/ubuntu/Weiyi/model_05_00_19"
-__TRAIN_DATA = [[5],                         # Month
-                [i for i in range(1,2)],     # Day
-                [i for i in range(20)]]      # Hour
+__ROOT_MODEL = "/home/ubuntu/Weiyi/model_test"
 __ALPHA = [0.99+0.001*i for i in range(10)]
-__TEST_DATA =  [[5],                         # Month
-                [i for i in range(1,2)],     # Day
-                [i for i in range(21, 22)]]  # Hour
+
+# Data Format = [[Prefix], [Suffix]]
+__TRAIN_DATA = [["all"], [i for i in range(5)]]
+__TEST_DATA = [["all"], [6]]
+
+# Data Format = [[Month], [Day], [Hour]]
+# __TRAIN_DATA = [[5], [i for i in range(1,2)], [i for i in range(20)]]
+# __TEST_DATA =  [[5], [i for i in range(1,2)], [i for i in range(21, 22)]]
 
 
-def get_io_addr_random_sample():
+def get_io_addr_random_sample(prefix, suffix):
     list_io_addr = []
     root = "/home/ubuntu/random_samples"
-    prefix = ["all"]
-    suffix = [i for i in range(5)]
     for i in prefix:
         for j in suffix:
             file_name = i+"data"+str(j)
@@ -51,7 +51,10 @@ def get_io_addr(list_month, list_day, list_hour):
 
 def train():
     print "Start Training"
-    list_io_addr = get_io_addr(__TRAIN_DATA[0], __TRAIN_DATA[1], __TRAIN_DATA[2])
+    if len(__TRAIN_DATA) == 3:
+        list_io_addr = get_io_addr(__TRAIN_DATA[0], __TRAIN_DATA[1], __TRAIN_DATA[2])
+    else:
+        list_io_addr = get_io_addr_random_sample(__TRAIN_DATA[0], __TRAIN_DATA[1])
     clf = BernoulliNB()
 
     for i in range(len(list_io_addr)):
@@ -86,7 +89,10 @@ def test():
     for i in range(len(__ALPHA)):
         confusion_matrix_para.append([0, 0, 0, 0])
 
-    list_io_addr = get_io_addr(__TEST_DATA[0], __TEST_DATA[1], __TEST_DATA[2])
+    if len(__TEST_DATA) == 3:
+        list_io_addr = get_io_addr(__TEST_DATA[0], __TEST_DATA[1], __TEST_DATA[2])
+    else:
+        list_io_addr = get_io_addr_random_sample(__TEST_DATA[0], __TEST_DATA[1])
     for addr_in in list_io_addr:
         print "Generate testing set from {}".format(addr_in)
         with open(addr_in, "r") as file_in:
@@ -123,5 +129,5 @@ def test():
         filtering = float(tn+fn) / total
         print "alpha = {0:.3f}, recall = {1:.4f}, filtering = {2:.4f}".format(__ALPHA[i], round(recall, 4), round(filtering, 4))
 
-# train()
+train()
 test()
