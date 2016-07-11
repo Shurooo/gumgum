@@ -50,6 +50,7 @@ def get_io_addr(list_month, list_day, list_hour):
 
 
 def train():
+    print "Start Training"
     list_io_addr = get_io_addr(__TRAIN_DATA[0], __TRAIN_DATA[1], __TRAIN_DATA[2])
     clf = BernoulliNB()
 
@@ -68,13 +69,14 @@ def train():
 
         print "Fitting Model"
         clf.partial_fit(X_train_sm, y_train_sm, classes=[0, 1])
-        print "Done\n"
+        print "Done"
 
     with open(__ROOT_MODEL, "w") as file_out:
         pickle.dump(clf, file_out)
 
 
 def test():
+    print "Start Testing"
     print "\nLoad Model"
     with open(__ROOT_MODEL, "r") as file_in:
         clf = pickle.load(file_in)
@@ -84,7 +86,7 @@ def test():
     for i in range(len(__ALPHA)):
         confusion_matrix_para.append([0, 0, 0, 0])
 
-    list_io_addr = get_io_addr()
+    list_io_addr = get_io_addr(__TEST_DATA[0], __TEST_DATA[1], __TEST_DATA[2])
     for addr_in in list_io_addr:
         print "Generate testing set from {}".format(addr_in)
         with open(addr_in, "r") as file_in:
@@ -121,5 +123,5 @@ def test():
         filtering = float(tn+fn) / total
         print "alpha = {0:.3f}, recall = {1:.4f}, filtering = {2:.4f}".format(__ALPHA[i], round(recall, 4), round(filtering, 4))
 
-train()
+# train()
 test()
