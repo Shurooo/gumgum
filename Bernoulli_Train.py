@@ -9,6 +9,20 @@ import Sparse_Matrix_IO
 __ROOT_MODEL = "/home/ubuntu/Weiyi/model_05_01"
 
 
+def get_io_addr_random_sample():
+    list_io_addr = []
+    root = "/home/ubuntu/random_samples"
+    prefix = ["all"]
+    suffix = [i for i in range(5)]
+    for i in prefix:
+        for j in suffix:
+            file_name = i+"data"+str(j)
+            addr_in = os.path.join(root, file_name+".txt")
+            addr_out = os.path.join(root, file_name+"_num.ods")
+            list_io_addr.append((addr_in, addr_out))
+    return list_io_addr
+
+
 def get_io_addr():
     root = "/mnt/rips/2016"
     filename_in = "output_bin.npy"
@@ -31,7 +45,7 @@ def get_io_addr():
     return list_io_addr
 
 
-list_io_addr = get_io_addr()
+list_io_addr = get_io_addr_random_sample()
 clf = BernoulliNB()
 
 for i in range(len(list_io_addr)):
