@@ -7,17 +7,16 @@ import pickle
 import Sparse_Matrix_IO
 
 
-__ROOT_DATA = "/mnt/rips/2016"
-__ROOT_MODEL = "/home/ubuntu/Weiyi/model_test"
+__ROOT_MODEL = "/home/ubuntu/Weiyi/model_05_02"
 __ALPHA = [0.99+0.001*i for i in range(10)]
 
 # Data Format = [[Prefix], [Suffix]]
-__TRAIN_DATA = [["all"], [i for i in range(5)]]
-__TEST_DATA = [["all"], [6]]
+# __TRAIN_DATA = [["all"], [i for i in range(5)]]
+# __TEST_DATA = [["all"], [5]]
 
 # Data Format = [[Month], [Day], [Hour]]
-# __TRAIN_DATA = [[5], [i for i in range(1,2)], [i for i in range(20)]]
-# __TEST_DATA =  [[5], [i for i in range(1,2)], [i for i in range(21, 22)]]
+__TRAIN_DATA = [[5], [i for i in range(2,3)], [i for i in range(20)]]
+__TEST_DATA =  [[5], [i for i in range(2,3)], [i for i in range(20,21)]]
 
 
 def get_io_addr_random_sample(prefix, suffix):
@@ -32,9 +31,8 @@ def get_io_addr_random_sample(prefix, suffix):
 
 
 def get_io_addr(list_month, list_day, list_hour):
-    root = "/mnt/rips/2016"
-
     list_io_addr = []
+    root = "/mnt/rips/2016"
     for month in list_month:
         for day in list_day:
             if month == 6:
@@ -50,12 +48,12 @@ def get_io_addr(list_month, list_day, list_hour):
 
 
 def train():
-    print "Start Training"
+    print "\n----------Start Training----------"
     if len(__TRAIN_DATA) == 3:
         list_io_addr = get_io_addr(__TRAIN_DATA[0], __TRAIN_DATA[1], __TRAIN_DATA[2])
     else:
         list_io_addr = get_io_addr_random_sample(__TRAIN_DATA[0], __TRAIN_DATA[1])
-    clf = BernoulliNB()
+    clf = BernoulliNB(fit_prior=True)
 
     for i in range(len(list_io_addr)):
         path_in = list_io_addr[i]
@@ -79,7 +77,7 @@ def train():
 
 
 def test():
-    print "Start Testing"
+    print "\n----------Start Testing----------"
     print "\nLoad Model"
     with open(__ROOT_MODEL, "r") as file_in:
         clf = pickle.load(file_in)
@@ -94,10 +92,9 @@ def test():
     else:
         list_io_addr = get_io_addr_random_sample(__TEST_DATA[0], __TEST_DATA[1])
     for addr_in in list_io_addr:
-        print "Generate testing set from {}".format(addr_in)
+        print "\nGenerate testing set from {}".format(addr_in)
         with open(addr_in, "r") as file_in:
             X = Sparse_Matrix_IO.load_sparse_csr(file_in)
-        print "Done"
         print "Testing"
         vector_len = len(X[0])
         X_test = X[:, 0:vector_len-1]
@@ -118,7 +115,7 @@ def test():
             confusion_matrix_para[i][3] += confusion_matrix[1, 0]   # fn
         print "Done"
 
-    print "Generate statistics"
+    print "\nGenerate statistics"
     for i in range(len(__ALPHA)):
         tp = confusion_matrix_para[i][0]
         fp = confusion_matrix_para[i][1]
