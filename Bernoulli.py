@@ -1,5 +1,6 @@
 import os
 import numpy as np
+import time
 from sklearn.naive_bayes import BernoulliNB
 from sklearn import metrics
 from imblearn.over_sampling import SMOTE
@@ -126,5 +127,9 @@ def test():
         filtering = float(tn+fn) / total
         print "alpha = {0:.3f}, recall = {1:.4f}, filtering = {2:.4f}".format(__ALPHA[i], round(recall, 4), round(filtering, 4))
 
+start = time.time()
 train()
+print "----------Training Completed in {} seconds----------\n".format(round(time.time()-start, 2))
+start = time.time()
 test()
+print "----------Testing Completed in {} seconds----------\n".format(round(time.time()-start, 2))
