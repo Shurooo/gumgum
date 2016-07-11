@@ -16,8 +16,8 @@ __ALPHA = [0.99+0.001*i for i in range(10)]
 # __TEST_DATA = [["all"], [5]]
 
 # Data Format = [[Month], [Day], [Hour]]
-__TRAIN_DATA = [[5], [i for i in range(1,5)], [17]]
-__TEST_DATA =  [[5], [5], [17]]
+__TRAIN_DATA = [[5], [1], [i for i in range(24)]]
+__TEST_DATA =  [[5], [2], [i for i in range(24)]]
 
 
 def get_io_addr_random_sample(prefix, suffix):
@@ -62,7 +62,7 @@ def train():
         with open(path_in, "r") as file_in:
             X = Sparse_Matrix_IO.load_sparse_csr(file_in)
         vector_len = len(X[0])
-        X_train = X[:, 31:vector_len-1]
+        X_train = X[:, 0:vector_len-1]
         y_train = X[:, vector_len-1]
         print "Done"
 
@@ -98,7 +98,7 @@ def test():
             X = Sparse_Matrix_IO.load_sparse_csr(file_in)
         print "Testing......"
         vector_len = len(X[0])
-        X_test = X[:, 31:vector_len-1]
+        X_test = X[:, 0:vector_len-1]
         y_test = X[:, vector_len-1]
         probas = clf.predict_proba(X_test)
 
