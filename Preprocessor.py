@@ -91,7 +91,7 @@ def filter(auction):
                 imp_list = bidreq["impressions"][:]
                 for imp in imp_list:
                     # Filter out ad formats that should be ignored
-                    if Fields_and_Methods.__FORMAT_MASK[imp["format"]] == 1:
+                    if (Fields_and_Methods.__FORMAT_MASK[imp["format"]] == 1) or (imp["bidfloor"] < 0):
                         bidreq_list[index]["impressions"].remove(imp)
             if len(bidreq_list[index]["impressions"]) == 0:
                 bidreq_list.remove(bidreq)
@@ -229,7 +229,7 @@ def auction_bidrequest_impressions_process(bidreq, bid_responded, result_bid, re
                 if width < 500:
                     banner = 4
                 else:
-                    banner = 5
+                    banner = 1
         else:
             banner = 0
         result_imp.append(banner)
