@@ -40,7 +40,7 @@ def get_io_addr_random_sample():
         for j in suffix:
             file_name = i+"data"+str(j)
             addr_in = os.path.join(root, file_name+".txt")
-            addr_out = os.path.join(root, file_name+"_num.ods")
+            addr_out = os.path.join(root, file_name+"_bin_new.npy")
             list_io_addr.append((addr_in, addr_out))
     return list_io_addr
 
@@ -296,7 +296,7 @@ def auction_bidrequest_impressions_process(bidreq, bid_responded, result_bid, re
 if __name__ == '__main__':
     cpus = multiprocessing.cpu_count()
     p = multiprocessing.Pool(cpus)
-    list_io_addr = get_io_addr()
+    list_io_addr = get_io_addr_random_sample()
 
     dumped = 0
     filtered = 0
