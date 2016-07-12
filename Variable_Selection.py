@@ -8,7 +8,7 @@ from scipy.sparse import csr_matrix, vstack
 __ADDR_ROOT = "/mnt/rips/2016"
 __FEATURES = ["hour", "day", "country", "margin", "tmax", "bkc", "site_typeid", "site_cat", "browser_type",
              "bidder_id", "vertical_id", "bid_floor", "format", "product", "banner", "response"]
-__FEATURES_TO_DROP = ["country"]
+__FEATURES_TO_DROP = ["country", "hour"]
 
 start = time.time()
 
