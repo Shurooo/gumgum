@@ -308,5 +308,4 @@ if __name__ == '__main__':
     print "{} lines filtered".format(filtered)
     print "{} lines dumped".format(dumped)
 
-print "Completed in {} seconds".format(round(time.time()-start, 2))
-print
+print "Completed in {} seconds\n".format(round(time.time()-start, 2))
