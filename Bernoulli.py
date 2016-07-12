@@ -9,7 +9,7 @@ import pickle
 import Sparse_Matrix_IO
 
 
-__ROOT_MODEL = "/home/ubuntu/Weiyi/model_05_01"
+__ROOT_MODEL = "/home/ubuntu/Weiyi/model_06_01"
 __ALPHA = [0.99+0.001*i for i in range(10)]
 
 __FEATURES = ["hour", "day", "country", "margin", "tmax", "bkc", "site_typeid", "site_cat", "browser_type",
@@ -21,8 +21,8 @@ __FEATURES_TO_DROP = []
 # __TEST_DATA = [["all"], [5]]
 
 # Data Format = [[Month], [Day], [Hour]]
-__TRAIN_DATA = [[5], [1], [i for i in range(24)]]
-__TEST_DATA =  [[5], [2], [i for i in range(24)]]
+__TRAIN_DATA = [[6], [1], [i for i in range(24)]]
+__TEST_DATA =  [[6], [1], [i for i in range(24)]]
 
 
 def get_io_addr_random_sample(prefix, suffix):
