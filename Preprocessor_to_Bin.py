@@ -92,16 +92,12 @@ def crawl(io_addr):
                     continue
 
                 event_process(entry, result)
-                bkc = auction_process(auction, result)
-                site_cates = auction_site_process(auction, result)
+                auction_process(auction, result)
+                auction_site_process(auction, result)
                 auction_dev_process(auction, result)
                 auction_bidrequests_process(auction, result, result_list)
 
                 for item in result_list:
-                    response = item.pop(len(item)-1)
-                    item.extend(site_cates)
-                    item.append(bkc)
-                    item.append(response)
                     data_sparse_list.append(csr_matrix(item))
             except:
                 dumped += 1
@@ -132,7 +128,7 @@ def filter(auction):
                 imp_list = bidreq["impressions"][:]
                 for imp in imp_list:
                     # Filter out ad formats that should be ignored
-                    if __FORMAT_MASK[imp["format"]] == 1:
+                    if (__FORMAT_MASK[imp["format"]] == 1) or (imp["bidfloor"] < 0):
                         bidreq_list[index]["impressions"].remove(imp)
             if len(bidreq_list[index]["impressions"]) == 0:
                 bidreq_list.remove(bidreq)
@@ -143,6 +139,8 @@ def filter(auction):
 
 
 def binarize(result, item, length):
+    if item < 0:
+        raise IndexError
     my_list = [0]*length
     my_list[item] = 1
     result.extend(my_list)
@@ -187,9 +185,9 @@ def auction_process(auction, result):
 
     # Auction - BKC
     if auction["user"].has_key("bkc"):
-        return 1
+        result.append(1)
     else:
-        return 0
+        result.append(0)
 
 
 def auction_site_process(auction, result):
@@ -204,7 +202,7 @@ def auction_site_process(auction, result):
             cat_int = IAB_parser(cat)
             if site_cats[cat_int-1] == 0:
                 site_cats[cat_int-1] = 1
-    return site_cats
+    result.extend(site_cats)
 
 
 def IAB_parser(str):
@@ -218,10 +216,10 @@ def IAB_parser(str):
 
 def auction_dev_process(auction, result):
     try:
-        type_index = __BROWSER_TYPE.index(auction["dev"]["bti"])
+        type_index = __BROWSER_TYPE.index(auction["dev"]["bti"])+1
     except:
         type_index = 0
-    binarize(result, type_index, len(__BROWSER_TYPE))
+    binarize(result, type_index, len(__BROWSER_TYPE)+1)
 
 
 def auction_bidrequests_process(auction, result, result_list):
@@ -282,10 +280,10 @@ def auction_bidrequest_impressions_process(bidreq, bid_responded, result_bid, re
                 if width < 500:
                     banner = 4
                 else:
-                    banner = 5
+                    banner = 1
         else:
             banner = 0
-        binarize(result_imp, banner-1, 5)
+        binarize(result_imp, banner, 5)
 
         # Response
         if imp["id"] == impid_responded:

@@ -49,7 +49,7 @@ def get_classes():
         "margin": create_class(1, 5),
         "tmax":create_class(1, 4),
         "site_typeid": create_class(1, 3),
-        "browser_type": create_class(1, 8),
+        "browser_type": create_class(0, 9),
         "bidder_id": create_class(1, 35),
         "vertical_id": create_class(1, 16),
         "bid_floor": create_class(1, 6),
