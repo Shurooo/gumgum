@@ -73,7 +73,7 @@ def train(cutoffs):
 
     for i in range(len(list_io_addr)):
         path_in = list_io_addr[i]
-        print "\nGenerate training set from {}".format(path_in)
+        print "\nGenerating training set from {}".format(path_in)
         with open(path_in, "r") as file_in:
             X = Sparse_Matrix_IO.load_sparse_csr(file_in)
 
@@ -102,7 +102,7 @@ def crawl(args):
     clf = args[1]
     cutoffs = args[2]
 
-    print "\nProcess testing set from {}".format(addr_in)
+    print "\nProcessing testing set from {}".format(addr_in)
     with open(addr_in, "r") as file_in:
         X = Sparse_Matrix_IO.load_sparse_csr(file_in)
 
@@ -126,7 +126,7 @@ def crawl(args):
     return list_confusion_matrix
 
 
-def test():
+def test(cutoffs):
     print "\n========== Start Testing =========="
     print "\nLoad Model......"
     with open(__ROOT_MODEL, "r") as file_in:
@@ -213,9 +213,9 @@ if len(__FEATURES_TO_DROP) > 0:
 else:
     cutoffs = []
 
-start = time.time()
-train(cutoffs)
-print "----------Training Completed in {} seconds----------\n".format(round(time.time()-start, 2))
+# start = time.time()
+# train(cutoffs)
+# print "----------Training Completed in {} seconds----------\n".format(round(time.time()-start, 2))
 start = time.time()
 test(cutoffs)
 print "----------Testing Completed in {} seconds----------\n".format(round(time.time()-start, 2))
