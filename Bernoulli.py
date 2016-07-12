@@ -102,7 +102,7 @@ def crawl(args):
     clf = args[1]
     cutoffs = args[2]
 
-    print "\nProcessing testing set from {}".format(addr_in)
+    print "Processing testing set from {}".format(addr_in)
     with open(addr_in, "r") as file_in:
         X = Sparse_Matrix_IO.load_sparse_csr(file_in)
 
@@ -131,7 +131,7 @@ def test(cutoffs):
     print "\nLoad Model......"
     with open(__ROOT_MODEL, "r") as file_in:
         clf = pickle.load(file_in)
-    print "Done"
+    print "Done\n"
 
     confusion_matrix_para = []
     for i in range(len(__ALPHA)):
