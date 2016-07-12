@@ -5,9 +5,9 @@ import Sparse_Matrix_IO
 
 
 def get_io_addr():
-    list_day = [i for i in range(2,3)]
-    list_hour = [i for i in range(1)]
-    list_month = [5]
+    list_day = [i for i in range(1,8)]
+    list_hour = [i for i in range(24)]
+    list_month = [5,6]
 
     filename_in = "output_bin_new.npy"
 
@@ -27,6 +27,7 @@ def get_io_addr():
 
 
 def crawl(addr_in):
+    print "Checking {}".format(addr_in)
     with open(addr_in, "r") as file_in:
         X = Sparse_Matrix_IO.load_sparse_csr(file_in)
     for line in X:

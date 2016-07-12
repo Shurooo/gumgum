@@ -9,12 +9,12 @@ import pickle
 import Sparse_Matrix_IO
 
 
-__ROOT_MODEL = "/home/ubuntu/Weiyi/model_06_01_no_cc"
+__ROOT_MODEL = "/home/ubuntu/Weiyi/model_06_01"
 __ALPHA = [0.99+0.001*i for i in range(10)]
 
 __FEATURES = ["hour", "day", "country", "margin", "tmax", "bkc", "site_typeid", "site_cat", "browser_type",
              "bidder_id", "vertical_id", "bid_floor", "format", "product", "banner", "response"]
-__FEATURES_TO_DROP = ["country"]
+__FEATURES_TO_DROP = []
 
 # Data Format = [[Prefix], [Suffix]]
 # __TRAIN_DATA = [["all"], [i for i in range(5)]]
