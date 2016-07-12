@@ -9,7 +9,7 @@ import pickle
 import Sparse_Matrix_IO
 
 
-__ROOT_MODEL = "/home/ubuntu/Weiyi/model_05_02"
+__ROOT_MODEL = "/home/ubuntu/Weiyi/model_06_01_no_cc"
 __ALPHA = [0.99+0.001*i for i in range(10)]
 
 __FEATURES = ["hour", "day", "country", "margin", "tmax", "bkc", "site_typeid", "site_cat", "browser_type",
@@ -21,8 +21,8 @@ __FEATURES_TO_DROP = ["country"]
 # __TEST_DATA = [["all"], [5]]
 
 # Data Format = [[Month], [Day], [Hour]]
-__TRAIN_DATA = [[5], [1], [i for i in range(24)]]
-__TEST_DATA =  [[5], [2], [i for i in range(24)]]
+__TRAIN_DATA = [[6], [1], [i for i in range(24)]]
+__TEST_DATA =  [[6], [2], [i for i in range(24)]]
 
 
 def get_io_addr_random_sample(prefix, suffix):
@@ -48,7 +48,7 @@ def get_io_addr(list_month, list_day, list_hour):
                                        str(month).rjust(2, "0"),
                                        str(day).rjust(2, "0"),
                                        str(hour).rjust(2, "0"))
-                addr_in = os.path.join(io_addr, "output_bin.npy")
+                addr_in = os.path.join(io_addr, "output_bin_new.npy")
                 list_io_addr.append(addr_in)
     return list_io_addr
 
@@ -60,7 +60,7 @@ def discard_vars(X, cutoffs):
         for i in range(0, len(cutoffs), 2):
             new_line.extend(line[cutoffs[i]:cutoffs[i+1]])
         X_new.append(new_line)
-    return X_new
+    return np.array(X_new)
 
 
 def train(cutoffs):
@@ -78,6 +78,7 @@ def train(cutoffs):
             X = Sparse_Matrix_IO.load_sparse_csr(file_in)
 
         if len(cutoffs) > 0:
+            print "Discarding selected features......"
             X = discard_vars(X, cutoffs)
 
         vector_len = len(X[0])
