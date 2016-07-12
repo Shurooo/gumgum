@@ -9,7 +9,7 @@ import pickle
 import Sparse_Matrix_IO
 
 
-__ROOT_MODEL = "/home/ubuntu/Weiyi/model_05_01"
+__ROOT_MODEL = "/home/ubuntu/Weiyi/model_05_01_classprior"
 
 __FEATURES = ["hour", "day", "country", "margin", "tmax", "bkc", "site_typeid", "site_cat", "browser_type",
              "bidder_id", "vertical_id", "bid_floor", "format", "product", "banner", "response"]
@@ -68,7 +68,7 @@ def train(cutoffs):
         list_io_addr = get_io_addr(__TRAIN_DATA[0], __TRAIN_DATA[1], __TRAIN_DATA[2])
     else:
         list_io_addr = get_io_addr_random_sample(__TRAIN_DATA[0], __TRAIN_DATA[1])
-    clf = BernoulliNB(fit_prior=True)
+    clf = BernoulliNB(class_prior=[0.9, 0.1])
 
     for i in range(len(list_io_addr)):
         path_in = list_io_addr[i]
@@ -149,7 +149,7 @@ def test(cutoffs):
     total = tp+fp+tn+fn
     recall = tp / float(tp+fn)
     filtering = float(tn+fn) / total
-    print "recall = {1:.4f}, filtering = {2:.4f}".format(round(recall, 4), round(filtering, 4))
+    print "recall = {0:.4f}, filtering = {1:.4f}".format(round(recall, 4), round(filtering, 4))
 
 
 def get_feature_indices():
@@ -198,9 +198,9 @@ if len(__FEATURES_TO_DROP) > 0:
 else:
     cutoffs = []
 
-# start = time.time()
-# train(cutoffs)
-# print "----------Training Completed in {} seconds----------\n".format(round(time.time()-start, 2))
+start = time.time()
+train(cutoffs)
+print "----------Training Completed in {} seconds----------\n".format(round(time.time()-start, 2))
 start = time.time()
 test(cutoffs)
 print "----------Testing Completed in {} seconds----------\n".format(round(time.time()-start, 2))
