@@ -33,7 +33,7 @@ def crawl(addr_in):
     for line in X:
         if len(line) != 361:
             print "\nSomething Wrong!"
-            print "file name {}\n".format(addr_in)
+            print "File name {}\n".format(addr_in)
             exit(1)
 
 

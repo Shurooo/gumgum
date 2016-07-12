@@ -9,8 +9,7 @@ import pickle
 import Sparse_Matrix_IO
 
 
-__ROOT_MODEL = "/home/ubuntu/Weiyi/model_06_01"
-__ALPHA = [0.99+0.001*i for i in range(10)]
+__ROOT_MODEL = "/home/ubuntu/Weiyi/model_05_01"
 
 __FEATURES = ["hour", "day", "country", "margin", "tmax", "bkc", "site_typeid", "site_cat", "browser_type",
              "bidder_id", "vertical_id", "bid_floor", "format", "product", "banner", "response"]
@@ -21,8 +20,8 @@ __FEATURES_TO_DROP = []
 # __TEST_DATA = [["all"], [5]]
 
 # Data Format = [[Month], [Day], [Hour]]
-__TRAIN_DATA = [[6], [1], [i for i in range(24)]]
-__TEST_DATA =  [[6], [1], [i for i in range(24)]]
+__TRAIN_DATA = [[5], [1], [i for i in range(24)]]
+__TEST_DATA =  [[5], [2], [i for i in range(24)]]
 
 
 def get_io_addr_random_sample(prefix, suffix):
@@ -112,18 +111,9 @@ def crawl(args):
     vector_len = len(X[0])
     X_test = X[:, 0:vector_len-1]
     y_test = X[:, vector_len-1]
-    probas = clf.predict_proba(X_test)
+    prediction = clf.predict(X_test)
 
-    list_confusion_matrix = []
-    for i in range(len(__ALPHA)):
-        prediction = []
-        for k in range(len(y_test)):
-            if probas[k,0] > __ALPHA[i]:
-                prediction.append(0)
-            else:
-                prediction.append(1)
-        list_confusion_matrix.append(metrics.confusion_matrix(y_test, prediction))
-    return list_confusion_matrix
+    return metrics.confusion_matrix(y_test, prediction)
 
 
 def test(cutoffs):
@@ -133,38 +123,33 @@ def test(cutoffs):
         clf = pickle.load(file_in)
     print "Done\n"
 
-    confusion_matrix_para = []
-    for i in range(len(__ALPHA)):
-        confusion_matrix_para.append([0, 0, 0, 0])
-
     if len(__TEST_DATA) == 3:
         list_io_addr = get_io_addr(__TEST_DATA[0], __TEST_DATA[1], __TEST_DATA[2])
     else:
         list_io_addr = get_io_addr_random_sample(__TEST_DATA[0], __TEST_DATA[1])
 
+    confusion_matrix = [0, 0, 0, 0]
     args = []
     for i in range(len(list_io_addr)):
         args.append((list_io_addr[i], clf, cutoffs))
 
     p = multiprocessing.Pool(4)
     for result in p.imap(crawl, args):
-        for i in range(len(result)):
-            confusion_matrix_para[i][0] += result[i][1, 1]   # tp
-            confusion_matrix_para[i][1] += result[i][0, 1]   # fp
-            confusion_matrix_para[i][2] += result[i][0, 0]   # tn
-            confusion_matrix_para[i][3] += result[i][1, 0]   # fn
+        confusion_matrix[0] += result[1, 1]   # tp
+        confusion_matrix[1] += result[0, 1]   # fp
+        confusion_matrix[2] += result[0, 0]   # tn
+        confusion_matrix[3] += result[1, 0]   # fn
     print "Done"
 
     print "\nGenerate statistics"
-    for i in range(len(__ALPHA)):
-        tp = confusion_matrix_para[i][0]
-        fp = confusion_matrix_para[i][1]
-        tn = confusion_matrix_para[i][2]
-        fn = confusion_matrix_para[i][3]
-        total = tp+fp+tn+fn
-        recall = tp / float(tp+fn)
-        filtering = float(tn+fn) / total
-        print "alpha = {0:.3f}, recall = {1:.4f}, filtering = {2:.4f}".format(__ALPHA[i], round(recall, 4), round(filtering, 4))
+    tp = confusion_matrix[0]
+    fp = confusion_matrix[1]
+    tn = confusion_matrix[2]
+    fn = confusion_matrix[3]
+    total = tp+fp+tn+fn
+    recall = tp / float(tp+fn)
+    filtering = float(tn+fn) / total
+    print "recall = {1:.4f}, filtering = {2:.4f}".format(round(recall, 4), round(filtering, 4))
 
 
 def get_feature_indices():
@@ -213,9 +198,9 @@ if len(__FEATURES_TO_DROP) > 0:
 else:
     cutoffs = []
 
-start = time.time()
-train(cutoffs)
-print "----------Training Completed in {} seconds----------\n".format(round(time.time()-start, 2))
+# start = time.time()
+# train(cutoffs)
+# print "----------Training Completed in {} seconds----------\n".format(round(time.time()-start, 2))
 start = time.time()
 test(cutoffs)
 print "----------Testing Completed in {} seconds----------\n".format(round(time.time()-start, 2))
