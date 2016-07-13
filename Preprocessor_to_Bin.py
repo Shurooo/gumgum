@@ -44,12 +44,11 @@ def get_io_addr_random_sample():
 
 
 def get_io_addr_day_sample():
-    # list_may = [(5, i) for i in range(1,8)]
-    # list_june = [(6, i) for i in range(4,26)]
-    # list_dates = list_may+list_june
-    list_dates = [(5,1)]
+    list_may = [(5, i) for i in range(2,8)]
+    list_june = [(6, i) for i in range(4,26)]
+    list_dates = list_may+list_june
 
-    filename_in = "day_samp"
+    filename_in = "day_samp.txt"
     root_in = "/mnt/rips2/2016"
     filename_out = "day_samp_bin.npy"
     root_out = "/mnt/rips2/2016"
@@ -70,8 +69,8 @@ def get_io_addr_day_sample():
 
 
 def get_io_addr():
-    list_day = [i for i in range(4,26)]
-    list_hour = [i for i in range(24)]
+    list_day = [4]
+    list_hour = [1,6]
     list_month = [6]
 
     filename_in = "part-00000"
@@ -108,7 +107,6 @@ def crawl(io_addr):
             print addr_in
             for line in file_in:
                 try:
-                    line = line.rstrip("\r\n").rstrip(")").lstrip("(")
                     entry = json.loads(line)
                     result = []
                     result_list = []
@@ -328,7 +326,7 @@ def auction_bidrequest_impressions_process(bidreq, bid_responded, result_bid, re
 if __name__ == '__main__':
     cpus = multiprocessing.cpu_count()
     p = multiprocessing.Pool(cpus)
-    list_io_addr = get_io_addr_day_sample()
+    list_io_addr = get_io_addr()
 
     dumped = 0
     filtered = 0
