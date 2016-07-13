@@ -46,18 +46,16 @@ def get_io_addr_random_sample():
 
 
 def get_io_addr():
-    list_day = [i for i in range(2,3)]
-    list_hour = [i for i in range(1)]
-    list_month = [5]
+    list_day = [i for i in range(4,19)]
+    list_hour = [i for i in range(24)]
+    list_month = [6]
 
     filename_in = "part-00000"
-    filename_out = "output_bin_test.npy"
+    filename_out = "output_bin_new.npy"
 
     list_io_addr = []
     for month in list_month:
         for day in list_day:
-            if month == 6:
-                day += 18
             for hour in list_hour:
                 io_addr = os.path.join(__ADDR_ROOT,
                                        str(month).rjust(2, "0"),
