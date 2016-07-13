@@ -65,22 +65,6 @@ def discard_vars(X, cutoffs):
     return np.array(X_new)
 
 
-def fit_model(clf, X):
-    vector_len = len(X[0])
-    X_train = X[:, 0:vector_len-1]
-    y_train = X[:, vector_len-1]
-    print "Done"
-
-    # sm = SMOTE(ratio=0.9)
-    # X_train_sm, y_train_sm = sm.fit_sample(X_train, y_train)
-
-    print "Fitting Model......"
-    clf.partial_fit(X_train, y_train, classes=[0, 1])
-    print "Done"
-
-    return clf
-
-
 def train(cutoffs):
     print "\n========== Start Training =========="
     if len(__TRAIN_DATA) == 3:
@@ -88,19 +72,32 @@ def train(cutoffs):
     else:
         list_io_addr = get_io_addr_random_sample(__TRAIN_DATA[0], __TRAIN_DATA[1])
     clf = BernoulliNB(class_prior=[0.05, 0.95])
-
+    start = 0
     layer = ce.Corex(n_hidden=100)
+
     if __IF_TRAIN_WITHOUT_SAVE:
+        start = 1
         print "Performing correlation explanation......"
         with open(list_io_addr[0], "r") as file_in:
             X = Sparse_Matrix_IO.load_sparse_csr(file_in)
             if len(cutoffs) > 0:
                 X = discard_vars(X, cutoffs)
-            layer.fit(X)
-            X = layer.labels
-            clf = fit_model(clf, X)
 
-    for i in range(len(list_io_addr)):
+            vector_len = len(X[0])
+            X_train = X[:, 0:vector_len-1]
+            y_train = X[:, vector_len-1]
+
+            layer.fit(X_train)
+            X_train = layer.labels
+
+            # sm = SMOTE(ratio=0.9)
+            # X_train_sm, y_train_sm = sm.fit_sample(X_train, y_train)
+
+            print "Fitting Model......"
+            clf.partial_fit(X_train, y_train, classes=[0, 1])
+            print "Done"
+
+    for i in range(start, len(list_io_addr)):
         path_in = list_io_addr[i]
         print "\nGenerating training set from {}".format(path_in)
         with open(path_in, "r") as file_in:
@@ -108,10 +105,18 @@ def train(cutoffs):
 
         if len(cutoffs) > 0:
             X = discard_vars(X, cutoffs)
+
+        vector_len = len(X[0])
+        X_train = X[:, 0:vector_len-1]
+        y_train = X[:, vector_len-1]
+
         if __IF_TRAIN_WITHOUT_SAVE:
             print "Performing correlation explanation......"
-            X = layer.transform(X)
-        clf = fit_model(clf, X)
+            X_train = layer.transform(X_train)
+
+        print "Fitting Model......"
+        clf.partial_fit(X_train, y_train, classes=[0, 1])
+        print "Done"
 
     if __IF_TRAIN_WITHOUT_SAVE:
         args = [clf, layer]
@@ -135,12 +140,14 @@ def crawl(args):
 
     if len(cutoffs) > 0:
         X = discard_vars(X, cutoffs)
-    if __IF_TRAIN_WITHOUT_SAVE:
-        X = layer.transform(X)
 
     vector_len = len(X[0])
     X_test = X[:, 0:vector_len-1]
     y_test = X[:, vector_len-1]
+
+    if __IF_TRAIN_WITHOUT_SAVE:
+        X_test = layer.transform(X_test)
+
     prediction = clf.predict(X_test)
 
     return metrics.confusion_matrix(y_test, prediction)
