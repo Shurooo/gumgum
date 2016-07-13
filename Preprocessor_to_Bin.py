@@ -75,6 +75,7 @@ def crawl(io_addr):
     dumped = 0
 
     data_sparse_list = []
+    
     with open(addr_in, "r") as file_in:
         print addr_in
         for line in file_in:
