@@ -68,7 +68,7 @@ def train(cutoffs):
         list_io_addr = get_io_addr(__TRAIN_DATA[0], __TRAIN_DATA[1], __TRAIN_DATA[2])
     else:
         list_io_addr = get_io_addr_random_sample(__TRAIN_DATA[0], __TRAIN_DATA[1])
-    clf = BernoulliNB(class_prior=[0.9, 0.1])
+    clf = BernoulliNB(class_prior=[0.05, 0.95])
 
     for i in range(len(list_io_addr)):
         path_in = list_io_addr[i]
