@@ -21,8 +21,8 @@ __FEATURES_TO_DROP = []
 # __TEST_DATA = [["all"], [5]]
 
 # Data Format = [[Month], [Day], [Hour]]
-__TRAIN_DATA = [[5], [1], [i for i in range(24)]]
-__TEST_DATA =  [[5], [2], [i for i in range(24)]]
+__TRAIN_DATA = [[5], [1], [i for i in range(5)]]
+__TEST_DATA =  [[5], [1], [6]]
 
 
 def get_io_addr_random_sample(prefix, suffix):
@@ -69,7 +69,7 @@ def train(cutoffs):
         list_io_addr = get_io_addr(__TRAIN_DATA[0], __TRAIN_DATA[1], __TRAIN_DATA[2])
     else:
         list_io_addr = get_io_addr_random_sample(__TRAIN_DATA[0], __TRAIN_DATA[1])
-    clf = BernoulliNB(class_prior=[0.05, 0.95])
+    clf = BernoulliNB(class_prior=[0.01, 0.99])
 
     for i in range(len(list_io_addr)):
         path_in = list_io_addr[i]
@@ -85,9 +85,11 @@ def train(cutoffs):
         X_train = X[:, 0:vector_len-1]
         y_train = X[:, vector_len-1]
         print "Done"
-
-        sm = SMOTE(ratio=0.5)
-        X_train_sm, y_train_sm = sm.fit_sample(X_train, y_train)
+        
+        nm = NearMiss(ratio=0.5)
+        X_train_sm, y_train_sm = nm.fit_sample(X_train, y_train)
+        # sm = SMOTE(ratio=0.99)
+        # X_train_sm, y_train_sm = sm.fit_sample(X_train, y_train)
 
         print "Fitting Model......"
         clf.partial_fit(X_train_sm, y_train_sm, classes=[0, 1])
@@ -96,8 +98,9 @@ def train(cutoffs):
     if __SAVE_MODEL:
         with open(__ROOT_MODEL, "w") as file_out:
             pickle.dump(clf, file_out)
+        return None
     else:
-        test(cutoffs, clf)
+        return clf
 
 
 def crawl(args):
@@ -204,9 +207,9 @@ else:
     cutoffs = []
 
 start = time.time()
-train(cutoffs)
+clf = train(cutoffs)
 print "----------Training Completed in {} seconds----------\n".format(round(time.time()-start, 2))
 
 start = time.time()
-test(cutoffs, None)
+test(cutoffs, clf)
 print "----------Testing Completed in {} seconds----------\n".format(round(time.time()-start, 2))
