@@ -114,7 +114,8 @@ def train(cutoffs):
         clf = fit_model(clf, X)
 
     if __IF_TRAIN_WITHOUT_SAVE:
-        test(cutoffs, layer)
+        args = [clf, layer]
+        test(cutoffs, args)
     else:
         with open(__ROOT_MODEL, "w") as file_out:
             pickle.dump(clf, file_out)
@@ -145,11 +146,16 @@ def crawl(args):
     return metrics.confusion_matrix(y_test, prediction)
 
 
-def test(cutoffs, layer=None):
+def test(cutoffs, args):
     print "\n========== Start Testing =========="
     print "\nLoad Model......"
-    with open(__ROOT_MODEL, "r") as file_in:
-        clf = pickle.load(file_in)
+    layer = None
+    if __IF_TRAIN_WITHOUT_SAVE:
+        clf = args[0]
+        layer = args[1]
+    else:
+        with open(__ROOT_MODEL, "r") as file_in:
+            clf = pickle.load(file_in)
     print "Done\n"
 
     if len(__TEST_DATA) == 3:
@@ -231,5 +237,5 @@ start = time.time()
 train(cutoffs)
 print "----------Training Completed in {} seconds----------\n".format(round(time.time()-start, 2))
 start = time.time()
-test(cutoffs)
+test(cutoffs, None)
 print "----------Testing Completed in {} seconds----------\n".format(round(time.time()-start, 2))
