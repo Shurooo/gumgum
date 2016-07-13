@@ -75,39 +75,41 @@ def crawl(io_addr):
     dumped = 0
 
     data_sparse_list = []
-    
-    with open(addr_in, "r") as file_in:
-        print addr_in
-        for line in file_in:
-            try:
-                entry = json.loads(line)
-                result = []
-                result_list = []
+    if os.path.isfile(addr_in):
+        with open(addr_in, "r") as file_in:
+            print addr_in
+            for line in file_in:
+                try:
+                    entry = json.loads(line)
+                    result = []
+                    result_list = []
 
-                auction = entry["auction"]
-                if_continue = filter(auction)   # Filter out auctions that do not contain any bid requests
-                if if_continue == 1:
-                    filtered += 1
-                    continue
+                    auction = entry["auction"]
+                    if_continue = filter(auction)   # Filter out auctions that do not contain any bid requests
+                    if if_continue == 1:
+                        filtered += 1
+                        continue
 
-                event_process(entry, result)
-                auction_process(auction, result)
-                auction_site_process(auction, result)
-                auction_dev_process(auction, result)
-                auction_bidrequests_process(auction, result, result_list)
+                    event_process(entry, result)
+                    auction_process(auction, result)
+                    auction_site_process(auction, result)
+                    auction_dev_process(auction, result)
+                    auction_bidrequests_process(auction, result, result_list)
 
-                for item in result_list:
-                    data_sparse_list.append(csr_matrix(item))
-            except:
-                dumped += 1
+                    for item in result_list:
+                        data_sparse_list.append(csr_matrix(item))
+                except:
+                    dumped += 1
 
-    data_matrix = vstack(data_sparse_list)
-    with open(addr_out, 'w') as file_out:
-        np.savez(file_out,
-                 data=data_matrix.data,
-                 indices=data_matrix.indices,
-                 indptr=data_matrix.indptr,
-                 shape=data_matrix.shape)
+        data_matrix = vstack(data_sparse_list)
+        with open(addr_out, 'w') as file_out:
+            np.savez(file_out,
+                     data=data_matrix.data,
+                     indices=data_matrix.indices,
+                     indptr=data_matrix.indptr,
+                     shape=data_matrix.shape)
+    else:
+        print "\nMISSING FILE: {}\n".format(addr_in)
 
     return [dumped, filtered]
 
