@@ -1,5 +1,6 @@
 import os
 import numpy as np
+import CorEx as ce
 import time
 from sklearn.naive_bayes import BernoulliNB
 from sklearn import metrics
@@ -9,7 +10,8 @@ import pickle
 import Sparse_Matrix_IO
 
 
-__ROOT_MODEL = "/home/ubuntu/Weiyi/model_05_01_classprior"
+__IF_TRAIN_WITHOUT_SAVE = True
+__ROOT_MODEL = "/home/ubuntu/Weiyi/model_06_01_classprior"
 
 __FEATURES = ["hour", "day", "country", "margin", "tmax", "bkc", "site_typeid", "site_cat", "browser_type",
              "bidder_id", "vertical_id", "bid_floor", "format", "product", "banner", "response"]
@@ -20,8 +22,8 @@ __FEATURES_TO_DROP = []
 # __TEST_DATA = [["all"], [5]]
 
 # Data Format = [[Month], [Day], [Hour]]
-__TRAIN_DATA = [[5], [1], [i for i in range(24)]]
-__TEST_DATA =  [[5], [2], [i for i in range(24)]]
+__TRAIN_DATA = [[5], [1], [13]]
+__TEST_DATA =  [[5], [1], [14]]
 
 
 def get_io_addr_random_sample(prefix, suffix):
@@ -53,6 +55,7 @@ def get_io_addr(list_month, list_day, list_hour):
 
 
 def discard_vars(X, cutoffs):
+    print "Discarding selected features......"
     X_new = []
     for line in X:
         new_line = []
@@ -69,37 +72,67 @@ def train(cutoffs):
     else:
         list_io_addr = get_io_addr_random_sample(__TRAIN_DATA[0], __TRAIN_DATA[1])
     clf = BernoulliNB(class_prior=[0.05, 0.95])
+    start = 0
+    layer = ce.Corex(n_hidden=100)
 
-    for i in range(len(list_io_addr)):
+    if __IF_TRAIN_WITHOUT_SAVE:
+        start = 1
+        print "Performing correlation explanation......"
+        with open(list_io_addr[0], "r") as file_in:
+            X = Sparse_Matrix_IO.load_sparse_csr(file_in)
+            if len(cutoffs) > 0:
+                X = discard_vars(X, cutoffs)
+
+            vector_len = len(X[0])
+            X_train = X[:, 0:vector_len-1]
+            y_train = X[:, vector_len-1]
+
+            layer.fit(X_train)
+            X_train = layer.labels
+
+            # sm = SMOTE(ratio=0.9)
+            # X_train_sm, y_train_sm = sm.fit_sample(X_train, y_train)
+
+            print "Fitting Model......"
+            clf.partial_fit(X_train, y_train, classes=[0, 1])
+            print "Done"
+
+    for i in range(start, len(list_io_addr)):
         path_in = list_io_addr[i]
         print "\nGenerating training set from {}".format(path_in)
         with open(path_in, "r") as file_in:
             X = Sparse_Matrix_IO.load_sparse_csr(file_in)
 
         if len(cutoffs) > 0:
-            print "Discarding selected features......"
             X = discard_vars(X, cutoffs)
 
         vector_len = len(X[0])
         X_train = X[:, 0:vector_len-1]
         y_train = X[:, vector_len-1]
-        print "Done"
 
-        # sm = SMOTE(ratio=0.9)
-        # X_train_sm, y_train_sm = sm.fit_sample(X_train, y_train)
+        if __IF_TRAIN_WITHOUT_SAVE:
+            print "Performing correlation explanation......"
+            X_train = layer.transform(X_train)
 
         print "Fitting Model......"
         clf.partial_fit(X_train, y_train, classes=[0, 1])
         print "Done"
 
-    with open(__ROOT_MODEL, "w") as file_out:
-        pickle.dump(clf, file_out)
+    if __IF_TRAIN_WITHOUT_SAVE:
+        args = [clf, layer]
+        test(cutoffs, args)
+    else:
+        with open(__ROOT_MODEL, "w") as file_out:
+            pickle.dump(clf, file_out)
 
 
 def crawl(args):
     addr_in = args[0]
     clf = args[1]
     cutoffs = args[2]
+    layer = None
+    if __IF_TRAIN_WITHOUT_SAVE:
+        layer = args[3]
 
     print "Processing testing set from {}".format(addr_in)
     with open(addr_in, "r") as file_in:
@@ -111,16 +144,25 @@ def crawl(args):
     vector_len = len(X[0])
     X_test = X[:, 0:vector_len-1]
     y_test = X[:, vector_len-1]
+
+    if __IF_TRAIN_WITHOUT_SAVE:
+        X_test = layer.transform(X_test)
+
     prediction = clf.predict(X_test)
 
     return metrics.confusion_matrix(y_test, prediction)
 
 
-def test(cutoffs):
+def test(cutoffs, args):
     print "\n========== Start Testing =========="
     print "\nLoad Model......"
-    with open(__ROOT_MODEL, "r") as file_in:
-        clf = pickle.load(file_in)
+    layer = None
+    if __IF_TRAIN_WITHOUT_SAVE:
+        clf = args[0]
+        layer = args[1]
+    else:
+        with open(__ROOT_MODEL, "r") as file_in:
+            clf = pickle.load(file_in)
     print "Done\n"
 
     if len(__TEST_DATA) == 3:
@@ -131,7 +173,7 @@ def test(cutoffs):
     confusion_matrix = [0, 0, 0, 0]
     args = []
     for i in range(len(list_io_addr)):
-        args.append((list_io_addr[i], clf, cutoffs))
+        args.append((list_io_addr[i], clf, cutoffs, layer))
 
     p = multiprocessing.Pool(4)
     for result in p.imap(crawl, args):
@@ -202,5 +244,5 @@ start = time.time()
 train(cutoffs)
 print "----------Training Completed in {} seconds----------\n".format(round(time.time()-start, 2))
 start = time.time()
-test(cutoffs)
+test(cutoffs, [None])
 print "----------Testing Completed in {} seconds----------\n".format(round(time.time()-start, 2))
