@@ -86,11 +86,11 @@ def train(cutoffs):
         y_train = X[:, vector_len-1]
         print "Done"
 
-        # sm = SMOTE(ratio=0.9)
-        # X_train_sm, y_train_sm = sm.fit_sample(X_train, y_train)
+        sm = SMOTE(ratio=0.5)
+        X_train_sm, y_train_sm = sm.fit_sample(X_train, y_train)
 
         print "Fitting Model......"
-        clf.partial_fit(X_train, y_train, classes=[0, 1])
+        clf.partial_fit(X_train_sm, y_train_sm, classes=[0, 1])
         print "Done"
 
     if __SAVE_MODEL:
