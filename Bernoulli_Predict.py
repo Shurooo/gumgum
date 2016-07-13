@@ -4,6 +4,7 @@ import time
 from sklearn.naive_bayes import BernoulliNB
 from sklearn import metrics
 from imblearn.over_sampling import SMOTE
+from imblearn.under_sampling import NearMiss
 import multiprocessing
 import pickle
 import Sparse_Matrix_IO
