@@ -44,13 +44,13 @@ def get_io_addr_random_sample():
 
 
 def get_io_addr():
-    list_day = [i for i in range(4,19)]
+    list_day = [i for i in range(4,26)]
     list_hour = [i for i in range(24)]
     list_month = [6]
 
     filename_in = "part-00000"
     root_in = "/mnt/rips/2016"
-    filename_out = "output_bin_new.npy"
+    filename_out = "output_bin.npy"
     root_out = "/mnt/rips2/2016"
 
     list_io_addr = []
@@ -61,7 +61,9 @@ def get_io_addr():
                                        str(day).rjust(2, "0"),
                                        str(hour).rjust(2, "0"))
                 addr_in = os.path.join(root_in, io_addr, filename_in)
-                addr_out = os.path.join(root_out, io_addr, filename_out)
+                path_out = os.path.join(root_out, io_addr)
+                os.makedirs(path_out)
+                addr_out = os.path.join(path_out, filename_out)
                 list_io_addr.append((addr_in, addr_out))
     return list_io_addr
 
