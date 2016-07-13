@@ -44,9 +44,10 @@ def get_io_addr_random_sample():
 
 
 def get_io_addr_day_sample():
-    list_may = [(5, i) for i in range(1,8)]
-    list_june = [(6, i) for i in range(4,26)]
-    list_dates = list_may+list_june
+    # list_may = [(5, i) for i in range(1,8)]
+    # list_june = [(6, i) for i in range(4,26)]
+    # list_dates = list_may+list_june
+    list_dates = [(5,1)]
 
     filename_in = "day_samp"
     root_in = "/mnt/rips2/2016"
@@ -107,6 +108,7 @@ def crawl(io_addr):
             print addr_in
             for line in file_in:
                 try:
+                    line = line.rstrip("\r\n").rstrip(")").lstrip("(")
                     entry = json.loads(line)
                     result = []
                     result_list = []
@@ -116,18 +118,19 @@ def crawl(io_addr):
                     if if_continue == 1:
                         filtered += 1
                         continue
-
+                    # print "Completed filtering"
                     event_process(entry, result)
                     auction_process(auction, result)
                     auction_site_process(auction, result)
                     auction_dev_process(auction, result)
                     auction_bidrequests_process(auction, result, result_list)
-
+                    # print "Completed feature extraction"
                     for item in result_list:
                         data_sparse_list.append(csr_matrix(item))
+                    # print "Completed processing one line"
                 except:
                     dumped += 1
-
+        # print "\nCompleted processing {}".format(addr_in)
         data_matrix = vstack(data_sparse_list)
         with open(addr_out, 'w') as file_out:
             np.savez(file_out,
@@ -135,6 +138,7 @@ def crawl(io_addr):
                      indices=data_matrix.indices,
                      indptr=data_matrix.indptr,
                      shape=data_matrix.shape)
+        # print "Completed saving sparse matrix for {}\n".format(addr_in)
     else:
         print "\nMISSING FILE: {}\n".format(addr_in)
 
