@@ -38,7 +38,7 @@ def get_io_addr_random_sample(prefix, suffix):
 
 def get_io_addr(list_month, list_day, list_hour):
     list_io_addr = []
-    root = "/mnt/rips/2016"
+    root = "/mnt/rips2/2016"
     for month in list_month:
         for day in list_day:
             if month == 6:
@@ -48,7 +48,7 @@ def get_io_addr(list_month, list_day, list_hour):
                                        str(month).rjust(2, "0"),
                                        str(day).rjust(2, "0"),
                                        str(hour).rjust(2, "0"))
-                addr_in = os.path.join(io_addr, "output_bin_new.npy")
+                addr_in = os.path.join(io_addr, "output_bin.npy")
                 list_io_addr.append(addr_in)
     return list_io_addr
 
