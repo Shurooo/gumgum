@@ -43,6 +43,33 @@ def get_io_addr_random_sample():
     return list_io_addr
 
 
+def get_io_addr_day_sample():
+    list_may = [(5, i, j) for i in range(1,8) for j in range(24)]
+    list_june = [(6, i, j) for i in range(4,26) for j in range(24)]
+    list_dates = list_may+list_june
+
+    filename_in = "day_samp"
+    root_in = "/mnt/rips2/2016"
+    filename_out = "day_samp_bin.npy"
+    root_out = "/mnt/rips2/2016"
+
+    list_io_addr = []
+    for date in list_dates:
+        month = date[0]
+        day = date[1]
+        hour = date[2]
+        io_addr = os.path.join(str(month).rjust(2, "0"),
+                               str(day).rjust(2, "0"),
+                               str(hour).rjust(2, "0"))
+        addr_in = os.path.join(root_in, io_addr, filename_in)
+        path_out = os.path.join(root_out, io_addr)
+        if not os.path.isdir(path_out):
+            os.makedirs(path_out)
+        addr_out = os.path.join(path_out, filename_out)
+        list_io_addr.append((addr_in, addr_out))
+    return list_io_addr
+
+
 def get_io_addr():
     list_day = [i for i in range(4,26)]
     list_hour = [i for i in range(24)]
@@ -299,7 +326,7 @@ def auction_bidrequest_impressions_process(bidreq, bid_responded, result_bid, re
 if __name__ == '__main__':
     cpus = multiprocessing.cpu_count()
     p = multiprocessing.Pool(cpus)
-    list_io_addr = get_io_addr()
+    list_io_addr = get_io_addr_day_sample()
 
     dumped = 0
     filtered = 0
