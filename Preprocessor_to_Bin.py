@@ -62,7 +62,8 @@ def get_io_addr():
                                        str(hour).rjust(2, "0"))
                 addr_in = os.path.join(root_in, io_addr, filename_in)
                 path_out = os.path.join(root_out, io_addr)
-                os.makedirs(path_out)
+                if not os.path.isdir(path_out):
+                    os.makedirs(path_out)
                 addr_out = os.path.join(path_out, filename_out)
                 list_io_addr.append((addr_in, addr_out))
     return list_io_addr
