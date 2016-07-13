@@ -7,8 +7,6 @@ import multiprocessing
 import time
 
 
-__ADDR_ROOT = "/mnt/rips/2016"
-
 __FORMAT_COUNT = 31
 __FORMAT_TO_IGNORE = [1,2,3,4,6,7,20,21,22,25,26]
 __FORMAT_MASK = [0]*(__FORMAT_COUNT+1)
@@ -51,18 +49,19 @@ def get_io_addr():
     list_month = [6]
 
     filename_in = "part-00000"
+    root_in = "/mnt/rips/2016"
     filename_out = "output_bin_new.npy"
+    root_out = "/mnt/rips2/2016"
 
     list_io_addr = []
     for month in list_month:
         for day in list_day:
             for hour in list_hour:
-                io_addr = os.path.join(__ADDR_ROOT,
-                                       str(month).rjust(2, "0"),
+                io_addr = os.path.join(str(month).rjust(2, "0"),
                                        str(day).rjust(2, "0"),
                                        str(hour).rjust(2, "0"))
-                addr_in = os.path.join(io_addr, filename_in)
-                addr_out = os.path.join(io_addr, filename_out)
+                addr_in = os.path.join(root_in, io_addr, filename_in)
+                addr_out = os.path.join(root_out, io_addr, filename_out)
                 list_io_addr.append((addr_in, addr_out))
     return list_io_addr
 
