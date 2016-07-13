@@ -7,7 +7,7 @@ import multiprocessing
 import time
 
 
-__ADDR_ROOT = "/home/wlu/Desktop/rips16"
+__ADDR_ROOT = "/mnt/rips/2016"
 
 __FORMAT_COUNT = 31
 __FORMAT_TO_IGNORE = [1,2,3,4,6,7,20,21,22,25,26]
@@ -294,7 +294,7 @@ def auction_bidrequest_impressions_process(bidreq, bid_responded, result_bid, re
 if __name__ == '__main__':
     cpus = multiprocessing.cpu_count()
     p = multiprocessing.Pool(cpus)
-    list_io_addr = get_io_addr_random_sample()
+    list_io_addr = get_io_addr()
 
     dumped = 0
     filtered = 0
