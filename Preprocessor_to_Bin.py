@@ -44,8 +44,8 @@ def get_io_addr_random_sample():
 
 
 def get_io_addr_day_sample():
-    list_may = [(5, i, j) for i in range(1,8) for j in range(24)]
-    list_june = [(6, i, j) for i in range(4,26) for j in range(24)]
+    list_may = [(5, i) for i in range(1,8)]
+    list_june = [(6, i) for i in range(4,26)]
     list_dates = list_may+list_june
 
     filename_in = "day_samp"
@@ -57,10 +57,8 @@ def get_io_addr_day_sample():
     for date in list_dates:
         month = date[0]
         day = date[1]
-        hour = date[2]
         io_addr = os.path.join(str(month).rjust(2, "0"),
-                               str(day).rjust(2, "0"),
-                               str(hour).rjust(2, "0"))
+                               str(day).rjust(2, "0"))
         addr_in = os.path.join(root_in, io_addr, filename_in)
         path_out = os.path.join(root_out, io_addr)
         if not os.path.isdir(path_out):
