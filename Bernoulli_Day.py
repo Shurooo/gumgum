@@ -116,7 +116,7 @@ def init_clf(sampling):
 
 with open("/home/ubuntu/Weiyi/report.csv", "w") as file_out:
     wr = csv.writer(file_out, quoting = csv.QUOTE_MINIMAL)
-    wr.writerow(["Model", "Online/Offline", "Train~Test", "Sampling", "TN", "FP", "FN", "TP", "Recall", "Filtered", "Parameters"])
+    wr.writerow(["Model", "Online/Offline", "Sampling", "Train~Test", "TN", "FP", "FN", "TP", "Recall", "Filtered", "Parameters"])
 
     for mode in ["Next_day"]:
         pairs_by_month = get_addr_in(mode)
