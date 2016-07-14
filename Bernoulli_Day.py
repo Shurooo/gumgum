@@ -13,6 +13,17 @@ import Sparse_Matrix_IO as smio
 
 __SAVE_MODEL = True
 
+__TRAIN_TEST_MODE = ["Next_day"]
+__ON_OFF_LINE = ["Online", "Offline"]
+__SAMPLING_METHOD = ["Under"]
+
+__RATIO_UNDER = 0.8
+__RATIO_OVER = 0.95
+
+# Date Format = [(Month, Day)]
+__DATA_MAY = [(5, i) for i in range(1, 8)]
+__DATA_JUNE = []  # [(6, i) for i in range(4, 26)]
+
 
 def format_addr(dates, mode):
     root = "/mnt/rips2/2016"
@@ -31,26 +42,18 @@ def format_addr(dates, mode):
     return train_test_pairs, dates_pairs
 
 def get_addr_in(mode):
-    # Date Format = [(Month, Day)]
-    may = [(5, i) for i in range(1, 8)]
-    # june = [(6, i) for i in range(4, 26)]
-    june = []
-
     pairs_by_month = []
-
     if mode == "Next_day":
-        for dates in [may, june]:
+        for dates in [__DATA_MAY, __DATA_JUNE]:
             tuple_pairs = format_addr(dates, 1)
             pairs_by_month.append(tuple_pairs)
     else:
-        tuple_pairs = format_addr(june, 7)
+        tuple_pairs = format_addr(__DATA_JUNE, 7)
         pairs_by_month.append(tuple_pairs)
-
     return pairs_by_month
 
 
 def train(addr_train, clf, sampling, onoff_line):
-
     path_in = os.path.join(addr_train, "day_samp_bin.npy")
     with open(path_in, "r") as file_in:
         X = smio.load_sparse_csr(file_in)
@@ -60,12 +63,10 @@ def train(addr_train, clf, sampling, onoff_line):
     y_train = X[:, vector_len-1]
 
     if sampling == "Over":
-        ratio = 0.95
-        sm = SMOTE(ratio=ratio)
+        sm = SMOTE(ratio=__RATIO_OVER)
         X_train, y_train = sm.fit_sample(X_train, y_train)
     elif sampling == "Under":
-        ratio = 0.5
-        X = US.undersample(X, ratio)
+        X = US.undersample(X, __RATIO_UNDER)
         vector_len = len(X[0])
         X_train = X[:, 0:vector_len-1]
         y_train = X[:, vector_len-1]
@@ -101,16 +102,16 @@ def test(addr_test, clf):
     tn = confusion_matrix[0, 0]
     fn = confusion_matrix[1, 0]
     total = tp+fp+tn+fn
-    recall = tp / float(tp+fn)
-    filtered = float(tn+fn) / total
+    recall = round(tp / float(tp+fn), 4)
+    filtered = round(float(tn+fn) / total, 4)
     return [tn, fp, fn, tp, recall, filtered]
 
 
 def init_clf(sampling):
     clf_options = {
         "None": (BernoulliNB(class_prior=[0.05, 0.95]), "cp=[0.05 0.95]"),
-        "Over": (BernoulliNB(class_prior=[0.01, 0.99]), "cp=[0.01 0.99]; ratio=0.95"),
-        "Under": (BernoulliNB(class_prior=[0.01, 0.99]), "cp=[0.01 0.99]; ratio=0.5")
+        "Over": (BernoulliNB(class_prior=[0.01, 0.99]), "cp=[0.01 0.99]; ratio={}".format(__RATIO_OVER)),
+        "Under": (BernoulliNB(class_prior=[0.01, 0.99]), "cp=[0.01 0.99]; ratio={}".format(__RATIO_UNDER))
     }
     return clf_options[sampling]
 
@@ -119,7 +120,7 @@ with open("/home/ubuntu/Weiyi/report.csv", "w") as file_out:
     wr = csv.writer(file_out, quoting = csv.QUOTE_MINIMAL)
     wr.writerow(["Model", "Online/Offline", "Sampling", "Train~Test", "TN", "FP", "FN", "TP", "Recall", "Filtered", "Parameters"])
 
-    for mode in ["Next_day"]:
+    for mode in __TRAIN_TEST_MODE:
         pairs_by_month = get_addr_in(mode)
 
         for item in pairs_by_month:
@@ -127,11 +128,11 @@ with open("/home/ubuntu/Weiyi/report.csv", "w") as file_out:
             dates_pairs = item[1]
 
             result = ["BNB"]
-            for onoff_line in ["Online", "Offline"]:
+            for onoff_line in __ON_OFF_LINE:
                 result_onoff = result[:]
                 result_onoff.append(onoff_line)
 
-                for sampling in ["Under"]:
+                for sampling in __SAMPLING_METHOD:
                     result_sampling = result_onoff[:]
                     result_sampling.append(sampling)
                     clf, param = init_clf(sampling)
