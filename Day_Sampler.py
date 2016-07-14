@@ -33,7 +33,7 @@ def crawl(addr_day):
     print "Processing {}".format(addr_day)
     for hour in range(0,24):
         hour_str = str(hour).rjust(2, "0")
-        path_in = os.path.join(addr_day, hour_str, "output_bin.npy")
+        path_in = os.path.join(addr_day, hour_str, "output.npy")
         with open(path_in, "r") as file_in:
             X = smio.load_sparse_csr(file_in)
         for line in X:
@@ -45,7 +45,7 @@ def crawl(addr_day):
                 if rand < num:
                     res[rand] = csr_matrix(line)
 
-        path_out = os.path.join(addr_day, "day_samp_bin.npy")
+        path_out = os.path.join(addr_day, "day_samp_num.npy")
         X = vstack(res)
         with open(path_out, "w") as file_out:
             smio.save_sparse_csr(file_out, X)
