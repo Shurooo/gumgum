@@ -48,9 +48,11 @@ def crawl(addr_day):
     for path_in in list_path_in:
         with open(path_in, "r") as file_in:
             X = smio.load_sparse_csr(file_in)
-        while line_indices[index]-setoff < len(X):
+        while (line_indices[index]-setoff < len(X)) and (index < num):
             res.append(csr_matrix(X[line_indices[index]-setoff]))
             index += 1
+        if index >= num:
+            break
         setoff += len(X)
 
     path_out = os.path.join(addr_day, "day_samp_num.npy")
