@@ -49,7 +49,7 @@ def crawl(addr_day):
         with open(path_in, "r") as file_in:
             X = smio.load_sparse_csr(file_in)
         while line_indices[index]-setoff < len(X):
-            res.append(csr_matrix(X[line_indices[index]]))
+            res.append(csr_matrix(X[line_indices[index]-setoff]))
             index += 1
         setoff += len(X)
 
