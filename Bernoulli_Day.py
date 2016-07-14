@@ -124,6 +124,6 @@ with open("/home/ubuntu/Weiyi/report.csv", "w") as file_out:
             stats = test(addr_test, clf)
             print ">>>>> Testing on {0} completed in {1} seconds".format(addr_test, round(time.time()-start, 2))
 
-            result.extend(stats)
-            result.append(param)
-            wr.writerow(result)
+            result_sampling.extend(stats)
+            result_sampling.append(param)
+            wr.writerow(result_sampling)
