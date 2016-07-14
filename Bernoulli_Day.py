@@ -33,7 +33,8 @@ def format_addr(dates, mode):
 def get_addr_in(mode):
     # Date Format = [(Month, Day)]
     may = [(5, i) for i in range(1, 8)]
-    june = [(6, i) for i in range(4, 26)]
+    # june = [(6, i) for i in range(4, 26)]
+    june = []
 
     pairs_by_month = []
 
@@ -130,7 +131,7 @@ with open("/home/ubuntu/Weiyi/report.csv", "w") as file_out:
                 result_onoff = result[:]
                 result_onoff.append(onoff_line)
 
-                for sampling in ["None", "Over"]:
+                for sampling in ["Under"]:
                     result_sampling = result_onoff[:]
                     result_sampling.append(sampling)
                     clf, param = init_clf(sampling)
