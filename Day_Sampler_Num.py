@@ -50,6 +50,7 @@ def crawl(addr_day):
             X = smio.load_sparse_csr(file_in)
         while (line_indices[index]-setoff < len(X)) and (index < num):
             res.append(csr_matrix(X[line_indices[index]-setoff]))
+            print "index = {}, line[index] = {}, setoff = {}, len(X) = {}".format(index, line_indices[index], setoff, len(X))
             index += 1
         if index >= num:
             break
