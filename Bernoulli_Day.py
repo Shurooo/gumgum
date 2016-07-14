@@ -109,7 +109,8 @@ with open("/home/ubuntu/Weiyi/report.csv", "w") as file_out:
         result = ["BNB"]
         result.append(dates[i])
         for sampling in ["None", "Over"]:
-            result.append(sampling)
+            result_sampling = result[:]
+            result_sampling.append(sampling)
 
             addr_train = pair[0]
             print "\n>>>>> Start Training on {}".format(addr_train)
