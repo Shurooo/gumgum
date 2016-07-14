@@ -77,7 +77,7 @@ def train(addr_train, sampling):
 
 
 def test(addr_test, clf):
-    path_in = os.path.join(addr_test, "day_samp_model")
+    path_in = os.path.join(addr_test, "day_samp_bin.npy")
     with open(path_in, "r") as file_in:
         X = smio.load_sparse_csr(file_in)
     vector_len = len(X[0])
@@ -102,23 +102,26 @@ with open("/home/ubuntu/Weiyi/report.csv", "w") as file_out:
     wr = csv.writer(file_out, quoting = csv.QUOTE_MINIMAL)
     wr.writerow(["Model", "Training", "Sampling", "TN", "FP", "FN", "TP", "Recall", "Filtered", "Parameters"])
 
-    result = ["BNB"]
-    train_test_pairs = get_addr_in(result)
-    for pair in train_test_pairs:
-        for sampling in ["None"]:
+    dates = []
+    train_test_pairs = get_addr_in(dates)
+    for i in range(len(train_test_pairs)):
+        pair = train_test_pairs[i]
+        result = ["BNB"]
+        result.append(dates[i])
+        for sampling in ["None", "Over"]:
             result.append(sampling)
 
             addr_train = pair[0]
             print "\n>>>>> Start Training on {}".format(addr_train)
             start = time.time()
             clf, param = train(addr_train, sampling)
-            print ">>>>> Training on {0} completed in {1} seconds\n".format(addr_train, round(time.time()-start, 2))
+            print ">>>>> Training on {0} completed in {1} seconds".format(addr_train, round(time.time()-start, 2))
 
             addr_test = pair[1]
             print "\n>>>>> Start Testing on {}".format(addr_test)
             start = time.time()
             stats = test(addr_test, clf)
-            print ">>>>> Testing on {0} completed in {1} seconds\n".format(addr_test, round(time.time()-start, 2))
+            print ">>>>> Testing on {0} completed in {1} seconds".format(addr_test, round(time.time()-start, 2))
 
             result.extend(stats)
             result.append(param)
