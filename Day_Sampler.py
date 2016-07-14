@@ -30,10 +30,10 @@ def get_io_addr():
 def crawl(addr_day):
     res = []
     count = 0
+    print "Processing {}".format(addr_day)
     for hour in range(0,24):
         hour_str = str(hour).rjust(2, "0")
         path_in = os.path.join(addr_day, hour_str, "output_bin.npy")
-        print "Processing {}".format(path_in)
         with open(path_in, "r") as file_in:
             X = smio.load_sparse_csr(file_in)
         for line in X:

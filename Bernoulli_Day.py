@@ -156,4 +156,4 @@ with open("/home/ubuntu/Weiyi/report.csv", "w") as file_out:
 
                         result_final.extend(stats)
                         result_final.append(param)
-                        wr.writerow(result_sampling)
+                        wr.writerow(result_final)
