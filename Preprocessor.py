@@ -1,10 +1,29 @@
 import json
-import csv
+import numpy as np
+from scipy.sparse import csr_matrix, vstack
 from datetime import datetime
 import os
 import multiprocessing
 import time
-import Fields_and_Methods
+
+
+__FORMAT_COUNT = 31
+__FORMAT_TO_IGNORE = [1,2,3,4,6,7,20,21,22,25,26]
+__FORMAT_MASK = [0]*(__FORMAT_COUNT+1)
+for i in __FORMAT_TO_IGNORE:
+    __FORMAT_MASK[i] = 1
+__FORMAT_INDEX = {}
+count = 1
+for i in range(1,__FORMAT_COUNT+1):
+    if __FORMAT_MASK[i] == 0:
+        __FORMAT_INDEX.update({i:count})
+        count += 1
+
+__BROWSER_TYPE = [1,2,5,7,10,11,12,13]
+
+ADDR_COUNTRY_DICT = "dict_country.json"
+with open(ADDR_COUNTRY_DICT, "r") as file_in:
+    __DICT_COUNTRY = json.load(file_in)
 
 start = time.time()
 
@@ -24,18 +43,29 @@ def get_io_addr_random_sample():
 
 
 def get_io_addr():
-    list_day = [i for i in range(2,3)]
-    list_hour = [i for i in range(1)]
-    list_month = [5]
+    list_day = [4]
+    list_hour = [1,6]
+    list_month = [6]
 
     filename_in = "part-00000"
-    filename_out = "output.ods"
+    root_in = "/mnt/rips/2016"
+    filename_out = "output.npy"
+    root_out = "/mnt/rips2/2016"
 
-    return Fields_and_Methods.make_io_addr(list_month,
-                                           list_day,
-                                           list_hour,
-                                           filename_in,
-                                           filename_out)
+    list_io_addr = []
+    for month in list_month:
+        for day in list_day:
+            for hour in list_hour:
+                io_addr = os.path.join(str(month).rjust(2, "0"),
+                                       str(day).rjust(2, "0"),
+                                       str(hour).rjust(2, "0"))
+                addr_in = os.path.join(root_in, io_addr, filename_in)
+                path_out = os.path.join(root_out, io_addr)
+                if not os.path.isdir(path_out):
+                    os.makedirs(path_out)
+                addr_out = os.path.join(path_out, filename_out)
+                list_io_addr.append((addr_in, addr_out))
+    return list_io_addr
 
 
 def crawl(io_addr):
@@ -45,33 +75,39 @@ def crawl(io_addr):
     filtered = 0
     dumped = 0
 
+
+    data_sparse_list = []
+    with open(addr_in, "r") as file_in:
+        print addr_in
+        for line in file_in:
+            try:
+                entry = json.loads(line)
+                result = []
+                result_list = []
+
+                auction = entry["auction"]
+                if_continue = filter(auction)   # Filter out auctions that do not contain any bid requests
+                if if_continue == 1:
+                    filtered += 1
+                    continue
+
+                event_process(entry, result)
+                auction_process(auction, result)
+                auction_site_process(auction, result)
+                auction_dev_process(auction, result)
+                auction_bidrequests_process(auction, result, result_list)
+
+                for item in result_list:
+                    data_sparse_list.append(csr_matrix(item))
+            except:
+                dumped += 1
+    data_matrix = vstack(data_sparse_list)
     with open(addr_out, 'w') as file_out:
-        wr = csv.writer(file_out, quoting = csv.QUOTE_MINIMAL)
-        wr.writerow(Fields_and_Methods.__HEADER)
-        with open(addr_in, "r") as file_in:
-            print addr_in
-            for line in file_in:
-                try:
-                    entry = json.loads(line)
-                    result = []
-                    result_list = []
-
-                    auction = entry["auction"]
-                    if_continue = filter(auction)   # Filter out auctions that do not contain any bid requests
-                    if if_continue == 1:
-                        filtered += 1
-                        continue
-
-                    event_process(entry, result)
-                    auction_process(auction, result)
-                    auction_site_process(auction, result)
-                    auction_dev_process(auction, result)
-                    auction_bidrequests_process(auction, result, result_list)
-
-                    for item in result_list:
-                        wr.writerow(item)
-                except:
-                    dumped += 1
+        np.savez(file_out,
+                 data=data_matrix.data,
+                 indices=data_matrix.indices,
+                 indptr=data_matrix.indptr,
+                 shape=data_matrix.shape)
 
     return [dumped, filtered]
 
@@ -91,7 +127,7 @@ def filter(auction):
                 imp_list = bidreq["impressions"][:]
                 for imp in imp_list:
                     # Filter out ad formats that should be ignored
-                    if (Fields_and_Methods.__FORMAT_MASK[imp["format"]] == 1) or (imp["bidfloor"] < 0):
+                    if (__FORMAT_MASK[imp["format"]] == 1) or (imp["bidfloor"] < 0):
                         bidreq_list[index]["impressions"].remove(imp)
             if len(bidreq_list[index]["impressions"]) == 0:
                 bidreq_list.remove(bidreq)
@@ -107,9 +143,9 @@ def event_process(entry, result):
     result.append(datetime.fromtimestamp(t).hour)
     result.append(datetime.fromtimestamp(t).weekday())
     try:
-        result.append(Fields_and_Methods.__DICT_COUNTRY[event["cc"]])
+        result.append(__DICT_COUNTRY[event["cc"]])
     except:
-        result.append(Fields_and_Methods.__DICT_COUNTRY["EMPTY"])
+        result.append(__DICT_COUNTRY["EMPTY"])
 
 
 def auction_process(auction, result):
@@ -165,7 +201,7 @@ def IAB_parser(str):
 
 def auction_dev_process(auction, result):
     try:
-        type_index = Fields_and_Methods.__BROWSER_TYPE.index(auction["dev"]["bti"]) + 1
+        type_index = __BROWSER_TYPE.index(auction["dev"]["bti"]) + 1
     except:
         type_index = 0
     result.append(type_index)
@@ -209,7 +245,7 @@ def auction_bidrequest_impressions_process(bidreq, bid_responded, result_bid, re
         result_imp.append(bid_floor)
 
         # Auction - Bidrequests - Impressions - Format
-        result_imp.append(Fields_and_Methods.__FORMAT_INDEX[imp["format"]])
+        result_imp.append(__FORMAT_INDEX[imp["format"]])
 
         # Auction - Bidrequests - Impressions - Product
         result_imp.append(imp["product"])

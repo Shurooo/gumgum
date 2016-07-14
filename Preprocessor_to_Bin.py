@@ -247,7 +247,7 @@ def IAB_parser(str):
 
 def auction_dev_process(auction, result):
     try:
-        type_index = __BROWSER_TYPE.index(auction["dev"]["bti"])+1
+        type_index = __BROWSER_TYPE.index(auction["dev"]["bti"]) + 1
     except:
         type_index = 0
     binarize(result, type_index, len(__BROWSER_TYPE)+1)
