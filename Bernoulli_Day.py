@@ -72,7 +72,7 @@ def train(addr_train, clf, sampling, onoff_line):
     if onoff_line == "Offline":
         clf.fit(X_train, y_train)
     else:
-        clf.partial_fit(X_train, y_train)
+        clf.partial_fit(X_train, y_train, classes=[0,1])
 
     if __SAVE_MODEL:
         model_name = "BNB_" + onoff_line +"_" + sampling + "_Model"
