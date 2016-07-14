@@ -68,7 +68,8 @@ def train(addr_train, sampling):
     clf.fit(X_train, y_train)
 
     if __SAVE_MODEL:
-        path_out = os.path.join(addr_train, "day_samp_model")
+        model_name = "BNB_" + sampling + "_Model"
+        path_out = os.path.join(addr_train, model_name)
         with open(path_out, "w") as file_out:
             pickle.dump(clf, file_out)
 
