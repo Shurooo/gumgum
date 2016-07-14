@@ -17,10 +17,10 @@ def split_helper(arr, cond):
 
 
 def split(data):
-    d = get(data)
-    h = np.size(d, 0)
-    w = np.size(d, 1)
-    zero, one = split_helper(d, d[:, w-1] < 1)
+
+    h = np.size(data, 0)
+    w = np.size(data, 1)
+    zero, one = split_helper(data, data[:, w-1] < 1)
     prop = np.size(one, 0)/h   # Proportion of positive responses
     return zero, one, prop
 
