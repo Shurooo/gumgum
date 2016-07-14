@@ -17,7 +17,7 @@ __TRAIN_TEST_MODE = ["Next_day"]
 __ON_OFF_LINE = ["Online", "Offline"]
 __SAMPLING_METHOD = ["Under"]
 
-__RATIO_UNDER = 0.8
+__RATIO_UNDER = 0.65
 __RATIO_OVER = 0.95
 
 # Date Format = [(Month, Day)]
@@ -148,13 +148,13 @@ with open("/home/ubuntu/Weiyi/report.csv", "w") as file_out:
                         print "\n>>>>> Start Training on {}".format(addr_train)
                         start = time.time()
                         clf = train(addr_train, clf, sampling, onoff_line)
-                        print ">>>>> Training on {0} completed in {1} seconds".format(addr_train, round(time.time()-start, 2))
+                        print ">>>>> Training completed in {} seconds".format(round(time.time()-start, 2))
 
                         addr_test = pair[1]
                         print "\n>>>>> Start Testing on {}".format(addr_test)
                         start = time.time()
                         stats = test(addr_test, clf)
-                        print ">>>>> Testing on {0} completed in {1} seconds".format(addr_test, round(time.time()-start, 2))
+                        print ">>>>> Testing completed in {} seconds".format(round(time.time()-start, 2))
 
                         result_final.extend(stats)
                         result_final.append(param)
