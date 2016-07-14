@@ -23,8 +23,8 @@ __DATA_FROM = 2
 # __TEST_DATA = [["all"], [5]]
 
 # Data Format = [[Month], [Day], [Hour]]
-__TRAIN_DATA = [[5], [1]]
-__TEST_DATA =  [[5], [2]]
+__TRAIN_DATA = [[6], [19]]
+__TEST_DATA =  [[6], [20]]
 
 
 def get_io_addr_random_sample(prefix, suffix):
@@ -64,7 +64,7 @@ def discard_vars(X, cutoffs):
 
 def correlation_ex(X):
     X = X[:, 31:224]
-    layer = ce.Corex(n_hidden=15)
+    layer = ce.Corex(n_hidden=5)
     layer.fit(X)
     return layer
 
@@ -72,8 +72,8 @@ def correlation_ex(X):
 def corex_transform(layer, X):
     Y = X[:, 31:224]
     Y = layer.transform(Y)
-    X = X[0:]
-
+    X = np.hstack([X[:, 0:31], Y, X[:, 224:len(X[0])]])
+    return X
 
 def train(cutoffs):
     print "\n========== Start Training =========="
@@ -107,6 +107,9 @@ def train(cutoffs):
         if __IF_TRAIN_WITHOUT_SAVE:
             print "Transforming training set according to CorEx......"
             X_train = corex_transform(layer, X_train)
+
+        sm = SMOTE(ratio=0.95)
+        X_train, y_train = sm.fit_sample(X_train, y_train)
 
         print "Fitting Model......"
         clf.partial_fit(X_train, y_train, classes=[0, 1])
