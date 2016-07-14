@@ -280,7 +280,7 @@ def auction_bidrequest_impressions_process(bidreq, bid_responded, result_bid, re
 
 if __name__ == '__main__':
     cpus = multiprocessing.cpu_count()
-    p = multiprocessing.Pool(cpus)
+    p = multiprocessing.Pool(4)
     list_io_addr = get_io_addr()
 
     dumped = 0

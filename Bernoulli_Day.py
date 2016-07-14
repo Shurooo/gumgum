@@ -13,16 +13,16 @@ import Sparse_Matrix_IO as smio
 
 __SAVE_MODEL = True
 
-__TRAIN_TEST_MODE = ["Next_day"]
+__TRAIN_TEST_MODE = ["Next_day", "Next_week"]
 __ON_OFF_LINE = ["Online", "Offline"]
-__SAMPLING_METHOD = ["Under"]
+__SAMPLING_METHOD = ["None", "Over", "Under"]
 
 __RATIO_UNDER = 0.65
 __RATIO_OVER = 0.95
 
 # Date Format = [(Month, Day)]
 __DATA_MAY = [(5, i) for i in range(1, 8)]
-__DATA_JUNE = []  # [(6, i) for i in range(4, 26)]
+__DATA_JUNE = [(6, i) for i in range(4, 26)]
 
 
 def format_addr(dates, mode):
