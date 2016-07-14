@@ -10,13 +10,15 @@ import pickle
 import csv
 import Sparse_Matrix_IO as smio
 
+
 __SAVE_MODEL = True
 
 
 def get_addr_in(result):
     # Date Format = [(Month, Day)]
     may = [(5, i) for i in range(1, 8)]
-    june = [(6, i) for i in range(4, 26)]
+    # june = [(6, i) for i in range(4, 26)]
+    june = []
     total = [may, june]
     train_test_pairs = []
     root = "/mnt/rips2/2016"
@@ -95,14 +97,14 @@ def test(addr_test, clf):
     return [tn, fp, fn, tp, recall, filtered]
 
 
-with open("/home/ubuntu/Weiyi/report.csv", "r") as file_out:
+with open("/home/ubuntu/Weiyi/report.csv", "w") as file_out:
     wr = csv.writer(file_out, quoting = csv.QUOTE_MINIMAL)
     wr.writerow(["Model", "Training", "Sampling", "TN", "FP", "FN", "TP", "Recall", "Filtered", "Parameters"])
 
     result = ["BNB"]
     train_test_pairs = get_addr_in(result)
     for pair in train_test_pairs:
-        for sampling in ["Over", "Under", "None"]:
+        for sampling in ["None"]:
             result.append(sampling)
 
             addr_train = pair[0]

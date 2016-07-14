@@ -44,7 +44,8 @@ def get_io_addr_random_sample():
 
 
 def get_io_addr_day_sample():
-    list_may = [(5, i) for i in range(2,8)]
+    # list_may = [(5, i) for i in range(2,8)]
+    list_may = []
     list_june = [(6, i) for i in range(4,26)]
     list_dates = list_may+list_june
 
@@ -326,7 +327,7 @@ def auction_bidrequest_impressions_process(bidreq, bid_responded, result_bid, re
 if __name__ == '__main__':
     cpus = multiprocessing.cpu_count()
     p = multiprocessing.Pool(cpus)
-    list_io_addr = get_io_addr()
+    list_io_addr = get_io_addr_day_sample()
 
     dumped = 0
     filtered = 0
