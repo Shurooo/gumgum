@@ -19,6 +19,7 @@ for month in [5, 6]:
             try:
                 hour_str = str(hour).rjust(2, "0")
                 path_in = os.path.join(path_in_day, hour_str, "output_bin.npy")
+                print "Processing {}".format(path_in)
                 with open(path_in, "r") as file_in:
                     X = smio.load_sparse_csr(file_in)
                 for line in X:
