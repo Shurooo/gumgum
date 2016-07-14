@@ -63,12 +63,16 @@ def discard_vars(X, cutoffs):
 
 
 def correlation_ex(X):
-    vector_len = len(X[0])
-    X_train = X[:, 0:vector_len-1]
-
-    layer = ce.Corex(n_hidden=20)
-    layer.fit(X_train)
+    X = X[:, 31:224]
+    layer = ce.Corex(n_hidden=15)
+    layer.fit(X)
     return layer
+
+
+def corex_transform(layer, X):
+    Y = X[:, 31:224]
+    Y = layer.transform(Y)
+    X = X[0:]
 
 
 def train(cutoffs):
@@ -81,7 +85,7 @@ def train(cutoffs):
 
     if __IF_TRAIN_WITHOUT_SAVE:
         print "Performing correlation explanation......"
-        with open("/home/wlu/Desktop/corex_matrix.npy", "r") as file_in:
+        with open("/home/wlu/Desktop/day_samp_bin_1-2.npy", "r") as file_in:
             X = Sparse_Matrix_IO.load_sparse_csr(file_in)
             if len(cutoffs) > 0:
                 X = discard_vars(X, cutoffs)
@@ -102,7 +106,7 @@ def train(cutoffs):
 
         if __IF_TRAIN_WITHOUT_SAVE:
             print "Transforming training set according to CorEx......"
-            X_train = layer.transform(X_train)
+            X_train = corex_transform(layer, X_train)
 
         print "Fitting Model......"
         clf.partial_fit(X_train, y_train, classes=[0, 1])
@@ -136,7 +140,7 @@ def crawl(args):
     y_test = X[:, vector_len-1]
 
     if __IF_TRAIN_WITHOUT_SAVE:
-        X_test = layer.transform(X_test)
+        X_test = corex_transform(layer, X_test)
 
     prediction = clf.predict(X_test)
 

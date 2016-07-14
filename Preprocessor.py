@@ -43,9 +43,9 @@ def get_io_addr_random_sample():
 
 
 def get_io_addr():
-    list_day = [4]
-    list_hour = [1,6]
-    list_month = [6]
+    may = [(5, i, j) for i in range(1,8) for j in range(24)]
+    june = [(6, i, j) for i in range(4,26) for j in range(24)]
+    list_dates = may + june
 
     filename_in = "part-00000"
     root_in = "/mnt/rips/2016"
@@ -53,18 +53,16 @@ def get_io_addr():
     root_out = "/mnt/rips2/2016"
 
     list_io_addr = []
-    for month in list_month:
-        for day in list_day:
-            for hour in list_hour:
-                io_addr = os.path.join(str(month).rjust(2, "0"),
-                                       str(day).rjust(2, "0"),
-                                       str(hour).rjust(2, "0"))
-                addr_in = os.path.join(root_in, io_addr, filename_in)
-                path_out = os.path.join(root_out, io_addr)
-                if not os.path.isdir(path_out):
-                    os.makedirs(path_out)
-                addr_out = os.path.join(path_out, filename_out)
-                list_io_addr.append((addr_in, addr_out))
+    for date in list_dates:
+        month = date[0]
+        day = date[1]
+        hour = date[2]
+        io_addr = os.path.join(str(month).rjust(2, "0"),
+                               str(day).rjust(2, "0"),
+                               str(hour).rjust(2, "0"))
+        addr_in = os.path.join(root_in, io_addr, filename_in)
+        addr_out = os.path.join(root_out, io_addr, filename_out)
+        list_io_addr.append((addr_in, addr_out))
     return list_io_addr
 
 
