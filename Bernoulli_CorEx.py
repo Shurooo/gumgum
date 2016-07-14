@@ -17,13 +17,14 @@ __FEATURES = ["hour", "day", "country", "margin", "tmax", "bkc", "site_typeid", 
              "bidder_id", "vertical_id", "bid_floor", "format", "product", "banner", "response"]
 __FEATURES_TO_DROP = []
 
+__DATA_FROM = 2
 # Data Format = [[Prefix], [Suffix]]
 # __TRAIN_DATA = [["all"], [i for i in range(5)]]
 # __TEST_DATA = [["all"], [5]]
 
 # Data Format = [[Month], [Day], [Hour]]
-__TRAIN_DATA = [[5], [1], [13]]
-__TEST_DATA =  [[5], [1], [14]]
+__TRAIN_DATA = [[5], [1]]
+__TEST_DATA =  [[5], [2]]
 
 
 def get_io_addr_random_sample(prefix, suffix):
@@ -37,20 +38,16 @@ def get_io_addr_random_sample(prefix, suffix):
     return list_io_addr
 
 
-def get_io_addr(list_month, list_day, list_hour):
+def get_io_addr(list_month, list_day):
     list_io_addr = []
-    root = "/mnt/rips/2016"
+    root = "/home/wlu/Desktop/rips16"
     for month in list_month:
         for day in list_day:
-            if month == 6:
-                day += 18
-            for hour in list_hour:
-                io_addr = os.path.join(root,
-                                       str(month).rjust(2, "0"),
-                                       str(day).rjust(2, "0"),
-                                       str(hour).rjust(2, "0"))
-                addr_in = os.path.join(io_addr, "output_bin_new.npy")
-                list_io_addr.append(addr_in)
+            io_addr = os.path.join(root,
+                                   str(month).rjust(2, "0"),
+                                   str(day).rjust(2, "0"))
+            addr_in = os.path.join(io_addr, "day_samp_bin.npy")
+            list_io_addr.append(addr_in)
     return list_io_addr
 
 
@@ -65,39 +62,32 @@ def discard_vars(X, cutoffs):
     return np.array(X_new)
 
 
+def correlation_ex(X):
+    vector_len = len(X[0])
+    X_train = X[:, 0:vector_len-1]
+
+    layer = ce.Corex(n_hidden=20)
+    layer.fit(X_train)
+    return layer
+
+
 def train(cutoffs):
     print "\n========== Start Training =========="
-    if len(__TRAIN_DATA) == 3:
-        list_io_addr = get_io_addr(__TRAIN_DATA[0], __TRAIN_DATA[1], __TRAIN_DATA[2])
+    if __DATA_FROM == 2:
+        list_io_addr = get_io_addr(__TRAIN_DATA[0], __TRAIN_DATA[1])
     else:
         list_io_addr = get_io_addr_random_sample(__TRAIN_DATA[0], __TRAIN_DATA[1])
     clf = BernoulliNB(class_prior=[0.05, 0.95])
-    start = 0
-    layer = ce.Corex(n_hidden=100)
 
     if __IF_TRAIN_WITHOUT_SAVE:
-        start = 1
         print "Performing correlation explanation......"
-        with open(list_io_addr[0], "r") as file_in:
+        with open("/home/wlu/Desktop/corex_matrix.npy", "r") as file_in:
             X = Sparse_Matrix_IO.load_sparse_csr(file_in)
             if len(cutoffs) > 0:
                 X = discard_vars(X, cutoffs)
+            layer = correlation_ex(X)
 
-            vector_len = len(X[0])
-            X_train = X[:, 0:vector_len-1]
-            y_train = X[:, vector_len-1]
-
-            layer.fit(X_train)
-            X_train = layer.labels
-
-            # sm = SMOTE(ratio=0.9)
-            # X_train_sm, y_train_sm = sm.fit_sample(X_train, y_train)
-
-            print "Fitting Model......"
-            clf.partial_fit(X_train, y_train, classes=[0, 1])
-            print "Done"
-
-    for i in range(start, len(list_io_addr)):
+    for i in range(0, len(list_io_addr)):
         path_in = list_io_addr[i]
         print "\nGenerating training set from {}".format(path_in)
         with open(path_in, "r") as file_in:
@@ -111,7 +101,7 @@ def train(cutoffs):
         y_train = X[:, vector_len-1]
 
         if __IF_TRAIN_WITHOUT_SAVE:
-            print "Performing correlation explanation......"
+            print "Transforming training set according to CorEx......"
             X_train = layer.transform(X_train)
 
         print "Fitting Model......"
@@ -119,11 +109,11 @@ def train(cutoffs):
         print "Done"
 
     if __IF_TRAIN_WITHOUT_SAVE:
-        args = [clf, layer]
-        test(cutoffs, args)
+        return [clf, layer]
     else:
         with open(__ROOT_MODEL, "w") as file_out:
             pickle.dump(clf, file_out)
+        return []
 
 
 def crawl(args):
@@ -165,8 +155,8 @@ def test(cutoffs, args):
             clf = pickle.load(file_in)
     print "Done\n"
 
-    if len(__TEST_DATA) == 3:
-        list_io_addr = get_io_addr(__TEST_DATA[0], __TEST_DATA[1], __TEST_DATA[2])
+    if __DATA_FROM == 2:
+        list_io_addr = get_io_addr(__TEST_DATA[0], __TEST_DATA[1])
     else:
         list_io_addr = get_io_addr_random_sample(__TEST_DATA[0], __TEST_DATA[1])
 
@@ -241,8 +231,9 @@ else:
     cutoffs = []
 
 start = time.time()
-train(cutoffs)
+args = train(cutoffs)
 print "----------Training Completed in {} seconds----------\n".format(round(time.time()-start, 2))
+
 start = time.time()
-test(cutoffs, [None])
+test(cutoffs, args)
 print "----------Testing Completed in {} seconds----------\n".format(round(time.time()-start, 2))

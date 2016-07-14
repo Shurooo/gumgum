@@ -16,13 +16,14 @@ __FEATURES = ["hour", "day", "country", "margin", "tmax", "bkc", "site_typeid", 
              "bidder_id", "vertical_id", "bid_floor", "format", "product", "banner", "response"]
 __FEATURES_TO_DROP = []
 
+__DATA_FROM = 2
 # Data Format = [[Prefix], [Suffix]]
 # __TRAIN_DATA = [["all"], [i for i in range(5)]]
 # __TEST_DATA = [["all"], [5]]
 
 # Data Format = [[Month], [Day], [Hour]]
-__TRAIN_DATA = [[5], [1], [i for i in range(24)]]
-__TEST_DATA =  [[5], [2], [i for i in range(24)]]
+__TRAIN_DATA = [[5], [1]]
+__TEST_DATA =  [[5], [2]]
 
 
 def get_io_addr_random_sample(prefix, suffix):
@@ -36,20 +37,16 @@ def get_io_addr_random_sample(prefix, suffix):
     return list_io_addr
 
 
-def get_io_addr(list_month, list_day, list_hour):
+def get_io_addr(list_month, list_day):
     list_io_addr = []
-    root = "/mnt/rips2/2016"
+    root = "/home/wlu/Desktop/rips16"
     for month in list_month:
         for day in list_day:
-            if month == 6:
-                day += 18
-            for hour in list_hour:
-                io_addr = os.path.join(root,
-                                       str(month).rjust(2, "0"),
-                                       str(day).rjust(2, "0"),
-                                       str(hour).rjust(2, "0"))
-                addr_in = os.path.join(io_addr, "output_bin.npy")
-                list_io_addr.append(addr_in)
+            io_addr = os.path.join(root,
+                                   str(month).rjust(2, "0"),
+                                   str(day).rjust(2, "0"))
+            addr_in = os.path.join(io_addr, "day_samp_bin.npy")
+            list_io_addr.append(addr_in)
     return list_io_addr
 
 
@@ -65,11 +62,11 @@ def discard_vars(X, cutoffs):
 
 def train(cutoffs):
     print "\n========== Start Training =========="
-    if len(__TRAIN_DATA) == 3:
-        list_io_addr = get_io_addr(__TRAIN_DATA[0], __TRAIN_DATA[1], __TRAIN_DATA[2])
+    if __DATA_FROM == 2:
+        list_io_addr = get_io_addr(__TRAIN_DATA[0], __TRAIN_DATA[1])
     else:
         list_io_addr = get_io_addr_random_sample(__TRAIN_DATA[0], __TRAIN_DATA[1])
-    clf = BernoulliNB(class_prior=[0.05, 0.95])
+    clf = BernoulliNB(class_prior=[0.01, 0.99])
 
     for i in range(len(list_io_addr)):
         path_in = list_io_addr[i]
@@ -86,18 +83,19 @@ def train(cutoffs):
         y_train = X[:, vector_len-1]
         print "Done"
 
-        # sm = SMOTE(ratio=0.9)
-        # X_train_sm, y_train_sm = sm.fit_sample(X_train, y_train)
+        sm = SMOTE(ratio=0.95)
+        X_train_sm, y_train_sm = sm.fit_sample(X_train, y_train)
 
         print "Fitting Model......"
-        clf.partial_fit(X_train, y_train, classes=[0, 1])
+        clf.partial_fit(X_train_sm, y_train_sm, classes=[0, 1])
         print "Done"
 
     if __SAVE_MODEL:
         with open(__ROOT_MODEL, "w") as file_out:
             pickle.dump(clf, file_out)
+        return None
     else:
-        test(cutoffs, clf)
+        return clf
 
 
 def crawl(args):
@@ -128,10 +126,10 @@ def test(cutoffs, clf):
             clf = pickle.load(file_in)
     print "Done\n"
 
-    if len(__TEST_DATA) == 3:
-        list_io_addr = get_io_addr(__TEST_DATA[0], __TEST_DATA[1], __TEST_DATA[2])
+    if __DATA_FROM == 2:
+        list_io_addr = get_io_addr(__TRAIN_DATA[0], __TRAIN_DATA[1])
     else:
-        list_io_addr = get_io_addr_random_sample(__TEST_DATA[0], __TEST_DATA[1])
+        list_io_addr = get_io_addr_random_sample(__TRAIN_DATA[0], __TRAIN_DATA[1])
 
     confusion_matrix = [0, 0, 0, 0]
     args = []
@@ -204,9 +202,9 @@ else:
     cutoffs = []
 
 start = time.time()
-train(cutoffs)
+clf = train(cutoffs)
 print "----------Training Completed in {} seconds----------\n".format(round(time.time()-start, 2))
 
 start = time.time()
-test(cutoffs, None)
+test(cutoffs, clf)
 print "----------Testing Completed in {} seconds----------\n".format(round(time.time()-start, 2))
