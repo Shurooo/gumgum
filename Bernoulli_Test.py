@@ -5,7 +5,6 @@ from sklearn.naive_bayes import BernoulliNB
 from sklearn import metrics
 from imblearn.over_sampling import SMOTE
 import Undersampling as US
-import multiprocessing
 import pickle
 import csv
 import Sparse_Matrix_IO as smio
@@ -40,6 +39,7 @@ def format_addr(dates, mode):
         train_test_pairs.append((addr_train, addr_test))
         dates_pairs.append(file_train+"~"+file_test)
     return train_test_pairs, dates_pairs
+
 
 def get_addr_in(mode):
     pairs_by_month = []
