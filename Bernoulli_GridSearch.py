@@ -49,8 +49,8 @@ def get_data(ratio, sampling):
             X = smio.load_sparse_csr(file_in)
             data.extend(X)
 
+    n = 30000
     if sampling == "Over":
-        n = 30000
         m = int(np.size(data, 1))
         k = int(0.8*n)
         X = data[:n, :m-1]
@@ -62,16 +62,18 @@ def get_data(ratio, sampling):
         X_test = X[k:, :]
         y_test = y[k:]
     else:
-        data = US.undersample(data, ratio)
-        n = min(30000, np.size(data, 0))
         m = int(np.size(data, 1))
         k = int(0.8*np.size(data, 0))
-        X = data[:n, :m-1]
-        y = data[:n, m-1:]
-        X_train = X[:k, :]
-        y_train = y[:k]
-        X_test = X[k:, :]
-        y_test = y[k:]
+        data_test = data[k:, :]
+        data = data[:k, :]
+        data = US.undersample(data, ratio)
+        k = int(0.8*np.size(data, 0))
+        if np.size(data_test, 0) > k:
+            data_test = data[:k, :]
+        X_train = data[:, :m-1]
+        y_train = data[:, m-1:].ravel()
+        X_test = data_test[:, :m-1]
+        y_test = data_test[:, m-1:].ravel()
     return X_train, y_train, X_test, y_test
 
 

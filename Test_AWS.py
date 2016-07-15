@@ -26,15 +26,18 @@ def get_data(ratio, sampling):
         X_test = X[k:, :]
         y_test = y[k:]
     else:
-        data = US.undersample(data, ratio)
         m = int(np.size(data, 1))
         k = int(0.8*np.size(data, 0))
-        X = data[:, :m-1]
-        y = data[:, m-1:]
-        X_train = X[:k, :]
-        y_train = y[:k]
-        X_test = X[k:, :]
-        y_test = y[k:]
+        data_test = data[k:, :]
+        data = data[:k, :]
+        data = US.undersample(data, ratio)
+        k = int(0.8*np.size(data, 0))
+        if np.size(data_test, 0) > k:
+            data_test = data[:k, :]
+        X_train = data[:, :m-1]
+        y_train = data[:, m-1:].ravel()
+        X_test = data_test[:, :m-1]
+        y_test = data_test[:, m-1:].ravel()
     return X_train, y_train, X_test, y_test
 
 
@@ -47,10 +50,6 @@ y_pred = clf.predict(X_test)
 confusion_matrix = metrics.confusion_matrix(y_test, y_pred)
 
 print confusion_matrix
-
-train_nonzero = np.count_nonzero(y_train)
-test_nonzero = np.count_nonzero(y_test)
-print "Count for nonzeros: ", train_nonzero, test_nonzero
 
 tp = confusion_matrix[1, 1]
 fp = confusion_matrix[0, 1]
@@ -65,4 +64,3 @@ try:
     filtered = round(float(tn) / total, 4)
 except:
     filtered = -1
-

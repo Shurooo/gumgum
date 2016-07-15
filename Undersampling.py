@@ -46,4 +46,5 @@ def undersample(data, ratio):   # ratio is same as SMOTE ratio
     numlines = int(num_one/ratio)
     zero = sample(zero, numlines)
     new = np.vstack([one, zero])
+    np.random.shuffle(new)
     return new
