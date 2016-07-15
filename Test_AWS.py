@@ -2,6 +2,7 @@ from imblearn.over_sampling import SMOTE
 from sklearn.utils import column_or_1d
 import Undersampling as US
 import Sparse_Matrix_IO as smio
+from sklearn.naive_bayes import BernoulliNB
 import numpy as np
 
 
@@ -34,3 +35,8 @@ def get_data(ratio, sampling):
         X_test = X[k:, :]
         y_test = y[k:]
     return X_train, y_train, X_test, y_test
+
+
+X_train, y_train, X_test, y_test = get_data(0.5, "Under")
+clf = BernoulliNB()
+clf.fit(X_train, y_train)

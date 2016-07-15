@@ -28,8 +28,8 @@ def J_score(clf, X, y):
 def get_data(ratio, sampling):
     with open(__ADDR_IN, "r") as file_in:
         data = smio.load_sparse_csr(file_in)
-    n = 30000
     if sampling == "Over":
+        n = 30000
         m = int(np.size(data, 1))
         k = int(0.8*n)
         X = data[:n, :m-1]
@@ -56,7 +56,7 @@ def get_data(ratio, sampling):
 def lm():
     myfile = open("/home/ubuntu/Weiyi/GridSearch_Bern.txt", "w")
 
-    for ratio in [0.1 + 0.1*i for i in range(9)]:
+    for ratio in [0.5]:
         sampling = "Under"
 
         myfile.write("_____________________________________________\n")
