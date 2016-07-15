@@ -22,7 +22,7 @@ __RATIO_OVER = 0.95
 
 # Date Format = [(Month, Day)]
 __DATA_MAY = [(5, i) for i in range(1, 8)]
-__DATA_JUNE = [(6, i) for i in range(4, 26)]
+__DATA_JUNE = [(6, i) for i in range(4, 13)]
 
 
 def format_addr(dates, mode):
