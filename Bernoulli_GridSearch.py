@@ -17,7 +17,7 @@ def get_io_addr():
     list_month = [5]
     list_day = [i for i in range(1, 5)]
     list_io_addr = []
-    root = "/home/wlu/Desktop/rips16"
+    root = "/mnt/rips2/2016"
     for month in list_month:
         for day in list_day:
             io_addr = os.path.join(root,
