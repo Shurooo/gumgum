@@ -18,7 +18,7 @@ def J_score(clf, X, y):
     total = len(y)
     recall = tp / float(tp+fn)
     filtered = float(tn) / total
-    return recall + filtered / 4
+    return recall + filtered / 5 
 
 
 def GetData(data_list): ## Input Weiyi-formatted Data
@@ -42,15 +42,15 @@ def DataFormat(data_list, ratio):
     m = int(np.size(Data,1))
     #n = int(np.size(Data,0))
     n = 30000
-    Data = US.undersample(Data[:n, :], ratio)
-    X = Data[:, 1:m-1]
-    y = Data[:, m-1]
+    # Data = US.undersample(Data[:n, :], ratio)
+    X = Data[:n, 1:m-1]
+    y = Data[:n, m-1]
 
     k = int(0.8*n)
     
-    # sm = SMOTE(ratio= ratio)
-    # X_resampled, y_scaled = sm.fit_sample(X[:k,:],y[:k])
-    # X_scaled = X_resampled
+    sm = SMOTE(ratio= ratio)
+    X_resampled, y_scaled = sm.fit_sample(X[:k,:],y[:k])
+    X_scaled = X_resampled
 
     X_scaled = X[:k,:]
     y_scaled = y[:k]
@@ -63,7 +63,7 @@ def DataFormat(data_list, ratio):
 def lm(data):
     myfile = open("/home/ubuntu/Weiyi/GridSearch3.txt", "w")
 
-    for ratio in [0.1 + 0.1*i for i in range(9)]:
+    for ratio in [0.7 + 0.5*i for i in range(6)]:
         myfile.write("_____________________________________________\n")
         myfile.write("Under Sampling Ratio = "+str(ratio))
         myfile.write("\n")
@@ -122,4 +122,4 @@ def lm(data):
     myfile.close()
 
 # Running the model on these data
-lm(["/mnt/rips2/2016/05/01/day_samp_bin.npy"])
+lm(["/mnt/rips2/2016/06/04/day_samp_bin.npy"])
