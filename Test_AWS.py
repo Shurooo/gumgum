@@ -1,51 +1,36 @@
-import os
-import time
-import multiprocessing
-import numpy as np
+from imblearn.over_sampling import SMOTE
+from sklearn.utils import column_or_1d
+import Undersampling as US
 import Sparse_Matrix_IO as smio
+import numpy as np
 
 
-start = time.time()
-
-def get_io_addr():
-    root = "/mnt/rips2/2016"
-
-    may = [(5, i) for i in range(1,8)]
-    june = [(6, i) for i in range(4,26)]
-    list_dates = may + june
-
-    list_io_addr = []
-    for date in list_dates:
-        month = date[0]
-        day = date[1]
-        addr_in = os.path.join(root,
-                               str(month).rjust(2, "0"),
-                               str(day).rjust(2, "0"))
-        list_io_addr.append(addr_in)
-    return list_io_addr
+__ADDR_IN = "/home/wlu/Desktop/rips16/05/01/day_samp_bin.npy"
 
 
-def crawl(addr_day):
-    print "Checking {}".format(addr_day)
-    path_in = os.path.join(addr_day, "day_samp_bin.npy")
-    with open(path_in, "r") as file_in:
-        X = smio.load_sparse_csr(file_in)
-    if len(X) != 100000:
-        print "\n>>>>> Something Wrong with {}\n".format(path_in)
-        exit(1)
+def get_data(ratio, sampling):
+    with open(__ADDR_IN, "r") as file_in:
+        data = smio.load_sparse_csr(file_in)
+    n = 30000
+    if sampling == "Over":
+        m = int(np.size(data, 1))
+        k = int(0.8*n)
+        X = data[:n, :m-1]
+        y = data[:n, m-1:]
+        X_train = X[:k, :]
+        y_train = y[:k]
+        sm = SMOTE(ratio=ratio)
+        X_train, y_train = sm.fit_sample(X_train, column_or_1d(y_train, warn=False))
+        X_test = X[k:, :]
+        y_test = y[k:]
     else:
-        for i in range(len(X)):
-            if len(X[i]) != 361:
-                print "\n>>>>> Something Wrong with {}".format(path_in)
-                print ">>>>> Line {}, wrong length {}".format(i, len(X[i]))
-                exit(1)
-
-
-if __name__ == '__main__':
-    p = multiprocessing.Pool(8)
-    list_io_addr = get_io_addr()
-
-    for result in p.imap(crawl, list_io_addr):
-        pass
-
-    print "Completed in {} seconds\n".format(round(time.time()-start, 2))
+        data = US.undersample(data, ratio)
+        m = int(np.size(data, 1))
+        k = int(0.8*np.size(data, 0))
+        X = data[:, :m-1]
+        y = data[:, m-1:]
+        X_train = X[:k, :]
+        y_train = y[:k]
+        X_test = X[k:, :]
+        y_test = y[k:]
+    return X_train, y_train, X_test, y_test

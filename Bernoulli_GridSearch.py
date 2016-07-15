@@ -1,11 +1,15 @@
 from imblearn.over_sampling import SMOTE
 import Undersampling as US
+from sklearn.utils import column_or_1d
 import numpy as np
 import time
 from sklearn.metrics import make_scorer, fbeta_score
 from sklearn.naive_bayes import BernoulliNB, MultinomialNB
 from sklearn import metrics, grid_search
-from scipy.sparse import csr_matrix
+import Sparse_Matrix_IO as smio
+
+
+__ADDR_IN = "/mnt/rips2/2016/05/01/day_samp_bin.npy"
 
 
 def J_score(clf, X, y):
@@ -18,51 +22,38 @@ def J_score(clf, X, y):
     total = len(y)
     recall = tp / float(tp+fn)
     filtered = float(tn) / total
-    return recall + filtered / 5 
+    return recall + filtered / 5
 
 
-def GetData(data_list): ## Input Weiyi-formatted Data
-    print "Reading Data..."
-    count, temp = 1, np.load(data_list[0])
-    Data = csr_matrix((  temp['data'], temp['indices'], temp['indptr']),
-                         shape = temp['shape'], dtype=float).toarray()
-    for i in range(1,len(data_list)):
-        count +=1
-        temp = np.load(data_list[i])
-        temp2 = csr_matrix((temp['data'], temp['indices'], temp['indptr']),
-                         shape = temp['shape'], dtype=float)
-        temp3 = temp2.toarray()
-        Data = np.append(Data,temp3,0)
-    print "All data files read"
-    return Data
-
-
-def DataFormat(data_list, ratio, sampling):
-    Data = GetData(data_list)
-    #n = int(np.size(Data,0))
+def get_data(ratio, sampling):
+    with open(__ADDR_IN, "r") as file_in:
+        data = smio.load_sparse_csr(file_in)
     n = 30000
-    k = int(0.8*n)
     if sampling == "Over":
-        m = int(np.size(Data, 1))
-        X = Data[:n, :m-1]
-        y = Data[:n, m-1:]
+        m = int(np.size(data, 1))
+        k = int(0.8*n)
+        X = data[:n, :m-1]
+        y = data[:n, m-1:]
+        X_train = X[:k, :]
+        y_train = y[:k]
         sm = SMOTE(ratio=ratio)
-        X_scaled, y_scaled = sm.fit_sample(X[:k, :], y[:k])
-        X_CV = X[k:, :]
-        y_CV = y[k:]
+        X_train, y_train = sm.fit_sample(X_train, column_or_1d(y_train, warn=False))
+        X_test = X[k:, :]
+        y_test = y[k:]
     else:
-        Data = US.undersample(Data[:n, :], ratio)
-        m = int(np.size(Data, 1))
-        X = Data[:n, :m-1]
-        y = Data[:n, m-1:]
-        X_scaled = X[:k, :]
-        y_scaled = y[:k]
-        X_CV = X[k:, :]
-        y_CV = y[k:]
-    return X_scaled, y_scaled, X_CV, y_CV
+        data = US.undersample(data, ratio)
+        m = int(np.size(data, 1))
+        k = int(0.8*np.size(data, 0))
+        X = data[:, :m-1]
+        y = data[:, m-1:]
+        X_train = X[:k, :]
+        y_train = y[:k]
+        X_test = X[k:, :]
+        y_test = y[k:]
+    return X_train, y_train, X_test, y_test
 
 
-def lm(data):
+def lm():
     myfile = open("/home/ubuntu/Weiyi/GridSearch_Bern.txt", "w")
 
     for ratio in [0.1 + 0.1*i for i in range(9)]:
@@ -72,7 +63,7 @@ def lm(data):
         myfile.write(sampling+"Sampling Ratio = "+str(ratio))
         myfile.write("\n")
 
-        X, y, X_cv, y_cv = DataFormat(data, ratio, sampling)
+        X, y, X_cv, y_cv = get_data(ratio, sampling)
         classes_weights = []
         step = np.arange(0.5, 0.91, 0.1)
         for i in step:
@@ -125,5 +116,4 @@ def lm(data):
 
     myfile.close()
 
-# Running the model on these data
-lm(["/mnt/rips2/2016/05/01/day_samp_bin.npy"])
+lm()
