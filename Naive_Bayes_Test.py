@@ -11,7 +11,7 @@ import Sparse_Matrix_IO as smio
 
 
 __SAVE_MODEL = True
-__LOAD_MODEL = False
+__LOAD_MODEL = True 
 
 __MODEL = ["Bern", "Multi"]
 __TRAIN_TEST_MODE = ["Next_day", "Next_week"]
@@ -174,11 +174,11 @@ with open("/home/ubuntu/Weiyi/report.csv", "w") as file_out:
                                 print "\n>>>>> Load Model for {}".format(addr_train)
                                 model_name = model + "_" + onoff_line + "_" + sampling + "_Model"
                                 path_in = os.path.join(addr_train, "Naive_Bayes_Models", model_name)
-                                if os.path.isfile(path_in):
-                                    with open(path_in, "w") as file_in:
+                                try: 
+                                    with open(path_in, "r") as file_in:
                                         clf = pickle.load(file_in)
-                                else:
-                                    print ">>>>> Error: Model does not exist"
+                                except:
+                                    print ">>>>> Error: Model cannot be loaded"
                                     __LOAD_MODEL = False
 
                             if not __LOAD_MODEL:
