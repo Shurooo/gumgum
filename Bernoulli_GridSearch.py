@@ -7,11 +7,18 @@ from sklearn.metrics import make_scorer, recall_score, fbeta_score
 from scipy.sparse import csr_matrix
 
 
-#def J_score(y,y_pred):
-#    r = metrics.recall_score(y,y_pred, average='binary')
-#    n = len(y)
-#    TN_rate = (n-np.count_nonzero(y+y_pred+2*np.ones(n)))/n
-#    return r+TN_rate/5
+def J_score(clf, X, y):
+    y_pred = clf.predict(X)
+    confusion_matrix = metrics.confusion_matrix(y, y_pred)
+    tp = confusion_matrix[1, 1]
+    fp = confusion_matrix[0, 1]
+    tn = confusion_matrix[0, 0]
+    fn = confusion_matrix[1, 0]
+    total = len(y)
+    recall = tp / float(tp+fn)
+    filtered = float(tn) / total
+    return recall + filtered / 5
+
 
 def GetData(data_list): ## Input Weiyi-formatted Data
     print "Reading Data..."
@@ -69,10 +76,7 @@ def lm(data):
         classes_weights.append([1-i, i])
     parameters = {'class_prior': classes_weights}
 
-    gum_score = make_scorer(fbeta_score, beta = 12)  #using f1 score
-    #gum_score = make_scorer(recall_score, beta = 12)  #using recall score
-
-    clf = grid_search.GridSearchCV(MultinomialNB(), parameters, cv=3, scoring=gum_score)
+    clf = grid_search.GridSearchCV(MultinomialNB(), parameters, cv=3, scoring=J_score)
 
     start = time.time()
     print "fitting Multinomial NBs"
@@ -91,10 +95,6 @@ def lm(data):
         print "predicting"
         y_pred = clf.predict(X_cv)
         elapsed2 = time.time()-start
-
-        myfile.write("F_12 score: \n")
-        myfile.write(str(fbeta_score(y_cv, y_pred, beta=12)))
-        myfile.write("\n")
 
         confusion_matrix = metrics.confusion_matrix(y_cv, y_pred)
         tp = confusion_matrix[1, 1]
