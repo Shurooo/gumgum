@@ -96,13 +96,22 @@ def lm(data):
         myfile.write(str(fbeta_score(y_cv, y_pred, beta=12)))
         myfile.write("\n")
 
+        confusion_matrix = metrics.confusion_matrix(y_cv, y_pred)
+        tp = confusion_matrix[1, 1]
+        fp = confusion_matrix[0, 1]
+        tn = confusion_matrix[0, 0]
+        fn = confusion_matrix[1, 0]
+        total = tp+fp+tn+fn
+        recall = round(tp / float(tp+fn), 4)
+        filtered = round(float(tn+fn) / total, 4)
+
         myfile.write("Recall: \n")
-        myfile.write(str(metrics.recall_score(y_cv, y_pred, average='binary')))
+        myfile.write(str(recall))
         myfile.write("\n")
 
-        myfile.write("Confusion Matrix: \n")
-        for item in metrics.confusion_matrix(y_cv, y_pred):
-            myfile.write("%s\n" % item)
+        myfile.write("Filtered: \n")
+        myfile.write(str(filtered))
+        myfile.write("\n")
 
         myfile.write("Time to fit: " + str(elapsed1) + "\n")
         myfile.write("Time to predict: " + str(elapsed2))
