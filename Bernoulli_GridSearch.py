@@ -71,10 +71,10 @@ def lm(data):
 
         X, y, X_cv, y_cv = DataFormat(data, ratio, sampling)
         classes_weights = []
-        step = np.arange(0.5,0.91,0.1)
+        step = np.arange(0.5, 0.91, 0.1)
         for i in step:
             classes_weights.append([1-i, i])
-        step = np.arange(0.91,0.991,0.01)
+        step = np.arange(0.91, 0.991, 0.01)
         for i in step:
             classes_weights.append([1-i, i])
         step = np.arange(0.991, 1, 0.001)
