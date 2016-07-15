@@ -83,7 +83,7 @@ def lm(data):
 
         gum_score = make_scorer(fbeta_score, beta = 10)  #using f1 score
         #gum_score = make_scorer(recall_score, beta = 12)  #using recall score
-        clf = grid_search.GridSearchCV(BernoulliNB(), parameters, cv=3, scoring=gum_score)
+        clf = grid_search.GridSearchCV(BernoulliNB(), parameters, cv=3, scoring=J_score)
 
         start = time.time()
         print "fitting Multinomial NBs"
@@ -122,4 +122,4 @@ def lm(data):
     myfile.close()
 
 # Running the model on these data
-lm(["/mnt/rips2/2016/06/04/day_samp_bin.npy"])
+lm(["/mnt/rips2/2016/05/01/day_samp_bin.npy"])
