@@ -60,10 +60,10 @@ def DataFormat(data_list, ratio, sampling):
 
 
 def lm(data):
-    myfile = open("/home/ubuntu/Weiyi/GridSearch3.txt", "w")
+    myfile = open("/home/ubuntu/Weiyi/GridSearch_Bern.txt", "w")
 
-    for ratio in [0.7 + 0.05*i for i in range(6)]:
-        sampling = "Over"
+    for ratio in [0.1 + 0.1*i for i in range(9)]:
+        sampling = "Under"
 
         myfile.write("_____________________________________________\n")
         myfile.write(sampling+"Sampling Ratio = "+str(ratio))
@@ -84,7 +84,7 @@ def lm(data):
 
         gum_score = make_scorer(fbeta_score, beta = 10)  #using f1 score
         #gum_score = make_scorer(recall_score, beta = 12)  #using recall score
-        clf = grid_search.GridSearchCV(MultinomialNB(), parameters, cv=3, scoring=J_score)
+        clf = grid_search.GridSearchCV(BernoulliNB(), parameters, cv=3, scoring=J_score)
 
         start = time.time()
         print "fitting Multinomial NBs"
@@ -123,4 +123,4 @@ def lm(data):
     myfile.close()
 
 # Running the model on these data
-lm(["/mnt/rips2/2016/06/04/day_samp_bin.npy"])
+lm(["/mnt/rips2/2016/05/01/day_samp_bin.npy"])
