@@ -35,7 +35,7 @@ def GetData(data_list): ## Input Weiyi-formatted Data
     return Data
 
 
-def DataFormat(data_list):
+def DataFormat(data_list, ratio):
     Data = GetData(data_list)
     m = int(np.size(Data,1))
     #n = int(np.size(Data,0))
@@ -45,7 +45,7 @@ def DataFormat(data_list):
     y = Data[:n,m-1]
 
     k = int(0.8*n)
-    sm = SMOTE(ratio= 0.75)
+    sm = SMOTE(ratio= ratio)
     X_resampled, y_scaled = sm.fit_sample(X[:k,:],y[:k])
     X_scaled = X_resampled
     X_CV = X[k:,:]
@@ -54,35 +54,38 @@ def DataFormat(data_list):
 
 
 def lm(data):
-    X, y, X_cv, y_cv = DataFormat(data)
-    classes_weights = []
-    step = np.arange(0.5,0.91,0.1)
-    for i in step:
-        classes_weights.append([1-i, i])
-    step = np.arange(0.91,0.991,0.01)
-    for i in step:
-        classes_weights.append([1-i, i])
-    step = np.arange(0.991,1,0.001)
-    for i in step:
-        classes_weights.append([1-i, i])
-    parameters = {"class_prior": classes_weights}
+    myfile = open("/home/ubuntu/Weiyi/GridSearch3.txt", "w")
 
-    clf = grid_search.GridSearchCV(MultinomialNB(), parameters, cv=3, scoring=J_score)
+    for ratio in [0.7, 0.75, 0.8, 0.85, 0.9, 0.95]:
+        myfile.write("___________________________________________________")
+        myfile.write("SMOT Ratio"+str(ratio))
+        myfile.write("\n")
 
-    start = time.time()
-    print "fitting Multinomial NBs"
-    clf.fit(X, y)
-    elapsed1 = time.time()-start
+        X, y, X_cv, y_cv = DataFormat(data, ratio)
+        classes_weights = []
+        step = np.arange(0.5,0.91,0.1)
+        for i in step:
+            classes_weights.append([1-i, i])
+        step = np.arange(0.91,0.991,0.01)
+        for i in step:
+            classes_weights.append([1-i, i])
+        step = np.arange(0.991,1,0.001)
+        for i in step:
+            classes_weights.append([1-i, i])
+        parameters = {"class_prior": classes_weights}
 
-    with open("/home/ubuntu/Weiyi/GridSearch3.txt", "w") as myfile:
+        clf = grid_search.GridSearchCV(MultinomialNB(), parameters, cv=3, scoring=J_score)
+
+        start = time.time()
+        print "fitting Multinomial NBs"
+        clf.fit(X, y)
+        elapsed1 = time.time()-start
+
         myfile.write("Best parameters set found on development set: ")
         myfile.write(str(clf.best_params_))
         myfile.write("\n")
-        myfile.write("Grid scores on development set:\n")
-        for params, mean_score, scores in clf.grid_scores_:
-            myfile.write("%0.3f (+/-%0.03f) for %r \n" % (mean_score, scores.std()*2, params))
-        start = time.time()
 
+        start = time.time()
         print "predicting"
         y_pred = clf.predict(X_cv)
         elapsed2 = time.time()-start
@@ -106,6 +109,8 @@ def lm(data):
 
         myfile.write("Time to fit: " + str(elapsed1) + "\n")
         myfile.write("Time to predict: " + str(elapsed2))
+
+    myfile.close()
 
 # Running the model on these data
 lm(["/home/ubuntu/random_samples/alldata0_num.npy"])
