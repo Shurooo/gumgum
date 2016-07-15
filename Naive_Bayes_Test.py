@@ -170,6 +170,7 @@ with open("/home/ubuntu/Weiyi/report.csv", "w") as file_out:
                                 clf, param = init_clf(model, sampling)
 
                             addr_train = pair[0]
+                            model_loaded = False
                             if __LOAD_MODEL:
                                 print "\n>>>>> Load Model for {}".format(addr_train)
                                 model_name = model + "_" + onoff_line + "_" + sampling + "_Model"
@@ -177,11 +178,12 @@ with open("/home/ubuntu/Weiyi/report.csv", "w") as file_out:
                                 try: 
                                     with open(path_in, "r") as file_in:
                                         clf = pickle.load(file_in)
+                                    model_loaded = True
                                 except:
                                     print ">>>>> Error: Model cannot be loaded"
-                                    __LOAD_MODEL = False
+                                    model_loaded = False
 
-                            if not __LOAD_MODEL:
+                            if not model_loaded:
                                 print "\n>>>>> Start Training on {}".format(addr_train)
                                 start = time.time()
                                 clf = train(addr_train, clf, model, sampling, onoff_line)
