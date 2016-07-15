@@ -80,7 +80,7 @@ def get_data(ratio, sampling):
 def lm():
     myfile = open(__ADDR_OUT, "w")
 
-    for ratio in [0.1+0.1*i for i in range(9)]:
+    for ratio in [0.5]:
         sampling = "Under"
 
         myfile.write("_____________________________________________\n")
