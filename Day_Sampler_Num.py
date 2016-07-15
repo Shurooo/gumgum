@@ -13,7 +13,7 @@ def get_io_addr():
     root = "/mnt/rips2/2016"
 
     may = []
-    june = [(6, i) for i in range(6, 13)]
+    june = [(6, i) for i in range(12, 26)]
     list_dates = may + june
 
     list_io_addr = []
@@ -62,7 +62,7 @@ def crawl(addr_day):
 
 
 if __name__ == '__main__':
-    p = multiprocessing.Pool(8)
+    p = multiprocessing.Pool(16)
     list_io_addr = get_io_addr()
 
     for result in p.imap(crawl, list_io_addr):
