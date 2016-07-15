@@ -43,7 +43,7 @@ def DataFormat(data_list, ratio, sampling):
     n = 30000
     k = int(0.8*n)
     if sampling == "Over":
-        m = int(np.size(Data,1))
+        m = int(np.size(Data, 1))
         X = Data[:n, :m-1]
         y = Data[:n, m-1:]
         sm = SMOTE(ratio=ratio)
@@ -52,11 +52,13 @@ def DataFormat(data_list, ratio, sampling):
         y_CV = y[k:]
     else:
         Data = US.undersample(Data[:n, :], ratio)
-        m = int(np.size(Data,1))
-        X_scaled = Data[:k, :m-1]
-        y_scaled = Data[:k, m-1:]
-        X_CV = Data[k:, :m-1]
-        y_CV = Data[k:, m-1:]
+        m = int(np.size(Data, 1))
+        X = Data[:n, :m-1]
+        y = Data[:n, m-1:]
+        X_scaled = X[:k, :]
+        y_scaled = y[:k]
+        X_CV = X[k:, :]
+        y_CV = y[k:]
     return X_scaled, y_scaled, X_CV, y_CV
 
 
