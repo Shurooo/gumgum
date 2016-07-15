@@ -3,7 +3,7 @@ import Undersampling as US
 import numpy as np
 import time
 from sklearn.metrics import make_scorer, fbeta_score
-from sklearn.naive_bayes import BernoulliNB
+from sklearn.naive_bayes import BernoulliNB, MultinomialNB
 from sklearn import metrics, grid_search
 from scipy.sparse import csr_matrix
 
@@ -37,26 +37,25 @@ def GetData(data_list): ## Input Weiyi-formatted Data
     return Data
 
 
-def DataFormat(data_list, ratio):
+def DataFormat(data_list, ratio, sampling):
     Data = GetData(data_list)
     m = int(np.size(Data,1))
     #n = int(np.size(Data,0))
     n = 30000
-    # Data = US.undersample(Data[:n, :], ratio)
-    X = Data[:n, 1:m-1]
-    y = Data[:n, m-1]
-
     k = int(0.8*n)
-    
-    sm = SMOTE(ratio= ratio)
-    X_resampled, y_scaled = sm.fit_sample(X[:k,:],y[:k])
-    X_scaled = X_resampled
-
-    X_scaled = X[:k,:]
-    y_scaled = y[:k]
-    X_CV = X[k:,:]
-    y_CV = y[k:]
-
+    if sampling == "Over":
+        X = Data[:n, :m-1]
+        y = Data[:n, m-1:]
+        sm = SMOTE(ratio=ratio)
+        X_scaled, y_scaled = sm.fit_sample(X[:k, :], y[:k])
+        X_CV = X[k:, :]
+        y_CV = y[k:]
+    else:
+        Data = US.undersample(Data[:n, :], ratio)
+        X_scaled = Data[:k, :m-1]
+        y_scaled = Data[:k, m-1:]
+        X_CV = Data[k:, :m-1]
+        y_CV = Data[k:, m-1:]
     return X_scaled, y_scaled, X_CV, y_CV
 
 
@@ -64,11 +63,13 @@ def lm(data):
     myfile = open("/home/ubuntu/Weiyi/GridSearch3.txt", "w")
 
     for ratio in [0.7 + 0.5*i for i in range(6)]:
+        sampling = "Over"
+
         myfile.write("_____________________________________________\n")
-        myfile.write("Under Sampling Ratio = "+str(ratio))
+        myfile.write(sampling+"Sampling Ratio = "+str(ratio))
         myfile.write("\n")
 
-        X, y, X_cv, y_cv = DataFormat(data, ratio)
+        X, y, X_cv, y_cv = DataFormat(data, ratio, sampling)
         classes_weights = []
         step = np.arange(0.5,0.91,0.1)
         for i in step:
@@ -76,14 +77,14 @@ def lm(data):
         step = np.arange(0.91,0.991,0.01)
         for i in step:
             classes_weights.append([1-i, i])
-        step = np.arange(0.991,1,0.001)
+        step = np.arange(0.991, 1, 0.001)
         for i in step:
             classes_weights.append([1-i, i])
-        parameters = {"class_prior": classes_weights, "alpha":[0.5, 1, 1.5, 2, 4, 8]}
+        parameters = {"class_prior": classes_weights, "alpha": [0.5, 1, 1.5, 2]}
 
         gum_score = make_scorer(fbeta_score, beta = 10)  #using f1 score
         #gum_score = make_scorer(recall_score, beta = 12)  #using recall score
-        clf = grid_search.GridSearchCV(BernoulliNB(), parameters, cv=3, scoring=J_score)
+        clf = grid_search.GridSearchCV(MultinomialNB(), parameters, cv=3, scoring=J_score)
 
         start = time.time()
         print "fitting Multinomial NBs"
