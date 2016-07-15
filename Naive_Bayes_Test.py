@@ -11,6 +11,7 @@ import Sparse_Matrix_IO as smio
 
 
 __SAVE_MODEL = True
+__LOAD_MODEL = False
 
 __MODEL = ["Bern", "Multi"]
 __TRAIN_TEST_MODE = ["Next_day", "Next_week"]
@@ -87,7 +88,7 @@ def train(addr_train, clf, model, sampling, onoff_line):
 
     if __SAVE_MODEL:
         model_name = model + "_" + onoff_line + "_" + sampling + "_Model"
-        path_out = os.path.join(addr_train, model_name)
+        path_out = os.path.join(addr_train, "Naive_Bayes_Models", model_name)
         with open(path_out, "w") as file_out:
             pickle.dump(clf, file_out)
 
@@ -169,10 +170,22 @@ with open("/home/ubuntu/Weiyi/report.csv", "w") as file_out:
                                 clf, param = init_clf(model, sampling)
 
                             addr_train = pair[0]
-                            print "\n>>>>> Start Training on {}".format(addr_train)
-                            start = time.time()
-                            clf = train(addr_train, clf, model, sampling, onoff_line)
-                            print ">>>>> Training completed in {} seconds".format(round(time.time()-start, 2))
+                            if __LOAD_MODEL:
+                                print "\n>>>>> Load Model for {}".format(addr_train)
+                                model_name = model + "_" + onoff_line + "_" + sampling + "_Model"
+                                path_in = os.path.join(addr_train, "Naive_Bayes_Models", model_name)
+                                if os.path.isfile(path_in):
+                                    with open(path_in, "w") as file_in:
+                                        clf = pickle.load(file_in)
+                                else:
+                                    print ">>>>> Error: Model does not exist"
+                                    __LOAD_MODEL = False
+
+                            if not __LOAD_MODEL:
+                                print "\n>>>>> Start Training on {}".format(addr_train)
+                                start = time.time()
+                                clf = train(addr_train, clf, model, sampling, onoff_line)
+                                print ">>>>> Training completed in {} seconds".format(round(time.time()-start, 2))
 
                             addr_test = pair[1]
                             print "\n>>>>> Start Testing on {}".format(addr_test)
