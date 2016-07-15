@@ -1,6 +1,7 @@
 from imblearn.over_sampling import SMOTE
 import numpy as np
 import time
+from sklearn.metrics import make_scorer, fbeta_score
 from sklearn.naive_bayes import MultinomialNB
 from sklearn import metrics, grid_search
 from scipy.sparse import csr_matrix
@@ -16,7 +17,7 @@ def J_score(clf, X, y):
     total = len(y)
     recall = tp / float(tp+fn)
     filtered = float(tn) / total
-    return recall + filtered / 5
+    return recall + filtered / 4
 
 
 def GetData(data_list): ## Input Weiyi-formatted Data
@@ -57,7 +58,7 @@ def lm(data):
     myfile = open("/home/ubuntu/Weiyi/GridSearch3.txt", "w")
 
     for ratio in [0.7, 0.75, 0.8, 0.85, 0.9, 0.95]:
-        myfile.write("\n_____________________________________________\n")
+        myfile.write("_____________________________________________\n")
         myfile.write("SMOT Ratio = "+str(ratio))
         myfile.write("\n")
 
@@ -74,7 +75,9 @@ def lm(data):
             classes_weights.append([1-i, i])
         parameters = {"class_prior": classes_weights}
 
-        clf = grid_search.GridSearchCV(MultinomialNB(), parameters, cv=3, scoring=J_score)
+        gum_score = make_scorer(fbeta_score, beta = 10)  #using f1 score
+        #gum_score = make_scorer(recall_score, beta = 12)  #using recall score
+        clf = grid_search.GridSearchCV(MultinomialNB(), parameters, cv=3, scoring=gum_score)
 
         start = time.time()
         print "fitting Multinomial NBs"
@@ -108,7 +111,7 @@ def lm(data):
         myfile.write("\n")
 
         myfile.write("Time to fit: " + str(elapsed1) + "\n")
-        myfile.write("Time to predict: " + str(elapsed2))
+        myfile.write("Time to predict: " + str(elapsed2) + "\n")
 
     myfile.close()
 
