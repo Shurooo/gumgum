@@ -39,4 +39,4 @@ def get_data(ratio, sampling):
 
 X_train, y_train, X_test, y_test = get_data(0.5, "Under")
 clf = BernoulliNB()
-clf.fit(X_train, y_train)
+clf.fit(X_train, y_train.ravel())

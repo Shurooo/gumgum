@@ -82,7 +82,7 @@ def lm():
 
         start = time.time()
         print "fitting Multinomial NBs"
-        clf.fit(X, y)
+        clf.fit(X, y.ravel())
         elapsed1 = time.time()-start
 
         myfile.write("Best parameters set found on development set: ")
