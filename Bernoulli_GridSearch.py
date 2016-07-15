@@ -100,8 +100,14 @@ def lm():
         tn = confusion_matrix[0, 0]
         fn = confusion_matrix[1, 0]
         total = tp+fp+tn+fn
-        recall = round(tp / float(tp+fn), 4)
-        filtered = round(float(tn) / total, 4)
+        try:
+            recall = round(tp / float(tp+fn), 4)
+        except:
+            recall = -1
+        try:
+            filtered = round(float(tn) / total, 4)
+        except:
+            filtered = -1
 
         myfile.write("Recall: \n")
         myfile.write(str(recall))
