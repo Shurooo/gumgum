@@ -48,6 +48,7 @@ def get_data(ratio, sampling):
         with open(addr_in, "r") as file_in:
             X = smio.load_sparse_csr(file_in)
             data.extend(X)
+    data = np.array(data)
 
     n = 30000
     if sampling == "Over":
