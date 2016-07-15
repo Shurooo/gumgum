@@ -2,7 +2,7 @@ from imblearn.over_sampling import SMOTE
 import numpy as np
 import time
 from sklearn.metrics import make_scorer, fbeta_score
-from sklearn.naive_bayes import MultinomialNB
+from sklearn.naive_bayes import BernoulliNB
 from sklearn import metrics, grid_search
 from scipy.sparse import csr_matrix
 
@@ -77,7 +77,7 @@ def lm(data):
 
         gum_score = make_scorer(fbeta_score, beta = 10)  #using f1 score
         #gum_score = make_scorer(recall_score, beta = 12)  #using recall score
-        clf = grid_search.GridSearchCV(MultinomialNB(), parameters, cv=3, scoring=gum_score)
+        clf = grid_search.GridSearchCV(BernoulliNB(), parameters, cv=3, scoring=gum_score)
 
         start = time.time()
         print "fitting Multinomial NBs"
@@ -116,4 +116,4 @@ def lm(data):
     myfile.close()
 
 # Running the model on these data
-lm(["/mnt/rips2/2016/06/04/day_samp_num.npy"])
+lm(["/mnt/rips2/2016/06/04/day_samp_bin.npy"])
