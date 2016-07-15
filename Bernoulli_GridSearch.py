@@ -15,7 +15,7 @@ __ADDR_OUT = "/home/ubuntu/Weiyi/GridSearch_Bern.txt"
 
 def get_io_addr():
     list_month = [5]
-    list_day = [i for i in range(1, 8)]
+    list_day = [i for i in range(1, 5)]
     list_io_addr = []
     root = "/home/wlu/Desktop/rips16"
     for month in list_month:
@@ -63,7 +63,7 @@ def get_data(ratio, sampling):
         y_test = y[k:]
     else:
         m = int(np.size(data, 1))
-        k = int(0.8*np.size(data, 0))
+        k = int(0.2*np.size(data, 0))
         data_test = data[k:, :]
         data = data[:k, :]
         data = US.undersample(data, ratio)
