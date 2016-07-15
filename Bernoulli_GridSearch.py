@@ -73,7 +73,7 @@ def lm(data):
         step = np.arange(0.991,1,0.001)
         for i in step:
             classes_weights.append([1-i, i])
-        parameters = {"class_prior": classes_weights}
+        parameters = {"class_prior": classes_weights, "alpha":[0.5, 1, 1.5, 2, 4, 8]}
 
         gum_score = make_scorer(fbeta_score, beta = 10)  #using f1 score
         #gum_score = make_scorer(recall_score, beta = 12)  #using recall score
