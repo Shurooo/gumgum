@@ -57,8 +57,8 @@ def lm(data):
     myfile = open("/home/ubuntu/Weiyi/GridSearch3.txt", "w")
 
     for ratio in [0.7, 0.75, 0.8, 0.85, 0.9, 0.95]:
-        myfile.write("___________________________________________________")
-        myfile.write("SMOT Ratio"+str(ratio))
+        myfile.write("\n_____________________________________________\n")
+        myfile.write("SMOT Ratio = "+str(ratio))
         myfile.write("\n")
 
         X, y, X_cv, y_cv = DataFormat(data, ratio)
@@ -113,4 +113,4 @@ def lm(data):
     myfile.close()
 
 # Running the model on these data
-lm(["/home/ubuntu/random_samples/alldata0_num.npy"])
+lm(["/mnt/rips2/2016/06/04/day_samp_num.npy"])
