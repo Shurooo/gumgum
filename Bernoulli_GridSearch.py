@@ -39,11 +39,11 @@ def GetData(data_list): ## Input Weiyi-formatted Data
 
 def DataFormat(data_list, ratio, sampling):
     Data = GetData(data_list)
-    m = int(np.size(Data,1))
     #n = int(np.size(Data,0))
     n = 30000
     k = int(0.8*n)
     if sampling == "Over":
+        m = int(np.size(Data,1))
         X = Data[:n, :m-1]
         y = Data[:n, m-1:]
         sm = SMOTE(ratio=ratio)
@@ -52,6 +52,7 @@ def DataFormat(data_list, ratio, sampling):
         y_CV = y[k:]
     else:
         Data = US.undersample(Data[:n, :], ratio)
+        m = int(np.size(Data,1))
         X_scaled = Data[:k, :m-1]
         y_scaled = Data[:k, m-1:]
         X_CV = Data[k:, :m-1]
