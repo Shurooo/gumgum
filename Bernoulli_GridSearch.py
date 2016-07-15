@@ -62,7 +62,7 @@ def DataFormat(data_list, ratio, sampling):
 def lm(data):
     myfile = open("/home/ubuntu/Weiyi/GridSearch3.txt", "w")
 
-    for ratio in [0.7 + 0.5*i for i in range(6)]:
+    for ratio in [0.7 + 0.05*i for i in range(6)]:
         sampling = "Over"
 
         myfile.write("_____________________________________________\n")
