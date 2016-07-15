@@ -3,13 +3,29 @@ import Undersampling as US
 from sklearn.utils import column_or_1d
 import numpy as np
 import time
+import os
 from sklearn.metrics import make_scorer, fbeta_score
 from sklearn.naive_bayes import BernoulliNB, MultinomialNB
 from sklearn import metrics, grid_search
 import Sparse_Matrix_IO as smio
 
 
-__ADDR_IN = "/mnt/rips2/2016/05/01/day_samp_bin.npy"
+__ADDR_OUT = "/home/ubuntu/Weiyi/GridSearch_Bern.txt"
+
+
+def get_io_addr():
+    list_month = [5]
+    list_day = [i for i in range(1, 8)]
+    list_io_addr = []
+    root = "/home/wlu/Desktop/rips16"
+    for month in list_month:
+        for day in list_day:
+            io_addr = os.path.join(root,
+                                   str(month).rjust(2, "0"),
+                                   str(day).rjust(2, "0"))
+            addr_in = os.path.join(io_addr, "day_samp_bin.npy")
+            list_io_addr.append(addr_in)
+    return list_io_addr
 
 
 def J_score(clf, X, y):
@@ -26,8 +42,13 @@ def J_score(clf, X, y):
 
 
 def get_data(ratio, sampling):
-    with open(__ADDR_IN, "r") as file_in:
-        data = smio.load_sparse_csr(file_in)
+    list_io_addr = get_io_addr()
+    data = []
+    for addr_in in list_io_addr:
+        with open(addr_in, "r") as file_in:
+            X = smio.load_sparse_csr(file_in)
+            data.extend(X)
+
     if sampling == "Over":
         n = 30000
         m = int(np.size(data, 1))
@@ -42,10 +63,11 @@ def get_data(ratio, sampling):
         y_test = y[k:]
     else:
         data = US.undersample(data, ratio)
+        n = min(30000, np.size(data, 0))
         m = int(np.size(data, 1))
         k = int(0.8*np.size(data, 0))
-        X = data[:, :m-1]
-        y = data[:, m-1:]
+        X = data[:n, :m-1]
+        y = data[:n, m-1:]
         X_train = X[:k, :]
         y_train = y[:k]
         X_test = X[k:, :]
@@ -54,16 +76,16 @@ def get_data(ratio, sampling):
 
 
 def lm():
-    myfile = open("/home/ubuntu/Weiyi/GridSearch_Bern.txt", "w")
+    myfile = open(__ADDR_OUT, "w")
 
-    for ratio in [0.5]:
+    for ratio in [0.1+0.1*i for i in range(9)]:
         sampling = "Under"
 
         myfile.write("_____________________________________________\n")
         myfile.write(sampling+"Sampling Ratio = "+str(ratio))
         myfile.write("\n")
 
-        X, y, X_cv, y_cv = get_data(ratio, sampling)
+        X, y, X_test, y_test = get_data(ratio, sampling)
         classes_weights = []
         step = np.arange(0.5, 0.91, 0.1)
         for i in step:
@@ -91,10 +113,10 @@ def lm():
 
         start = time.time()
         print "predicting"
-        y_pred = clf.predict(X_cv)
+        y_pred = clf.predict(X_test)
         elapsed2 = time.time()-start
 
-        confusion_matrix = metrics.confusion_matrix(y_cv, y_pred)
+        confusion_matrix = metrics.confusion_matrix(y_test, y_pred)
         tp = confusion_matrix[1, 1]
         fp = confusion_matrix[0, 1]
         tn = confusion_matrix[0, 0]

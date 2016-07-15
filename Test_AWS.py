@@ -3,6 +3,7 @@ from sklearn.utils import column_or_1d
 import Undersampling as US
 import Sparse_Matrix_IO as smio
 from sklearn.naive_bayes import BernoulliNB
+from sklearn import metrics
 import numpy as np
 
 
@@ -37,6 +38,31 @@ def get_data(ratio, sampling):
     return X_train, y_train, X_test, y_test
 
 
-X_train, y_train, X_test, y_test = get_data(0.5, "Under")
+X_train, y_train, X_test, y_test = get_data(0.9, "Under")
 clf = BernoulliNB()
 clf.fit(X_train, y_train.ravel())
+
+y_pred = clf.predict(X_test)
+
+confusion_matrix = metrics.confusion_matrix(y_test, y_pred)
+
+print confusion_matrix
+
+train_nonzero = np.count_nonzero(y_train)
+test_nonzero = np.count_nonzero(y_test)
+print "Count for nonzeros: ", train_nonzero, test_nonzero
+
+tp = confusion_matrix[1, 1]
+fp = confusion_matrix[0, 1]
+tn = confusion_matrix[0, 0]
+fn = confusion_matrix[1, 0]
+total = tp+fp+tn+fn
+try:
+    recall = round(tp / float(tp+fn), 4)
+except:
+    recall = -1
+try:
+    filtered = round(float(tn) / total, 4)
+except:
+    filtered = -1
+
