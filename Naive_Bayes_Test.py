@@ -10,8 +10,8 @@ import csv
 import Sparse_Matrix_IO as smio
 
 
-__SAVE_MODEL = True
-__LOAD_MODEL = True 
+__SAVE_MODEL = False
+__LOAD_MODEL = False 
 
 __MODEL = ["Bern", "Multi"]
 __TRAIN_TEST_MODE = ["Next_day", "Next_week"]
