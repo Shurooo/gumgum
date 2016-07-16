@@ -40,7 +40,7 @@ def get_data(ratio, sampling):
         y_test = data_test[:, m-1:].ravel()
     return X_train, y_train, X_test, y_test
 
-
+print "test ssh connection"
 X_train, y_train, X_test, y_test = get_data(0.9, "Under")
 clf = BernoulliNB()
 clf.fit(X_train, y_train.ravel())
