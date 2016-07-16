@@ -10,12 +10,12 @@ from sklearn import metrics, grid_search
 import Sparse_Matrix_IO as smio
 
 
-__ADDR_OUT = "/home/ubuntu/Weiyi/GridSearch_Bern.txt"
+__ADDR_OUT = "/home/ubuntu/Weiyi/GridSearch_Bern_06.txt"
 
 
 def get_io_addr():
-    list_month = [5]
-    list_day = [i for i in range(1, 5)]
+    list_month = [6]
+    list_day = [i for i in range(4, 7)]
     list_io_addr = []
     root = "/mnt/rips2/2016"
     for month in list_month:
@@ -81,7 +81,7 @@ def get_data(ratio, sampling):
 def lm():
     myfile = open(__ADDR_OUT, "w")
 
-    for ratio in [0.5]:
+    for ratio in [0.01 + 0.01*i for i in range(5)]:
         sampling = "Under"
 
         myfile.write("_____________________________________________\n")
