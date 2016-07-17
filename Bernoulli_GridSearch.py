@@ -10,12 +10,12 @@ from sklearn import metrics, grid_search
 import Sparse_Matrix_IO as smio
 
 
-__ADDR_OUT = "/home/ubuntu/Weiyi/GridSearch_Bern_06.txt"
+__ADDR_OUT = "/home/ubuntu/Weiyi/GridSearch_Bern_66.txt"
 
 
 def get_io_addr():
-    list_month = [5]
-    list_day = [i for i in range(1, 2)]
+    list_month = [6]
+    list_day = [i for i in range(4, 5)]
     list_io_addr = []
     root = "/mnt/rips2/2016"
     for month in list_month:
