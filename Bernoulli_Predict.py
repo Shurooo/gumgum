@@ -22,13 +22,13 @@ __DATA_FROM = 2
 # __TEST_DATA = [["all"], [5]]
 
 # Data Format = [[Month], [Day], [Hour]]
-__TRAIN_DATA = [[5], [1]]
-__TEST_DATA =  [[5], [2]]
+__TRAIN_DATA = [[6], [19]]
+__TEST_DATA =  [[6], [20]]
 
 
 def get_io_addr_random_sample(prefix, suffix):
     list_io_addr = []
-    root = "/home/ubuntu/random_samples"
+    root = "/home/wlu/Desktop/random_samples"
     for i in prefix:
         for j in suffix:
             file_name = i+"data"+str(j)
@@ -66,7 +66,7 @@ def train(cutoffs):
         list_io_addr = get_io_addr(__TRAIN_DATA[0], __TRAIN_DATA[1])
     else:
         list_io_addr = get_io_addr_random_sample(__TRAIN_DATA[0], __TRAIN_DATA[1])
-    clf = BernoulliNB(class_prior=[0.01, 0.99])
+    clf = BernoulliNB(class_prior=[0.5, 0.5])
 
     for i in range(len(list_io_addr)):
         path_in = list_io_addr[i]
@@ -83,7 +83,7 @@ def train(cutoffs):
         y_train = X[:, vector_len-1]
         print "Done"
 
-        sm = SMOTE(ratio=0.95)
+        sm = SMOTE(ratio=0.993)
         X_train_sm, y_train_sm = sm.fit_sample(X_train, y_train)
 
         print "Fitting Model......"

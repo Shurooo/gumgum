@@ -15,8 +15,12 @@ __LOAD_MODEL = False
 
 __MODEL = ["Bern"]
 __TRAIN_TEST_MODE = ["Next_day", "Next_week"]
-__ON_OFF_LINE = ["Online", "Offline"]
-__SAMPLING_METHOD = ["Under", "Over", "None"]
+__ON_OFF_LINE = ["Online"]
+__SAMPLING_METHOD = ["Over"]
+
+__FEATURES = ["hour", "day", "country", "margin", "tmax", "bkc", "site_typeid", "site_cat", "browser_type",
+             "bidder_id", "vertical_id", "bid_floor", "format", "product", "banner", "response"]
+__FEATURES_TO_DROP = ["hour"]
 
 __RATIO_UNDER = 0.3
 __RATIO_OVER = 0.95
@@ -24,6 +28,16 @@ __RATIO_OVER = 0.95
 # Date Format = [(Month, Day)]
 __DATA_MAY = [(5, i) for i in range(1, 8)]
 __DATA_JUNE = [(6, i) for i in range(4, 26)]
+
+
+def discard_vars(X, cutoffs):
+    X_new = []
+    for line in X:
+        new_line = []
+        for i in range(0, len(cutoffs), 2):
+            new_line.extend(line[cutoffs[i]:cutoffs[i+1]])
+        X_new.append(new_line)
+    return np.array(X_new)
 
 
 def format_addr(dates, mode):
@@ -62,11 +76,15 @@ def get_file_name(model):
         return "day_samp_num.npy"
 
 
-def train(addr_train, clf, model, sampling, onoff_line):
+def train(addr_train, clf, model, sampling, onoff_line, cutoffs):
     file_name = get_file_name(model)
     path_in = os.path.join(addr_train, file_name)
     with open(path_in, "r") as file_in:
         X = smio.load_sparse_csr(file_in)
+
+    if len(cutoffs) > 0:
+        print "Discarding selected features......"
+        X = discard_vars(X, cutoffs)
 
     vector_len = len(X[0])
     X_train = X[:, 0:vector_len-1]
@@ -95,11 +113,16 @@ def train(addr_train, clf, model, sampling, onoff_line):
     return clf
 
 
-def test(addr_test, clf, model):
+def test(addr_test, clf, model, cutoffs):
     file_name = get_file_name(model)
     path_in = os.path.join(addr_test, file_name)
     with open(path_in, "r") as file_in:
         X = smio.load_sparse_csr(file_in)
+
+    if len(cutoffs) > 0:
+        print "Discarding selected features......"
+        X = discard_vars(X, cutoffs)
+
     vector_len = len(X[0])
     X_test = X[:, 0:vector_len-1]
     y_test = X[:, vector_len-1]
@@ -116,6 +139,53 @@ def test(addr_test, clf, model):
     recall = round(tp / float(tp+fn), 4)
     filtered = round(float(tn+fn) / total, 4)
     return [tn, fp, fn, tp, recall, filtered]
+
+
+def get_feature_indices():
+    get_feature_length = {
+        "hour": 24,
+        "day": 7,
+        "country": 193,
+        "margin": 5,
+        "tmax": 4,
+        "bkc": 1,
+        "site_typeid": 3,
+        "site_cat": 26,
+        "browser_type": 9,
+        "bidder_id": 35,
+        "vertical_id": 16,
+        "bid_floor": 6,
+        "format": 20,
+        "product": 6,
+        "banner": 5,
+        "response": 1
+    }
+    feature_indices = {}
+    begin = 0
+    end = 0
+    for item in __FEATURES:
+        length = get_feature_length[item]
+        end += length
+        feature_indices.update({item:(begin, end)})
+        begin += length
+    return feature_indices, end
+
+
+def get_cutoffs():
+    feature_indices, total_length = get_feature_indices()
+    cutoffs = [0, total_length]
+    for item in __FEATURES_TO_DROP:
+        indices = feature_indices[item]
+        cutoffs.append(indices[0])
+        cutoffs.append(indices[1])
+
+    return sorted(cutoffs)
+
+
+if len(__FEATURES_TO_DROP) > 0:
+    cutoffs = get_cutoffs()
+else:
+    cutoffs = []
 
 
 def get_clf(model, class_weight):
@@ -183,16 +253,21 @@ with open("/home/ubuntu/Weiyi/report.csv", "w") as file_out:
                                     print ">>>>> Error: Model cannot be loaded"
                                     model_loaded = False
 
+                            if len(__FEATURES_TO_DROP) > 0:
+                                cutoffs = get_cutoffs()
+                            else:
+                                cutoffs = []
+
                             if not model_loaded:
                                 print "\n>>>>> Start Training on {}".format(addr_train)
                                 start = time.time()
-                                clf = train(addr_train, clf, model, sampling, onoff_line)
+                                clf = train(addr_train, clf, model, sampling, onoff_line, cutoffs)
                                 print ">>>>> Training completed in {} seconds".format(round(time.time()-start, 2))
 
                             addr_test = pair[1]
                             print "\n>>>>> Start Testing on {}".format(addr_test)
                             start = time.time()
-                            stats = test(addr_test, clf, model)
+                            stats = test(addr_test, clf, model, cutoffs)
                             print ">>>>> Testing completed in {} seconds".format(round(time.time()-start, 2))
 
                             result_final.extend(stats)

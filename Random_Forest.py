@@ -10,8 +10,8 @@ import Sparse_Matrix_IO
 
 
 # Data Format = [[Month], [Day], [Hour]]
-path_train = "/home/wlu/Desktop/random_samples/day_samp_0501_num.npy"
-path_test = "/home/wlu/Desktop/random_samples/day_samp_0502_num.npy"
+path_train = "/home/wlu/Desktop/random_samples/day_samp_0622_num.npy"
+path_test = "/home/wlu/Desktop/random_samples/day_samp_0623_num.npy"
 
 
 def train():
