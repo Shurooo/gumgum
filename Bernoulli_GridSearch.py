@@ -14,8 +14,8 @@ __ADDR_OUT = "/home/ubuntu/Weiyi/GridSearch_Bern_66.txt"
 
 
 def get_io_addr():
-    list_month = [6]
-    list_day = [i for i in range(4, 5)]
+    list_month = [5]
+    list_day = [i for i in range(1, 2)]
     list_io_addr = []
     root = "/mnt/rips2/2016"
     for month in list_month:
@@ -91,7 +91,7 @@ def lm():
     myfile = open(__ADDR_OUT, "w")
 
     for ratio in [-1]:
-        sampling = "None"
+        sampling = "Over"
 
         myfile.write("_____________________________________________\n")
         myfile.write(sampling+"Sampling Ratio = "+str(ratio))
@@ -99,10 +99,7 @@ def lm():
 
         X, y, X_test, y_test = get_data(ratio, sampling)
         classes_weights = []
-        step = np.arange(0.5, 0.91, 0.1)
-        for i in step:
-            classes_weights.append([1-i, i])
-        step = np.arange(0.91, 0.991, 0.01)
+        step = np.arange(0.9, 0.991, 0.01)
         for i in step:
             classes_weights.append([1-i, i])
         step = np.arange(0.991, 1, 0.001)
@@ -115,7 +112,7 @@ def lm():
         clf = grid_search.GridSearchCV(BernoulliNB(), parameters, cv=3, scoring=J_score)
 
         start = time.time()
-        print "fitting Multinomial NBs"
+        print "fitting Bernoulli NB"
         clf.fit(X, y.ravel())
         elapsed1 = time.time()-start
 

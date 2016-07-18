@@ -79,7 +79,7 @@ def train(addr_train, clf, model, sampling, onoff_line):
         X = US.undersample(X, __RATIO_UNDER)
         vector_len = len(X[0])
         X_train = X[:, 0:vector_len-1]
-        y_train = X[:, vector_len-1]
+        y_train = X[:, vector_len-1].ravel()
 
     if onoff_line == "Offline":
         clf.fit(X_train, y_train)
