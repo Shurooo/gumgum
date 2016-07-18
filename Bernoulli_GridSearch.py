@@ -10,7 +10,8 @@ from sklearn import metrics, grid_search
 import Sparse_Matrix_IO as smio
 
 
-__ADDR_OUT = "/home/ubuntu/Weiyi/GridSearch_Bern_66.txt"
+__ADDR_OUT = "/home/ubuntu/Weiyi/GridSearch_Bern.txt"
+# __ADDR_OUT = "/home/wlu/Desktop/GridSearch_Bern.txt"
 
 
 def get_io_addr():
@@ -90,7 +91,7 @@ def get_data(ratio, sampling):
 def lm():
     myfile = open(__ADDR_OUT, "w")
 
-    for ratio in [-1]:
+    for ratio in [0.75 + 0.01*i for i in range(11)]:
         sampling = "Over"
 
         myfile.write("_____________________________________________\n")
