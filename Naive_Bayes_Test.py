@@ -20,7 +20,7 @@ __SAMPLING_METHOD = ["Over"]
 
 __FEATURES = ["hour", "day", "country", "margin", "tmax", "bkc", "site_typeid", "site_cat", "browser_type",
              "bidder_id", "vertical_id", "bid_floor", "format", "product", "banner", "response"]
-__FEATURES_TO_DROP = ["hour"]
+__FEATURES_TO_DROP = ["day"]
 
 __RATIO_UNDER = 0.3
 __RATIO_OVER = 0.95
