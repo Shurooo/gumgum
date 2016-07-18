@@ -10,20 +10,23 @@ import csv
 import Sparse_Matrix_IO as smio
 
 
-__SAVE_MODEL = True
+__SAVE_MODEL = False
 __LOAD_MODEL = False 
 
 __MODEL = ["Bern"]
 __TRAIN_TEST_MODE = ["Next_day", "Next_week"]
 __ON_OFF_LINE = ["Online"]
-__SAMPLING_METHOD = ["Over"]
+__SAMPLING_METHOD = ["Under"]
 
 __FEATURES = ["hour", "day", "country", "margin", "tmax", "bkc", "site_typeid", "site_cat", "browser_type",
              "bidder_id", "vertical_id", "bid_floor", "format", "product", "banner", "response"]
-__FEATURES_TO_DROP = ["day"]
+__FEATURES_TO_DROP = []
 
-__RATIO_UNDER = 0.3
 __RATIO_OVER = 0.95
+__RATIO_UNDER = 0.3
+__WEIGHT_NONE = [0.05, 0.95]
+__WEIGHT_OVER = [0.01, 0.99]
+__WEIGHT_UNDER = [0.05, 0.95]
 
 # Date Format = [(Month, Day)]
 __DATA_MAY = [(5, i) for i in range(1, 8)]
@@ -197,15 +200,15 @@ def get_clf(model, class_weight):
 
 def init_clf(model, sampling):
     class_weight_options = {
-        "None":[0.05, 0.95],
-        "Over":[0.01, 0.99],
-        "Under":[0.01, 0.99]
+        "None": __WEIGHT_NONE,
+        "Over": __WEIGHT_OVER,
+        "Under": __WEIGHT_UNDER
     }
     clf = get_clf(model, class_weight_options[sampling])
     param_options = {
-        "None": (clf, "cp=[0.05 0.95]"),
-        "Over": (clf, "cp=[0.01 0.99]; ratio={}".format(__RATIO_OVER)),
-        "Under": (clf, "cp=[0.01 0.99]; ratio={}".format(__RATIO_UNDER))
+        "None": (clf, "cp={}".format(str(__WEIGHT_NONE).replace(",", ""))),
+        "Over": (clf, "cp={}; ratio={}".format(str(__WEIGHT_OVER).replace(",", ""), __RATIO_OVER)),
+        "Under": (clf, "cp={}; ratio={}".format(str(__WEIGHT_UNDER).replace(",", ""), __RATIO_UNDER))
     }
     return param_options[sampling]
 
