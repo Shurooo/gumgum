@@ -18,8 +18,8 @@ __TRAIN_TEST_MODE = ["Next_day", "Next_week"]
 __ON_OFF_LINE = ["Online", "Offline"]
 __SAMPLING_METHOD = ["Under", "Over", "None"]
 
-__RATIO_UNDER = 0.32
-__RATIO_OVER = 0.83
+__RATIO_UNDER = 0.3
+__RATIO_OVER = 0.95
 
 # Date Format = [(Month, Day)]
 __DATA_MAY = [(5, i) for i in range(1, 8)]
@@ -127,15 +127,15 @@ def get_clf(model, class_weight):
 
 def init_clf(model, sampling):
     class_weight_options = {
-        "None":[0.004, 0.996],
-        "Over":[0.005, 0.995],
-        "Under":[0.008, 0.992]
+        "None":[0.05, 0.95],
+        "Over":[0.01, 0.99],
+        "Under":[0.01, 0.99]
     }
     clf = get_clf(model, class_weight_options[sampling])
     param_options = {
-        "None": (clf, "cp=[0.004 0.996]"),
-        "Over": (clf, "cp=[0.005 0.995]; ratio={}".format(__RATIO_OVER)),
-        "Under": (clf, "cp=[0.008 0.992]; ratio={}".format(__RATIO_UNDER))
+        "None": (clf, "cp=[0.05 0.95]"),
+        "Over": (clf, "cp=[0.01 0.99]; ratio={}".format(__RATIO_OVER)),
+        "Under": (clf, "cp=[0.01 0.99]; ratio={}".format(__RATIO_UNDER))
     }
     return param_options[sampling]
 
