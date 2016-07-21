@@ -1,4 +1,5 @@
 import os
+import pickle
 import numpy as np
 import time
 from sklearn.naive_bayes import BernoulliNB
@@ -7,30 +8,73 @@ from sklearn import metrics
 from imblearn.over_sampling import SMOTE
 from imblearn.under_sampling import NearMiss
 import Sparse_Matrix_IO
+import multiprocessing
 
+
+__SAVE_MODEL = False
+__ROOT_MODEL = "/home/ubuntu/Weiyi/model_random_forest.p"
 
 # Data Format = [[Month], [Day], [Hour]]
-path_train = "/home/wlu/Desktop/random_samples/day_samp_0622_num.npy"
-path_test = "/home/wlu/Desktop/random_samples/day_samp_0623_num.npy"
+path_train = "/home/wlu/Desktop/random_samples/alldata1_num.npy"
+path_test = "/home/wlu/Desktop/random_samples/alldata2_num.npy"
+
+# Data Format = [[Prefix], [Suffix]]
+# __TRAIN_DATA = [["all"], [i for i in range(5)]]
+# __TEST_DATA = [["all"], [5]]
+
+# Data Format = [[Month], [Day], [Hour]]
+__TRAIN_DATA = [[6], [19]]
+__TEST_DATA =  [[6], [20]]
+
+
+def get_io_addr(data_in):
+    list_io_addr = []
+    if str(data_in[0]).isdigit():
+        root = "/home/wlu/Desktop/rips16"
+        list_month = data_in[0]
+        list_day = data_in[1]
+        for month in list_month:
+            for day in list_day:
+                io_addr = os.path.join(root,
+                                       str(month).rjust(2, "0"),
+                                       str(day).rjust(2, "0"))
+                addr_in = os.path.join(io_addr, "day_samp_bin.npy")
+                list_io_addr.append(addr_in)
+    else:
+        root = "/home/wlu/Desktop/random_samples"
+        list_prefix = data_in[0]
+        list_suffix = data_in[1]
+        for prefix in list_prefix:
+            for suffix in list_suffix:
+                file_name = prefix+"data"+str(suffix)
+                addr_in = os.path.join(root, file_name+"_bin.npy")
+                list_io_addr.append(addr_in)
+    return list_io_addr
 
 
 def train():
     print "\n>>>>> Start Training on {}".format(path_train)
-    clf = RandomForestClassifier(n_estimators=70, max_features=4, max_depth=None, min_samples_split=1, n_jobs=-1, random_state=0, class_weight={0:0.001, 1:0.999})
+    clf = RandomForestClassifier(n_estimators=25, max_features=6, warm_start=True, max_depth=None, min_samples_split=1, n_jobs=-1, random_state=0, class_weight={0:0.01, 1:0.99})
+    list_io_addr = get_io_addr(__TRAIN_DATA)
 
-    with open(path_train, "r") as file_in:
-        X = Sparse_Matrix_IO.load_sparse_csr(file_in)
+    for path_in in list_io_addr:
+        with open(path_in, "r") as file_in:
+            X = Sparse_Matrix_IO.load_sparse_csr(file_in)
 
-    vector_len = len(X[0])
-    X_train = X[:, 0:vector_len-1]
-    y_train = X[:, vector_len-1]
+        vector_len = len(X[0])
+        X_train = X[:, 0:vector_len-1]
+        y_train = X[:, vector_len-1]
 
-    sm = SMOTE(ratio=0.999)
-    X_train, y_train = sm.fit_sample(X_train, y_train)
+        sm = SMOTE(ratio=0.95)
+        X_train, y_train = sm.fit_sample(X_train, y_train)
 
-    print "Fitting Model......"
-    clf.fit(X_train, y_train)
-    print "Done"
+        print "Fitting Model......"
+        clf.fit(X_train, y_train)
+        print "Done"
+
+    if __SAVE_MODEL:
+        with open(__ROOT_MODEL, "w") as file_out:
+            pickle.dump(clf, file_out)
 
     return clf
 
@@ -42,28 +86,47 @@ def thres(item, alpha):
         return 1
 
 
-def test(clf):
-    print "\n>>>>> Start Testing".format(path_test)
+def crawl(args):
+    addr_in = args[0]
+    clf = args[1]
 
-    confusion_matrix = [0, 0, 0, 0]
-
-    with open(path_test, "r") as file_in:
+    print "Processing testing set from {}".format(addr_in)
+    with open(addr_in, "r") as file_in:
         X = Sparse_Matrix_IO.load_sparse_csr(file_in)
 
     vector_len = len(X[0])
     X_test = X[:, 0:vector_len-1]
     y_test = X[:, vector_len-1]
 
-    print "Making predictions"
-    prediction_proba = clf.predict_proba(X_test)
-    alpha = 0.9999
-    prediction = [thres(item[0], alpha) for item in prediction_proba]
-    result = metrics.confusion_matrix(y_test, prediction)
+    # prediction_proba = clf.predict_proba(X_test)
+    # alpha = 0.9999
+    # prediction = [thres(item[0], alpha) for item in prediction_proba]
+    prediction = clf.predict(X_test)
 
-    confusion_matrix[0] += result[1, 1]   # tp
-    confusion_matrix[1] += result[0, 1]   # fp
-    confusion_matrix[2] += result[0, 0]   # tn
-    confusion_matrix[3] += result[1, 0]   # fn
+    return metrics.confusion_matrix(y_test, prediction)
+
+
+def test(clf):
+    print "\n========== Start Testing =========="
+    print "\nLoad Model......"
+    if __SAVE_MODEL:
+        with open(__ROOT_MODEL, "r") as file_in:
+            clf = pickle.load(file_in)
+    print "Done\n"
+
+    list_io_addr = get_io_addr(__TEST_DATA)
+
+    confusion_matrix = [0, 0, 0, 0]
+    args = []
+    for i in range(len(list_io_addr)):
+        args.append((list_io_addr[i], clf))
+
+    p = multiprocessing.Pool(4)
+    for result in p.imap(crawl, args):
+        confusion_matrix[0] += result[1, 1]   # tp
+        confusion_matrix[1] += result[0, 1]   # fp
+        confusion_matrix[2] += result[0, 0]   # tn
+        confusion_matrix[3] += result[1, 0]   # fn
     print "Done"
 
     print "\nGenerate statistics"

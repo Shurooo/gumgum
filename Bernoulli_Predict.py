@@ -16,7 +16,6 @@ __FEATURES = ["hour", "day", "country", "margin", "tmax", "bkc", "site_typeid", 
              "bidder_id", "vertical_id", "bid_floor", "format", "product", "banner", "response"]
 __FEATURES_TO_DROP = []
 
-__DATA_FROM = 2
 # Data Format = [[Prefix], [Suffix]]
 # __TRAIN_DATA = [["all"], [i for i in range(5)]]
 # __TEST_DATA = [["all"], [5]]
@@ -26,27 +25,28 @@ __TRAIN_DATA = [[6], [19]]
 __TEST_DATA =  [[6], [20]]
 
 
-def get_io_addr_random_sample(prefix, suffix):
+def get_io_addr(data_in):
     list_io_addr = []
-    root = "/home/wlu/Desktop/random_samples"
-    for i in prefix:
-        for j in suffix:
-            file_name = i+"data"+str(j)
-            addr_in = os.path.join(root, file_name+"_bin.npy")
-            list_io_addr.append(addr_in)
-    return list_io_addr
-
-
-def get_io_addr(list_month, list_day):
-    list_io_addr = []
-    root = "/home/wlu/Desktop/rips16"
-    for month in list_month:
-        for day in list_day:
-            io_addr = os.path.join(root,
-                                   str(month).rjust(2, "0"),
-                                   str(day).rjust(2, "0"))
-            addr_in = os.path.join(io_addr, "day_samp_bin.npy")
-            list_io_addr.append(addr_in)
+    if str(data_in[0]).isdigit():
+        root = "/home/wlu/Desktop/rips16"
+        list_month = data_in[0]
+        list_day = data_in[1]
+        for month in list_month:
+            for day in list_day:
+                io_addr = os.path.join(root,
+                                       str(month).rjust(2, "0"),
+                                       str(day).rjust(2, "0"))
+                addr_in = os.path.join(io_addr, "day_samp_bin.npy")
+                list_io_addr.append(addr_in)
+    else:
+        root = "/home/wlu/Desktop/random_samples"
+        list_prefix = data_in[0]
+        list_suffix = data_in[1]
+        for prefix in list_prefix:
+            for suffix in list_suffix:
+                file_name = prefix+"data"+str(suffix)
+                addr_in = os.path.join(root, file_name+"_bin.npy")
+                list_io_addr.append(addr_in)
     return list_io_addr
 
 
@@ -62,10 +62,7 @@ def discard_vars(X, cutoffs):
 
 def train(cutoffs):
     print "\n========== Start Training =========="
-    if __DATA_FROM == 2:
-        list_io_addr = get_io_addr(__TRAIN_DATA[0], __TRAIN_DATA[1])
-    else:
-        list_io_addr = get_io_addr_random_sample(__TRAIN_DATA[0], __TRAIN_DATA[1])
+    list_io_addr = get_io_addr(__TRAIN_DATA)
     clf = BernoulliNB(class_prior=[0.5, 0.5])
 
     for i in range(len(list_io_addr)):
@@ -126,10 +123,7 @@ def test(cutoffs, clf):
             clf = pickle.load(file_in)
     print "Done\n"
 
-    if __DATA_FROM == 2:
-        list_io_addr = get_io_addr(__TRAIN_DATA[0], __TRAIN_DATA[1])
-    else:
-        list_io_addr = get_io_addr_random_sample(__TRAIN_DATA[0], __TRAIN_DATA[1])
+    list_io_addr = get_io_addr(__TEST_DATA)
 
     confusion_matrix = [0, 0, 0, 0]
     args = []
