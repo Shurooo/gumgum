@@ -19,8 +19,8 @@ __ROOT_MODEL = "/home/ubuntu/Weiyi/model_random_forest.p"
 # __TEST_DATA = [["all"], [5]]
 
 # Data Format = [[Month], [Day], [Hour]]
-__TRAIN_DATA = [[5], [1]]
-__TEST_DATA =  [[5], [2]]
+__TRAIN_DATA = [[6], [19]]
+__TEST_DATA =  [[6], [20]]
 
 
 def get_io_addr(data_in):
@@ -49,7 +49,7 @@ def get_io_addr(data_in):
 
 
 def train():
-    clf = RandomForestClassifier(n_estimators=100, max_features=5, warm_start=True, max_depth=None, min_samples_split=1, n_jobs=-1, random_state=0, class_weight={0:1, 1:5000})
+    clf = RandomForestClassifier(n_estimators=100, max_features=5, warm_start=True, max_depth=None, min_samples_split=1, n_jobs=-1, random_state=0, class_weight={0:1, 1:5000}, criterion="entropy")
     list_io_addr = get_io_addr(__TRAIN_DATA)
 
     for path_in in list_io_addr:
