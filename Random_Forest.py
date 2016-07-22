@@ -25,7 +25,7 @@ __TEST_DATA =  [[6], [20]]
 
 def get_io_addr(data_in):
     list_io_addr = []
-    if str(data_in[0]).isdigit():
+    if str(data_in[0][0]).isdigit():
         root = "/mnt/rips2/2016"
         list_month = data_in[0]
         list_day = data_in[1]
@@ -49,7 +49,7 @@ def get_io_addr(data_in):
 
 
 def train():
-    clf = RandomForestClassifier(n_estimators=25, max_features=6, warm_start=True, max_depth=None, min_samples_split=1, n_jobs=-1, random_state=0, class_weight={0:1, 1:300})
+    clf = RandomForestClassifier(n_estimators=80, max_features=10, warm_start=True, max_depth=None, min_samples_split=1, n_jobs=-1, random_state=0, class_weight={0:1, 1:1000})
     list_io_addr = get_io_addr(__TRAIN_DATA)
 
     for path_in in list_io_addr:
