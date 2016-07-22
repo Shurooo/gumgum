@@ -11,12 +11,8 @@ import Sparse_Matrix_IO
 import multiprocessing
 
 
-__SAVE_MODEL = False
+__SAVE_MODEL = True
 __ROOT_MODEL = "/home/ubuntu/Weiyi/model_random_forest.p"
-
-# Data Format = [[Month], [Day], [Hour]]
-path_train = "/home/wlu/Desktop/random_samples/alldata1_num.npy"
-path_test = "/home/wlu/Desktop/random_samples/alldata2_num.npy"
 
 # Data Format = [[Prefix], [Suffix]]
 # __TRAIN_DATA = [["all"], [i for i in range(5)]]
@@ -30,7 +26,7 @@ __TEST_DATA =  [[6], [20]]
 def get_io_addr(data_in):
     list_io_addr = []
     if str(data_in[0]).isdigit():
-        root = "/home/wlu/Desktop/rips16"
+        root = "/mnt/rips2/2016"
         list_month = data_in[0]
         list_day = data_in[1]
         for month in list_month:
@@ -41,7 +37,7 @@ def get_io_addr(data_in):
                 addr_in = os.path.join(io_addr, "day_samp_bin.npy")
                 list_io_addr.append(addr_in)
     else:
-        root = "/home/wlu/Desktop/random_samples"
+        root = "/home/ubuntu/random_samples"
         list_prefix = data_in[0]
         list_suffix = data_in[1]
         for prefix in list_prefix:
@@ -53,13 +49,13 @@ def get_io_addr(data_in):
 
 
 def train():
-    print "\n>>>>> Start Training on {}".format(path_train)
-    clf = RandomForestClassifier(n_estimators=25, max_features=6, warm_start=True, max_depth=None, min_samples_split=1, n_jobs=-1, random_state=0, class_weight={0:0.01, 1:0.99})
+    clf = RandomForestClassifier(n_estimators=25, max_features=6, warm_start=True, max_depth=None, min_samples_split=1, n_jobs=-1, random_state=0, class_weight={0:1, 1:300})
     list_io_addr = get_io_addr(__TRAIN_DATA)
 
     for path_in in list_io_addr:
         with open(path_in, "r") as file_in:
             X = Sparse_Matrix_IO.load_sparse_csr(file_in)
+        print "\n>>>>> Start Training on {}".format(path_in)
 
         vector_len = len(X[0])
         X_train = X[:, 0:vector_len-1]
