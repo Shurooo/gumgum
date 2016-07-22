@@ -66,7 +66,7 @@ def train(addr_train, clf, sampling, add_estimators):
         sm = SMOTE(ratio=0.95)
         X_train, y_train = sm.fit_sample(X_train, y_train)
     if sampling == "Under":
-        X_train, y_train = US.undersample(X, 0.3)
+        X_train, y_train = US.undersample(X, 0.1)
 
     print "Fitting Model......"
     clf.n_estimators += add_estimators
@@ -139,7 +139,7 @@ with open('/home/ubuntu/Weiyi/Reports/RF_Report.xlsx', "w") as file_out:
 
             for mode in __TRAIN_TEST_MODE:
                 if mode == "Next_week":
-                    row += 2
+                    row += 3
                     ws.write_row(row, 0, __HEADER)
                     row += 1
 
