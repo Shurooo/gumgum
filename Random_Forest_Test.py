@@ -13,12 +13,12 @@ __SAVE_MODEL = False
 __LOAD_MODEL = False
 
 __TRAIN_TEST_MODE = ["Next_day", "Next_week"]
-__ON_OFF_LINE = ["Online"]
+__ON_OFF_LINE = ["Online", "Offline"]
 __SAMPLING_METHOD = ["Over"]
 
 # Date Format = [(Month, Day)]
 __DATA_MAY = [(5, i) for i in range(1, 8)]
-__DATA_JUNE = []
+__DATA_JUNE = [(6, i) for i in range(4, 26)]
 
 __HEADER = ["Model", "Online/Offline", "Sampling", "Train", "Test", "TN", "FP", "FN", "TP", "Recall", "Filtered"]
 
