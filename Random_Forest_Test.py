@@ -55,7 +55,6 @@ def get_addr_in(mode):
 def train(addr_train, clf, sampling, add_estimators):
     with open(addr_train, "r") as file_in:
         X = smio.load_sparse_csr(file_in)
-    print "\n>>>>> Start Training on {}".format(path_in)
 
     vector_len = len(X[0])
     X_train = X[:, 0:vector_len-1]
