@@ -139,7 +139,9 @@ with open('/home/ubuntu/Weiyi/Reports/RF_Report.xlsx', "w") as file_out:
                     ws.write_row(row, 0, __HEADER)
                     row += 1
 
-                clf = RandomForestClassifier(n_estimators=init_estimators,
+                pairs_by_month = get_addr_in(mode)
+                for item in pairs_by_month:
+                    clf = RandomForestClassifier(n_estimators=init_estimators,
                                              max_features=15,
                                              min_weight_fraction_leaf=0.000025,
                                              oob_score=True,
@@ -148,8 +150,6 @@ with open('/home/ubuntu/Weiyi/Reports/RF_Report.xlsx', "w") as file_out:
                                              random_state=1514,
                                              class_weight={0:1, 1:8})
 
-                pairs_by_month = get_addr_in(mode)
-                for item in pairs_by_month:
                     train_test_pairs = item[0]
                     dates_pairs = item[1]
                     for i in range(len(train_test_pairs)):
