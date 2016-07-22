@@ -101,7 +101,7 @@ def test(addr_test, clf):
     total = tp+fp+tn+fn
     recall = round(tp / float(tp+fn), 4)
     filtered = round(float(tn+fn) / total, 4)
-    return [tn, fp, fn, tp], str(round(recall, 4)), str(round(filtered, 4))
+    return [tn, fp, fn, tp], recall, filtered
 
 
 workbook = xlsxwriter.Workbook('/home/ubuntu/Weiyi/Report/RF_Report.xlsx')
@@ -187,12 +187,12 @@ for onoff_line in __ON_OFF_LINE:
                     ws.write_row(row, 0, result_row)
 
                     if recall < 0.95:
-                        ws.write(row, col_recall, recall, abnormal_format)
+                        ws.write(row, col_recall, str(round(recall, 4)), abnormal_format)
                     else:
                         ws.write(row, col_recall, recall)
 
                     if filtered < 0.1:
-                        ws.write(row, col_filtered, filtered, abnormal_format)
+                        ws.write(row, col_filtered, str(round(filtered, 4)), abnormal_format)
                     else:
                         ws.write_row(row, col_filtered, filtered)
 
