@@ -104,7 +104,7 @@ def test(addr_test, clf):
     return [tn, fp, fn, tp], recall, filtered
 
 
-with open('/home/ubuntu/Weiyi/Report/RF_Report.xlsx', "w") as file_out:
+with open('/home/ubuntu/Weiyi/Reports/RF_Report.xlsx', "w") as file_out:
     workbook = xlsxwriter.Workbook(file_out)
     abnormal_format = workbook.add_format()
     abnormal_format.set_bg_color("red")
