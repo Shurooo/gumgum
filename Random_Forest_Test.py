@@ -14,7 +14,7 @@ __SAVE_MODEL = False
 __LOAD_MODEL = False
 
 __TRAIN_TEST_MODE = ["Next_day", "Next_week"]
-__ON_OFF_LINE = ["Online", "Offline"]
+__ON_OFF_LINE = ["Online"]
 __SAMPLING_METHOD = ["Under"]
 
 # Date Format = [(Month, Day)]
@@ -192,14 +192,14 @@ with open('/home/ubuntu/Weiyi/Reports/RF_Report.xlsx', "w") as file_out:
                         ws.write_row(row, 0, result_row)
 
                         if recall < 0.95:
-                            ws.write(row, col_recall, [recall], abnormal_format)
+                            ws.write(row, col_recall, recall, abnormal_format)
                         else:
-                            ws.write(row, col_recall, [recall])
+                            ws.write(row, col_recall, recall)
 
                         if filtered < 0.1:
-                            ws.write(row, col_filtered, [filtered], abnormal_format)
+                            ws.write(row, col_filtered, filtered, abnormal_format)
                         else:
-                            ws.write(row, col_filtered, [filtered])
+                            ws.write(row, col_filtered, filtered)
 
                         row += 1
 
