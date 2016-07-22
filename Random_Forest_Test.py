@@ -101,7 +101,7 @@ def test(addr_test, clf):
     total = tp+fp+tn+fn
     recall = round(tp / float(tp+fn), 4)
     filtered = round(float(tn+fn) / total, 4)
-    return [tn, fp, fn, tp], recall, filtered
+    return [tn, fp, fn, tp], str(round(recall, 4)), str(round(filtered, 4))
 
 
 workbook = xlsxwriter.Workbook('/home/ubuntu/Weiyi/Report/RF_Report.xlsx')
