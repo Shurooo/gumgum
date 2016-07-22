@@ -195,7 +195,7 @@ with open('/home/ubuntu/Weiyi/Reports/RF_Report.xlsx', "w") as file_out:
                         if filtered < 0.1:
                             ws.write(row, col_filtered, str(round(filtered, 4)), abnormal_format)
                         else:
-                            ws.write_row(row, col_filtered, str(round(filtered, 4)))
+                            ws.write(row, col_filtered, str(round(filtered, 4)))
 
                         row += 1
 
