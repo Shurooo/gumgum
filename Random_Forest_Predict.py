@@ -5,11 +5,12 @@ import time
 from sklearn.ensemble import RandomForestClassifier
 from sklearn import metrics
 from imblearn.over_sampling import SMOTE
+
 import Sparse_Matrix_IO
 import multiprocessing
 
 
-__SAVE_MODEL = True
+__SAVE_MODEL = False
 __ROOT_MODEL = "/home/ubuntu/Weiyi/model_random_forest.p"
 
 # Data Format = [[Prefix], [Suffix]]

@@ -47,4 +47,5 @@ def undersample(data, ratio):   # ratio is same as SMOTE ratio
     zero = sample(zero, numlines)
     new = np.vstack([one, zero])
     np.random.shuffle(new)
-    return new
+    w = np.size(new, 1)
+    return new[:, 0:w-1], new[:, w-1:].ravel()

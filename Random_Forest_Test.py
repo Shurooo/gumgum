@@ -6,6 +6,7 @@ import time
 from sklearn.ensemble import RandomForestClassifier
 from sklearn import metrics
 from imblearn.over_sampling import SMOTE
+import Undersampling as US
 import Sparse_Matrix_IO as smio
 
 
@@ -14,11 +15,12 @@ __LOAD_MODEL = False
 
 __TRAIN_TEST_MODE = ["Next_day", "Next_week"]
 __ON_OFF_LINE = ["Online", "Offline"]
-__SAMPLING_METHOD = ["Over"]
+__SAMPLING_METHOD = ["Under"]
 
 # Date Format = [(Month, Day)]
 __DATA_MAY = [(5, i) for i in range(1, 8)]
-__DATA_JUNE = [(6, i) for i in range(4, 26)]
+#__DATA_JUNE = [(6, i) for i in range(4, 26)]
+__DATA_JUNE = []
 
 __HEADER = ["Model", "Online/Offline", "Sampling", "Train", "Test", "TN", "FP", "FN", "TP", "Recall", "Filtered"]
 
@@ -63,6 +65,8 @@ def train(addr_train, clf, sampling, add_estimators):
     if sampling == "Over":
         sm = SMOTE(ratio=0.95)
         X_train, y_train = sm.fit_sample(X_train, y_train)
+    if sampling == "Under":
+        X_train, y_train = US.undersample(X, 0.3)
 
     print "Fitting Model......"
     clf.n_estimators += add_estimators
@@ -101,7 +105,7 @@ def test(addr_test, clf):
     total = tp+fp+tn+fn
     recall = round(tp / float(tp+fn), 4)
     filtered = round(float(tn+fn) / total, 4)
-    return [tn, fp, fn, tp], recall, filtered
+    return [tn, fp, fn, tp], round(recall, 4), round(filtered, 4)
 
 
 with open('/home/ubuntu/Weiyi/Reports/RF_Report.xlsx', "w") as file_out:
@@ -188,14 +192,14 @@ with open('/home/ubuntu/Weiyi/Reports/RF_Report.xlsx', "w") as file_out:
                         ws.write_row(row, 0, result_row)
 
                         if recall < 0.95:
-                            ws.write(row, col_recall, str(round(recall, 4)), abnormal_format)
+                            ws.write(row, col_recall, [recall], abnormal_format)
                         else:
-                            ws.write(row, col_recall, str(round(recall, 4)))
+                            ws.write(row, col_recall, [recall])
 
                         if filtered < 0.1:
-                            ws.write(row, col_filtered, str(round(filtered, 4)), abnormal_format)
+                            ws.write(row, col_filtered, [filtered], abnormal_format)
                         else:
-                            ws.write(row, col_filtered, str(round(filtered, 4)))
+                            ws.write(row, col_filtered, [filtered])
 
                         row += 1
 
