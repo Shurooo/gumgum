@@ -49,7 +49,7 @@ def get_io_addr(data_in):
 
 
 def train():
-    clf = RandomForestClassifier(n_estimators=50, max_features=5, max_leaf_nodes=500, warm_start=True, max_depth=None, min_samples_split=1, n_jobs=-1, random_state=0, class_weight={0:1, 1:10000})
+    clf = RandomForestClassifier(n_estimators=75, max_features=15, min_weight_fraction_leaf=0.000025, warm_start=True, max_depth=None, min_samples_split=2, n_jobs=-1, random_state=0, class_weight={0:1, 1:8})
     list_io_addr = get_io_addr(__TRAIN_DATA)
 
     for path_in in list_io_addr:
@@ -61,8 +61,8 @@ def train():
         X_train = X[:, 0:vector_len-1]
         y_train = X[:, vector_len-1]
 
-        # sm = SMOTE(ratio=0.95)
-        # X_train, y_train = sm.fit_sample(X_train, y_train)
+        sm = SMOTE(ratio=0.95)
+        X_train, y_train = sm.fit_sample(X_train, y_train)
 
         print "Fitting Model......"
         clf.fit(X_train, y_train)
