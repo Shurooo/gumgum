@@ -2,11 +2,9 @@ import os
 import pickle
 import numpy as np
 import time
-from sklearn.naive_bayes import BernoulliNB
 from sklearn.ensemble import RandomForestClassifier
 from sklearn import metrics
 from imblearn.over_sampling import SMOTE
-from imblearn.under_sampling import NearMiss
 import Sparse_Matrix_IO
 import multiprocessing
 
