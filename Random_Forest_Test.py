@@ -189,12 +189,12 @@ for onoff_line in __ON_OFF_LINE:
                     if recall < 0.95:
                         ws.write(row, col_recall, str(round(recall, 4)), abnormal_format)
                     else:
-                        ws.write(row, col_recall, recall)
+                        ws.write(row, col_recall, str(round(recall, 4)))
 
                     if filtered < 0.1:
                         ws.write(row, col_filtered, str(round(filtered, 4)), abnormal_format)
                     else:
-                        ws.write_row(row, col_filtered, filtered)
+                        ws.write_row(row, col_filtered, str(round(filtered, 4)))
 
                     row += 1
 
