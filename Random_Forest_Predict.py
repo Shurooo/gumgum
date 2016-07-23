@@ -5,7 +5,7 @@ import time
 from sklearn.ensemble import RandomForestClassifier
 from sklearn import metrics
 from imblearn.over_sampling import SMOTE
-from imblearn.under_sampling import UnderSampler
+from imblearn.under_sampling import NearMiss
 
 import Sparse_Matrix_IO
 import multiprocessing
@@ -69,8 +69,8 @@ def train():
         y_train = X[:, vector_len-1]
 
         # sm = SMOTE(ratio=0.95)
-        us = UnderSampler(ratio=0.5)
-        X_train, y_train = us.fit_sample(X_train, y_train)
+        nm = NearMiss(ratio=0.5)
+        X_train, y_train = nm.fit_sample(X_train, y_train)
 
         print "Fitting Model......"
         clf.n_estimators += 60
