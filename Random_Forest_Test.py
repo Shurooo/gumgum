@@ -19,7 +19,8 @@ __SAMPLING_RATIO = [0.5, 1, 2]
 # Date Format = [(Month, Day)]
 __DATA_MAY = [(5, i) for i in range(1, 8)]
 # __DATA_MAY = []
-__DATA_JUNE = [(6, i) for i in range(4, 26)]
+# __DATA_JUNE = [(6, i) for i in range(4, 26)]
+__DATA_JUNE = []
 
 __HEADER = ["Model", "Online/Offline", "Sampling", "Train", "Test", "TN", "FP", "FN", "TP", "Recall", "Filtered"]
 
