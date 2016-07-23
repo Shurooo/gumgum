@@ -5,6 +5,7 @@ import time
 from sklearn.ensemble import RandomForestClassifier
 from sklearn import metrics
 from imblearn.over_sampling import SMOTE
+from imblearn.under_sampling import UnderSampler
 
 import Sparse_Matrix_IO
 import multiprocessing
@@ -18,8 +19,8 @@ __ROOT_MODEL = "/home/ubuntu/Weiyi/model_random_forest.p"
 # __TEST_DATA = [["all"], [5]]
 
 # Data Format = [[Month], [Day], [Hour]]
-__TRAIN_DATA = [[5], [1, 2, 3, 4, 5]]
-__TEST_DATA =  [[5], [6]]
+__TRAIN_DATA = [[5], [1]]
+__TEST_DATA =  [[5], [2]]
 
 
 def get_io_addr(data_in):
@@ -48,7 +49,14 @@ def get_io_addr(data_in):
 
 
 def train():
-    clf = RandomForestClassifier(n_estimators=15, max_features=15, min_weight_fraction_leaf=0.000025, oob_score=True, warm_start=True, max_depth=None, min_samples_split=2, n_jobs=-1, random_state=1514, class_weight={0:1, 1:8})
+    clf = RandomForestClassifier(n_estimators=15,
+                                 max_features=15,
+                                 min_weight_fraction_leaf=0.000025,
+                                 oob_score=True,
+                                 warm_start=True,
+                                 n_jobs=-1,
+                                 random_state=1514,
+                                 class_weight={0:1, 1:8})
     list_io_addr = get_io_addr(__TRAIN_DATA)
 
     for path_in in list_io_addr:
@@ -60,8 +68,9 @@ def train():
         X_train = X[:, 0:vector_len-1]
         y_train = X[:, vector_len-1]
 
-        sm = SMOTE(ratio=0.95)
-        X_train, y_train = sm.fit_sample(X_train, y_train)
+        # sm = SMOTE(ratio=0.95)
+        us = UnderSampler(ratio=0.5)
+        X_train, y_train = us.fit_sample(X_train, y_train)
 
         print "Fitting Model......"
         clf.n_estimators += 60
