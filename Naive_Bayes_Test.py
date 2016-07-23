@@ -14,7 +14,7 @@ __LOAD_MODEL = False
 
 __TRAIN_TEST_MODE = ["Next_day"]
 __ON_OFF_LINE = ["Online"]
-__SAMPLING_RATIO = [0.5, 1, 2]
+__SAMPLING_RATIO = [0.1, 0.2, 0.3, 0.4]
 
 __WEIGHT = [0.05, 0.95]
 
