@@ -19,8 +19,8 @@ __SAMPLING_METHOD = ["Under"]
 
 # Date Format = [(Month, Day)]
 __DATA_MAY = [(5, i) for i in range(1, 8)]
-#__DATA_JUNE = [(6, i) for i in range(4, 26)]
-__DATA_JUNE = []
+# __DATA_MAY = []
+__DATA_JUNE = [(6, i) for i in range(4, 26)]
 
 __HEADER = ["Model", "Online/Offline", "Sampling", "Train", "Test", "TN", "FP", "FN", "TP", "Recall", "Filtered"]
 
@@ -66,7 +66,7 @@ def train(addr_train, clf, sampling, add_estimators):
         sm = SMOTE(ratio=0.95)
         X_train, y_train = sm.fit_sample(X_train, y_train)
     if sampling == "Under":
-        X_train, y_train = US.undersample(X, 0.1)
+        X_train, y_train = US.undersample(X, 1.2)
 
     print "Fitting Model......"
     clf.n_estimators += add_estimators

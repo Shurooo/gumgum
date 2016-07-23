@@ -19,8 +19,8 @@ __ROOT_MODEL = "/home/ubuntu/Weiyi/model_random_forest.p"
 # __TEST_DATA = [["all"], [5]]
 
 # Data Format = [[Month], [Day], [Hour]]
-__TRAIN_DATA = [[5], [1]]
-__TEST_DATA =  [[5], [2]]
+__TRAIN_DATA = [[5], [1, 2, 3, 4]]
+__TEST_DATA =  [[5], [5]]
 
 
 def get_io_addr(data_in):
@@ -69,7 +69,7 @@ def train():
         y_train = X[:, vector_len-1]
 
         # sm = SMOTE(ratio=0.95)
-        nm = NearMiss(ratio=0.5)
+        nm = NearMiss(ratio=0.3)
         X_train, y_train = nm.fit_sample(X_train, y_train)
 
         print "Fitting Model......"
