@@ -21,13 +21,13 @@ __FEATURES_TO_DROP = []
 # __TEST_DATA = [["all"], [5]]
 
 # Data Format = [[Month], [Day], [Hour]]
-__TRAIN_DATA = [[6], [19]]
-__TEST_DATA =  [[6], [20]]
+__TRAIN_DATA = [[5], [1]]
+__TEST_DATA =  [[5], [2]]
 
 
 def get_io_addr(data_in):
     list_io_addr = []
-    if str(data_in[0]).isdigit():
+    if str(data_in[0][0]).isdigit():
         root = "/home/wlu/Desktop/rips16"
         list_month = data_in[0]
         list_day = data_in[1]
@@ -63,7 +63,7 @@ def discard_vars(X, cutoffs):
 def train(cutoffs):
     print "\n========== Start Training =========="
     list_io_addr = get_io_addr(__TRAIN_DATA)
-    clf = BernoulliNB(class_prior=[0.5, 0.5])
+    clf = BernoulliNB(class_prior=[0.01, 0.99])
 
     for i in range(len(list_io_addr)):
         path_in = list_io_addr[i]
@@ -80,7 +80,7 @@ def train(cutoffs):
         y_train = X[:, vector_len-1]
         print "Done"
 
-        sm = SMOTE(ratio=0.993)
+        sm = SMOTE(ratio=0.95)
         X_train_sm, y_train_sm = sm.fit_sample(X_train, y_train)
 
         print "Fitting Model......"
