@@ -12,9 +12,10 @@ __SAVE_MODEL = False
 __ROOT_MODEL = "/home/ubuntu/Weiyi/model_05_01_classprior"
 
 # Data Format = [[Month], [Day], [Hour]]
-__TRAIN_DATA = [[6], [19]]
-__TEST_DATA = [[6], [20]]
+__TRAIN_DATA = [[5], [1]]
+__TEST_DATA = [[5], [2]]
 
+__RATIO = 3.2 
 
 def get_io_addr(data_in):
     list_io_addr = []
@@ -33,11 +34,11 @@ def get_io_addr(data_in):
 def train():
     print "\n========== Start Training =========="
     list_io_addr = get_io_addr(__TRAIN_DATA)
-    clf = BernoulliNB(class_prior=[0.01, 0.99])
+    clf = BernoulliNB(class_prior=[0.15, 0.85])
 
     for addr_in in list_io_addr:
         print "\nGenerating training set from {}".format(addr_in)
-        X_train, y_train = gd.get(addr_in, 0.2)
+        X_train, y_train = gd.get(addr_in, __RATIO)
         print "Done"
 
         print "Fitting Model......"
