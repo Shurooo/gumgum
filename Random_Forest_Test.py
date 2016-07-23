@@ -74,7 +74,7 @@ def train(addr_train, clf, sampling, add_estimators):
     print "Done"
 
     if __SAVE_MODEL:
-        model_name = "RF" + "_" + onoff_line + "_" + sampling + "_Model.p"
+        model_name = "RF_" + onoff_line + "_" + sampling + "_Model.p"
         dir_out = os.path.join(addr_train, "Random_Forest_Models")
         if not os.path.isdir(dir_out):
             os.mkdir(dir_out)
