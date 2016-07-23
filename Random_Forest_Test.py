@@ -5,8 +5,7 @@ import numpy as np
 import time
 from sklearn.ensemble import RandomForestClassifier
 from sklearn import metrics
-from imblearn.over_sampling import SMOTE
-import Undersampling as US
+import Get_Data as gd
 import Sparse_Matrix_IO as smio
 
 
@@ -15,7 +14,7 @@ __LOAD_MODEL = False
 
 __TRAIN_TEST_MODE = ["Next_day", "Next_week"]
 __ON_OFF_LINE = ["Online"]
-__SAMPLING_METHOD = ["Under"]
+__SAMPLING_RATIO = [0.5, 1, 2]
 
 # Date Format = [(Month, Day)]
 __DATA_MAY = [(5, i) for i in range(1, 8)]
@@ -34,8 +33,8 @@ def format_addr(dates, mode):
         test = dates[i+mode]
         file_train = os.path.join(str(train[0]).rjust(2, "0"), str(train[1]).rjust(2, "0"))
         file_test = os.path.join(str(test[0]).rjust(2, "0"), str(test[1]).rjust(2, "0"))
-        addr_train = os.path.join(root, file_train, "day_samp_bin.npy")
-        addr_test = os.path.join(root, file_test, "day_samp_bin.npy")
+        addr_train = os.path.join(root, file_train)
+        addr_test = os.path.join(root, file_test)
 
         train_test_pairs.append((addr_train, addr_test))
         dates_pairs.append((file_train, file_test))
@@ -54,19 +53,8 @@ def get_addr_in(mode):
     return pairs_by_month
 
 
-def train(addr_train, clf, sampling, add_estimators):
-    with open(addr_train, "r") as file_in:
-        X = smio.load_sparse_csr(file_in)
-
-    vector_len = len(X[0])
-    X_train = X[:, 0:vector_len-1]
-    y_train = X[:, vector_len-1]
-
-    if sampling == "Over":
-        sm = SMOTE(ratio=0.95)
-        X_train, y_train = sm.fit_sample(X_train, y_train)
-    if sampling == "Under":
-        X_train, y_train = US.undersample(X, 1.2)
+def train(addr_train, clf, ratio, add_estimators):
+    X_train, y_train = gd.get(addr_train, ratio)
 
     print "Fitting Model......"
     clf.n_estimators += add_estimators
@@ -74,7 +62,7 @@ def train(addr_train, clf, sampling, add_estimators):
     print "Done"
 
     if __SAVE_MODEL:
-        model_name = "RF_" + onoff_line + "_" + sampling + "_Model.p"
+        model_name = "RF_" + onoff_line + "_" + str(ratio) + "_Model.p"
         dir_out = os.path.join(addr_train, "Random_Forest_Models")
         if not os.path.isdir(dir_out):
             os.mkdir(dir_out)
@@ -86,7 +74,7 @@ def train(addr_train, clf, sampling, add_estimators):
 
 
 def test(addr_test, clf):
-    path_in = os.path.join(addr_test, addr_test)
+    path_in = os.path.join(addr_test, "day_samp_bin.npy")
     with open(path_in, "r") as file_in:
         X = smio.load_sparse_csr(file_in)
 
@@ -125,14 +113,10 @@ with open('/home/ubuntu/Weiyi/Reports/RF_Report.xlsx', "w") as file_out:
             init_estimators = 75
             add_estimators = 0
 
-        for sampling in __SAMPLING_METHOD:
-            if sampling == "Over":
-                ratio = 0.95
-            else:
-                ratio = 0.3
-            result = ["RF", onoff_line, sampling]
+        for ratio in __SAMPLING_RATIO:
+            result = ["RF", onoff_line, ratio]
 
-            ws = workbook.add_worksheet(onoff_line+"-"+sampling)
+            ws = workbook.add_worksheet(onoff_line+"-"+str(ratio))
             row = 0
             ws.write_row(row, 0, __HEADER)
             row += 1
@@ -166,7 +150,7 @@ with open('/home/ubuntu/Weiyi/Reports/RF_Report.xlsx', "w") as file_out:
                         model_loaded = False
                         if __LOAD_MODEL:
                             print "\n>>>>> Load Model for {}".format(addr_train)
-                            model_name = "RF" + "_" + onoff_line + "_" + sampling + "_Model.p"
+                            model_name = "RF" + "_" + onoff_line + "_" + str(ratio) + "_Model.p"
                             path_in = os.path.join(addr_train, "Random_Forest_Models", model_name)
                             try:
                                 with open(path_in, "r") as file_in:
@@ -179,7 +163,7 @@ with open('/home/ubuntu/Weiyi/Reports/RF_Report.xlsx', "w") as file_out:
                         if not model_loaded:
                             print "\n>>>>> Start Training on {}".format(addr_train)
                             start = time.time()
-                            clf = train(addr_train, clf, sampling, add_estimators)
+                            clf = train(addr_train, clf, ratio, add_estimators)
                             print ">>>>> Training completed in {} seconds".format(round(time.time()-start, 2))
 
                         addr_test = pair[1]
