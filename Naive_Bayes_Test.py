@@ -35,11 +35,11 @@ def format_addr(dates, mode):
         test = dates[i+mode]
         file_train = os.path.join(str(train[0]).rjust(2, "0"), str(train[1]).rjust(2, "0"))
         file_test = os.path.join(str(test[0]).rjust(2, "0"), str(test[1]).rjust(2, "0"))
-        addr_train = os.path.join(root, file_train)
-        addr_test = os.path.join(root, file_test)
+        addr_train = os.path.join(root, file_train, "day_samp_bin.npy")
+        addr_test = os.path.join(root, file_test, "day_samp_bin.npy")
 
         train_test_pairs.append((addr_train, addr_test))
-        dates_pairs.append(file_train+"~"+file_test)
+        dates_pairs.append((file_train, file_test))
     return train_test_pairs, dates_pairs
 
 
