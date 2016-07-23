@@ -16,7 +16,7 @@ __ROOT_MODEL = "/home/ubuntu/Weiyi/model_random_forest.p"
 __TRAIN_DATA = [[6], [4]]
 __TEST_DATA =  [[6], [5]]
 
-__RATIO = 0.5
+__RATIO = 5
 
 def get_io_addr(data_in):
     list_io_addr = []
@@ -34,14 +34,12 @@ def get_io_addr(data_in):
 
 
 def train():
-    clf = RandomForestClassifier(n_estimators=15,
+    clf = RandomForestClassifier(n_estimators=70,
                                  max_features=15,
-                                 min_weight_fraction_leaf=0.000025,
                                  oob_score=True,
-                                 warm_start=True,
+                                 warm_start=False,
                                  n_jobs=-1,
-                                 random_state=1514,
-                                 class_weight={0:1, 1:8})
+                                 random_state=1514)
     list_io_addr = get_io_addr(__TRAIN_DATA)
 
     for path_in in list_io_addr:
@@ -49,7 +47,6 @@ def train():
         X_train, y_train = gd.get(path_in, __RATIO)
 
         print "Fitting Model......"
-        clf.n_estimators += 60
         clf.fit(X_train, y_train)
         print "Done"
 
