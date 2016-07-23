@@ -4,47 +4,31 @@ import numpy as np
 import time
 from sklearn.ensemble import RandomForestClassifier
 from sklearn import metrics
-from imblearn.over_sampling import SMOTE
-from imblearn.under_sampling import NearMiss
-
-import Sparse_Matrix_IO
+import Get_Data as gd
+import Sparse_Matrix_IO as smio
 import multiprocessing
 
 
 __SAVE_MODEL = False
 __ROOT_MODEL = "/home/ubuntu/Weiyi/model_random_forest.p"
 
-# Data Format = [[Prefix], [Suffix]]
-# __TRAIN_DATA = [["all"], [i for i in range(5)]]
-# __TEST_DATA = [["all"], [5]]
-
 # Data Format = [[Month], [Day], [Hour]]
-__TRAIN_DATA = [[5], [1, 2, 3, 4]]
-__TEST_DATA =  [[5], [5]]
+__TRAIN_DATA = [[5], [1]]
+__TEST_DATA =  [[5], [2]]
 
 
 def get_io_addr(data_in):
     list_io_addr = []
-    if str(data_in[0][0]).isdigit():
-        root = "/mnt/rips2/2016"
-        list_month = data_in[0]
-        list_day = data_in[1]
-        for month in list_month:
-            for day in list_day:
-                io_addr = os.path.join(root,
-                                       str(month).rjust(2, "0"),
-                                       str(day).rjust(2, "0"))
-                addr_in = os.path.join(io_addr, "day_samp_bin.npy")
-                list_io_addr.append(addr_in)
-    else:
-        root = "/home/ubuntu/random_samples"
-        list_prefix = data_in[0]
-        list_suffix = data_in[1]
-        for prefix in list_prefix:
-            for suffix in list_suffix:
-                file_name = prefix+"data"+str(suffix)
-                addr_in = os.path.join(root, file_name+"_bin.npy")
-                list_io_addr.append(addr_in)
+    root = "/mnt/rips2/2016"
+    list_month = data_in[0]
+    list_day = data_in[1]
+    for month in list_month:
+        for day in list_day:
+            io_addr = os.path.join(root,
+                                   str(month).rjust(2, "0"),
+                                   str(day).rjust(2, "0"))
+            addr_in = os.path.join(io_addr)
+            list_io_addr.append(addr_in)
     return list_io_addr
 
 
@@ -60,17 +44,8 @@ def train():
     list_io_addr = get_io_addr(__TRAIN_DATA)
 
     for path_in in list_io_addr:
-        with open(path_in, "r") as file_in:
-            X = Sparse_Matrix_IO.load_sparse_csr(file_in)
         print "\n>>>>> Start Training on {}".format(path_in)
-
-        vector_len = len(X[0])
-        X_train = X[:, 0:vector_len-1]
-        y_train = X[:, vector_len-1]
-
-        # sm = SMOTE(ratio=0.95)
-        nm = NearMiss(ratio=0.3)
-        X_train, y_train = nm.fit_sample(X_train, y_train)
+        X_train, y_train = gd.get(path_in, 1)
 
         print "Fitting Model......"
         clf.n_estimators += 60
@@ -84,28 +59,18 @@ def train():
     return clf
 
 
-def thres(item, alpha):
-    if item > alpha:
-        return 0
-    else:
-        return 1
-
-
 def crawl(args):
     addr_in = args[0]
     clf = args[1]
 
     print "Processing testing set from {}".format(addr_in)
-    with open(addr_in, "r") as file_in:
-        X = Sparse_Matrix_IO.load_sparse_csr(file_in)
+    with open(os.path.join(addr_in, "day_samp_bin.npy"), "r") as file_in:
+        X = smio.load_sparse_csr(file_in)
 
     vector_len = len(X[0])
     X_test = X[:, 0:vector_len-1]
     y_test = X[:, vector_len-1]
 
-    # prediction_proba = clf.predict_proba(X_test)
-    # alpha = 0.9999
-    # prediction = [thres(item[0], alpha) for item in prediction_proba]
     prediction = clf.predict(X_test)
 
     return metrics.confusion_matrix(y_test, prediction)
