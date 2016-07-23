@@ -32,7 +32,7 @@ def crawl(addr_day):
     list_path_in = []
     for hour in range(0, 24):
         hour_str = str(hour).rjust(2, "0")
-        list_path_in.append(os.path.join(addr_day, hour_str, "output_bin_pos.npy"))
+        list_path_in.append(os.path.join(addr_day, hour_str, "output_bin_neg.npy"))
 
     total_line = 0
     for path_in in list_path_in:
@@ -66,7 +66,7 @@ if __name__ == '__main__':
     p = multiprocessing.Pool(16)
     list_io_addr = get_io_addr()
 
-    file_out = open("/home/ubuntu/Weiyi/count_pos.txt", "w")
+    file_out = open("/home/ubuntu/Weiyi/count_neg.txt", "w")
 
     for result in p.imap(crawl, list_io_addr):
         addr_day = result[0]
