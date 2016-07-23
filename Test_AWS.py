@@ -11,10 +11,8 @@ start = time.time()
 def get_io_addr():
     root = "/mnt/rips2/2016"
 
-    # may = [(5, i, j) for i in range(1, 8) for j in range(24)]
-    # june = [(6, i, j) for i in range(4, 26) for j in range(24)]
-    may = [(5, 1, 00)]
-    june = []
+    may = [(5, i, j) for i in range(1, 8) for j in range(24)]
+    june = [(6, i, j) for i in range(4, 26) for j in range(24)]
     list_dates = may + june
 
     list_io_addr = []
