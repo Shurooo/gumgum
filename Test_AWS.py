@@ -32,7 +32,8 @@ def get_io_addr():
 
 def crawl(addr_in):
     print "Processing {}".format(addr_in)
-    with open(addr_in, "r") as file_in:
+    path_in = os.path.join(addr_in, "output_bin.npy")
+    with open(path_in, "r") as file_in:
         X = smio.load_sparse_csr(file_in)
 
     path_out_pos = os.path.join(addr_in, "output_bin_pos.npy")
