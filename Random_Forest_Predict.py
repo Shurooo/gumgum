@@ -13,9 +13,10 @@ __SAVE_MODEL = False
 __ROOT_MODEL = "/home/ubuntu/Weiyi/model_random_forest.p"
 
 # Data Format = [[Month], [Day], [Hour]]
-__TRAIN_DATA = [[5], [1]]
-__TEST_DATA =  [[5], [2]]
+__TRAIN_DATA = [[6], [4]]
+__TEST_DATA =  [[6], [5]]
 
+__RATIO = 0.5
 
 def get_io_addr(data_in):
     list_io_addr = []
@@ -45,7 +46,7 @@ def train():
 
     for path_in in list_io_addr:
         print "\n>>>>> Start Training on {}".format(path_in)
-        X_train, y_train = gd.get(path_in, 1)
+        X_train, y_train = gd.get(path_in, __RATIO)
 
         print "Fitting Model......"
         clf.n_estimators += 60

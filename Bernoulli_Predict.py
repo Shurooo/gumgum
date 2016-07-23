@@ -12,8 +12,8 @@ __SAVE_MODEL = False
 __ROOT_MODEL = "/home/ubuntu/Weiyi/model_05_01_classprior"
 
 # Data Format = [[Month], [Day], [Hour]]
-__TRAIN_DATA = [[5], [1]]
-__TEST_DATA = [[5], [2]]
+__TRAIN_DATA = [[6], [19]]
+__TEST_DATA = [[6], [20]]
 
 
 def get_io_addr(data_in):
