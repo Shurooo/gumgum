@@ -12,9 +12,9 @@ import Sparse_Matrix_IO as smio
 __SAVE_MODEL = False
 __LOAD_MODEL = False
 
-__TRAIN_TEST_MODE = ["Next_day", "Next_week"]
+__TRAIN_TEST_MODE = ["Next_day"]
 __ON_OFF_LINE = ["Online"]
-__SAMPLING_RATIO = [0.5, 1, 2]
+__SAMPLING_RATIO = [2.65]
 
 # Date Format = [(Month, Day)]
 # __DATA_MAY = [(5, i) for i in range(1, 8)]
@@ -107,11 +107,11 @@ with open('/home/ubuntu/Weiyi/Reports/RF_Report.xlsx', "w") as file_out:
     for onoff_line in __ON_OFF_LINE:
         if onoff_line == "Online":
             if_warm_start = True
-            init_estimators = 15
-            add_estimators = 60
+            init_estimators = 30
+            add_estimators = 10
         else:
             if_warm_start = False
-            init_estimators = 75
+            init_estimators = 40
             add_estimators = 0
 
         for ratio in __SAMPLING_RATIO:
@@ -131,13 +131,12 @@ with open('/home/ubuntu/Weiyi/Reports/RF_Report.xlsx', "w") as file_out:
                 pairs_by_month = get_addr_in(mode)
                 for item in pairs_by_month:
                     clf = RandomForestClassifier(n_estimators=init_estimators,
-                                             max_features=15,
-                                             min_weight_fraction_leaf=0.000025,
+                                             max_features=12,
                                              oob_score=True,
                                              warm_start=if_warm_start,
                                              n_jobs=-1,
                                              random_state=1514,
-                                             class_weight={0:1, 1:8})
+                                             class_weight={0:1, 1:10})
 
                     train_test_pairs = item[0]
                     dates_pairs = item[1]
