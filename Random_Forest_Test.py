@@ -97,7 +97,7 @@ def test(addr_test, clf):
     return [tn, fp, fn, tp], round(recall, 4), round(filtered, 4)
 
 
-with open('/home/ubuntu/Weiyi/Reports/RF_Report.xlsx', "w") as file_out:
+with open('/home/ubuntu/Weiyi/Reports/RF_Report_50_10.xlsx', "w") as file_out:
     workbook = xlsxwriter.Workbook(file_out)
     abnormal_format = workbook.add_format()
     abnormal_format.set_bg_color("red")
@@ -107,7 +107,7 @@ with open('/home/ubuntu/Weiyi/Reports/RF_Report.xlsx', "w") as file_out:
     for onoff_line in __ON_OFF_LINE:
         if onoff_line == "Online":
             if_warm_start = True
-            init_estimators = 30
+            init_estimators = 40
             add_estimators = 10
         else:
             if_warm_start = False
