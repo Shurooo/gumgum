@@ -57,7 +57,7 @@ def crawl(args):
     clf = args[1]
 
     print "Processing testing set from {}".format(addr_in)
-    with open(addr_in, "r") as file_in:
+    with open(os.path.join(addr_in, "day_samp_bin.npy"), "r") as file_in:
         X = smio.load_sparse_csr(file_in)
 
     vector_len = len(X[0])
