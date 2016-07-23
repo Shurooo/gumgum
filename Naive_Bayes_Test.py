@@ -105,7 +105,7 @@ with open('/home/ubuntu/Weiyi/Reports/BNB_Report.xlsx', "w") as file_out:
         for ratio in __SAMPLING_RATIO:
             result = ["BNB", onoff_line, ratio]
 
-            ws = workbook.add_worksheet(onoff_line+"-"+ratio)
+            ws = workbook.add_worksheet(onoff_line+"-"+str(ratio))
             row = 0
             ws.write_row(row, 0, __HEADER)
             row += 1
