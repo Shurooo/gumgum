@@ -3,88 +3,45 @@ import numpy as np
 import time
 from sklearn.naive_bayes import BernoulliNB
 from sklearn import metrics
-from imblearn.over_sampling import SMOTE
-from imblearn.under_sampling import NearMiss
 import multiprocessing
 import pickle
-import Sparse_Matrix_IO
+import Get_Data as gd
+import Sparse_Matrix_IO as smio
 
 __SAVE_MODEL = False
 __ROOT_MODEL = "/home/ubuntu/Weiyi/model_05_01_classprior"
 
-__FEATURES = ["hour", "day", "country", "margin", "tmax", "bkc", "site_typeid", "site_cat", "browser_type",
-             "bidder_id", "vertical_id", "bid_floor", "format", "product", "banner", "response"]
-__FEATURES_TO_DROP = []
-
-# Data Format = [[Prefix], [Suffix]]
-# __TRAIN_DATA = [["all"], [i for i in range(5)]]
-# __TEST_DATA = [["all"], [5]]
-
 # Data Format = [[Month], [Day], [Hour]]
 __TRAIN_DATA = [[5], [1]]
-__TEST_DATA =  [[5], [2]]
+__TEST_DATA = [[5], [2]]
 
 
 def get_io_addr(data_in):
     list_io_addr = []
-    if str(data_in[0][0]).isdigit():
-        root = "/home/wlu/Desktop/rips16"
-        list_month = data_in[0]
-        list_day = data_in[1]
-        for month in list_month:
-            for day in list_day:
-                io_addr = os.path.join(root,
-                                       str(month).rjust(2, "0"),
-                                       str(day).rjust(2, "0"))
-                addr_in = os.path.join(io_addr, "day_samp_bin.npy")
-                list_io_addr.append(addr_in)
-    else:
-        root = "/home/wlu/Desktop/random_samples"
-        list_prefix = data_in[0]
-        list_suffix = data_in[1]
-        for prefix in list_prefix:
-            for suffix in list_suffix:
-                file_name = prefix+"data"+str(suffix)
-                addr_in = os.path.join(root, file_name+"_bin.npy")
-                list_io_addr.append(addr_in)
+    root = "/mnt/rips2/2016"
+    list_month = data_in[0]
+    list_day = data_in[1]
+    for month in list_month:
+        for day in list_day:
+            addr_in = os.path.join(root,
+                                   str(month).rjust(2, "0"),
+                                   str(day).rjust(2, "0"))
+            list_io_addr.append(addr_in)
     return list_io_addr
 
 
-def discard_vars(X, cutoffs):
-    X_new = []
-    for line in X:
-        new_line = []
-        for i in range(0, len(cutoffs), 2):
-            new_line.extend(line[cutoffs[i]:cutoffs[i+1]])
-        X_new.append(new_line)
-    return np.array(X_new)
-
-
-def train(cutoffs):
+def train():
     print "\n========== Start Training =========="
     list_io_addr = get_io_addr(__TRAIN_DATA)
     clf = BernoulliNB(class_prior=[0.01, 0.99])
 
-    for i in range(len(list_io_addr)):
-        path_in = list_io_addr[i]
-        print "\nGenerating training set from {}".format(path_in)
-        with open(path_in, "r") as file_in:
-            X = Sparse_Matrix_IO.load_sparse_csr(file_in)
-
-        if len(cutoffs) > 0:
-            print "Discarding selected features......"
-            X = discard_vars(X, cutoffs)
-
-        vector_len = len(X[0])
-        X_train = X[:, 0:vector_len-1]
-        y_train = X[:, vector_len-1]
+    for addr_in in list_io_addr:
+        print "\nGenerating training set from {}".format(addr_in)
+        X_train, y_train = gd.get(addr_in, 0.2)
         print "Done"
 
-        sm = SMOTE(ratio=0.95)
-        X_train_sm, y_train_sm = sm.fit_sample(X_train, y_train)
-
         print "Fitting Model......"
-        clf.partial_fit(X_train_sm, y_train_sm, classes=[0, 1])
+        clf.partial_fit(X_train, y_train, classes=[0, 1])
         print "Done"
 
     if __SAVE_MODEL:
@@ -98,14 +55,10 @@ def train(cutoffs):
 def crawl(args):
     addr_in = args[0]
     clf = args[1]
-    cutoffs = args[2]
 
     print "Processing testing set from {}".format(addr_in)
     with open(addr_in, "r") as file_in:
-        X = Sparse_Matrix_IO.load_sparse_csr(file_in)
-
-    if len(cutoffs) > 0:
-        X = discard_vars(X, cutoffs)
+        X = smio.load_sparse_csr(file_in)
 
     vector_len = len(X[0])
     X_test = X[:, 0:vector_len-1]
@@ -115,7 +68,7 @@ def crawl(args):
     return metrics.confusion_matrix(y_test, prediction)
 
 
-def test(cutoffs, clf):
+def test(clf):
     print "\n========== Start Testing =========="
     print "\nLoad Model......"
     if __SAVE_MODEL:
@@ -128,7 +81,7 @@ def test(cutoffs, clf):
     confusion_matrix = [0, 0, 0, 0]
     args = []
     for i in range(len(list_io_addr)):
-        args.append((list_io_addr[i], clf, cutoffs))
+        args.append((list_io_addr[i], clf))
 
     p = multiprocessing.Pool(4)
     for result in p.imap(crawl, args):
@@ -149,56 +102,10 @@ def test(cutoffs, clf):
     print "recall = {0:.4f}, filtering = {1:.4f}".format(round(recall, 4), round(filtering, 4))
 
 
-def get_feature_indices():
-    get_feature_length = {
-        "hour": 24,
-        "day": 7,
-        "country": 193,
-        "margin": 5,
-        "tmax": 4,
-        "bkc": 1,
-        "site_typeid": 3,
-        "site_cat": 26,
-        "browser_type": 9,
-        "bidder_id": 35,
-        "vertical_id": 16,
-        "bid_floor": 6,
-        "format": 20,
-        "product": 6,
-        "banner": 5,
-        "response": 1
-    }
-    feature_indices = {}
-    begin = 0
-    end = 0
-    for item in __FEATURES:
-        length = get_feature_length[item]
-        end += length
-        feature_indices.update({item:(begin, end)})
-        begin += length
-    return feature_indices, end
-
-
-def get_cutoffs():
-    feature_indices, total_length = get_feature_indices()
-    cutoffs = [0, total_length]
-    for item in __FEATURES_TO_DROP:
-        indices = feature_indices[item]
-        cutoffs.append(indices[0])
-        cutoffs.append(indices[1])
-
-    return sorted(cutoffs)
-
-
-if len(__FEATURES_TO_DROP) > 0:
-    cutoffs = get_cutoffs()
-else:
-    cutoffs = []
-
 start = time.time()
-clf = train(cutoffs)
+clf = train()
 print "----------Training Completed in {} seconds----------\n".format(round(time.time()-start, 2))
 
 start = time.time()
-test(cutoffs, clf)
+test(clf)
 print "----------Testing Completed in {} seconds----------\n".format(round(time.time()-start, 2))
