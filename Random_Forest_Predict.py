@@ -36,6 +36,7 @@ def get_io_addr(data_in):
 def train():
     clf = RandomForestClassifier(n_estimators=40,
                                  max_features=12,
+                                 min_weight_fraction_leaf=0.000025,
                                  oob_score=True,
                                  warm_start=False,
                                  n_jobs=-1,
