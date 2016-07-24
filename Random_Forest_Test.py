@@ -107,7 +107,7 @@ with open('/home/ubuntu/Weiyi/Reports/RF_Report_50_10.xlsx', "w") as file_out:
     for onoff_line in __ON_OFF_LINE:
         if onoff_line == "Online":
             if_warm_start = True
-            init_estimators = 40
+            init_estimators = 30
             add_estimators = 10
         else:
             if_warm_start = False
@@ -129,6 +129,8 @@ with open('/home/ubuntu/Weiyi/Reports/RF_Report_50_10.xlsx', "w") as file_out:
                     row += 1
 
                 pairs_by_month = get_addr_in(mode)
+                recall_list = []
+                filtered_list = []
                 for item in pairs_by_month:
                     clf = RandomForestClassifier(n_estimators=init_estimators,
                                              max_features=12,
@@ -172,6 +174,8 @@ with open('/home/ubuntu/Weiyi/Reports/RF_Report_50_10.xlsx', "w") as file_out:
                         stats, recall, filtered = test(addr_test, clf)
                         print ">>>>> Testing completed in {} seconds".format(round(time.time()-start, 2))
 
+                        recall_list.append(recall)
+                        filtered_list.append(filtered)
                         result_row.extend(stats)
                         ws.write_row(row, 0, result_row)
 
@@ -186,6 +190,12 @@ with open('/home/ubuntu/Weiyi/Reports/RF_Report_50_10.xlsx', "w") as file_out:
                             ws.write(row, col_filtered, filtered)
 
                         row += 1
+
+                recall_avg = sum(recall_list) / len(recall_list)
+                ws.write(row, col_recall, recall_avg)
+
+                filtered_avg = sum(filtered_list) / len(filtered_list)
+                ws.write(row, col_filtered, filtered_avg)
 
     workbook.close()
 
