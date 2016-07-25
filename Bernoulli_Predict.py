@@ -12,10 +12,10 @@ __SAVE_MODEL = False
 __ROOT_MODEL = "/home/ubuntu/Weiyi/model_05_01_classprior"
 
 # Data Format = [[Month], [Day], [Hour]]
-__TRAIN_DATA = [[5], [1]]
-__TEST_DATA = [[5], [2]]
+__TRAIN_DATA = [[6], [4]]
+__TEST_DATA = [[6], [5]]
 
-__RATIO = 3.2 
+__RATIO = 0.72 
 
 def get_io_addr(data_in):
     list_io_addr = []
@@ -34,7 +34,7 @@ def get_io_addr(data_in):
 def train():
     print "\n========== Start Training =========="
     list_io_addr = get_io_addr(__TRAIN_DATA)
-    clf = BernoulliNB(class_prior=[0.15, 0.85])
+    clf = BernoulliNB(class_prior=[0.01, 0.99])
 
     for addr_in in list_io_addr:
         print "\nGenerating training set from {}".format(addr_in)
@@ -99,7 +99,7 @@ def test(clf):
     fn = confusion_matrix[3]
     total = tp+fp+tn+fn
     recall = tp / float(tp+fn)
-    filtering = float(tn+fn) / total
+    filtering = float(tn) / total
     print "recall = {0:.4f}, filtering = {1:.4f}".format(round(recall, 4), round(filtering, 4))
 
 
