@@ -14,7 +14,7 @@ __LOAD_MODEL = False
 
 __TRAIN_TEST_MODE = ["Next_day"]
 __ON_OFF_LINE = ["Online"]
-__SAMPLING_RATIO = [2.65]
+__SAMPLING_RATIO = [1]
 
 # Date Format = [(Month, Day)]
 # __DATA_MAY = [(5, i) for i in range(1, 8)]
