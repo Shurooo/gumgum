@@ -47,6 +47,7 @@ def train():
     for path_in in list_io_addr:
         print "\n>>>>> Start Training on {}".format(path_in)
         X_train, y_train = gd.get(addr_day=path_in, ratio=__RATIO, features_to_get=__FEATURES_TO_GET)
+        print "----------\n", len(X_train[0]), "\n----------"
 
         print "Fitting Model......"
         clf.fit(X_train, y_train)
@@ -64,6 +65,7 @@ def crawl(args):
     clf = args[1]
 
     X_test, y_test = gd.get(addr_day=addr_in, features_to_get=__FEATURES_TO_GET)
+    print "----------\n", len(X_test[0]), "\n----------"
     prediction = clf.predict(X_test)
 
     return metrics.confusion_matrix(y_test, prediction)
