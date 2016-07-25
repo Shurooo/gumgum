@@ -17,10 +17,8 @@ __ON_OFF_LINE = ["Online"]
 __SAMPLING_RATIO = [2.65]
 
 # Date Format = [(Month, Day)]
-# __DATA_MAY = [(5, i) for i in range(1, 8)]
-__DATA_MAY = []
+__DATA_MAY = [(5, i) for i in range(1, 8)]
 __DATA_JUNE = [(6, i) for i in range(4, 26)]
-# __DATA_JUNE = []
 
 __HEADER = ["Model", "Online/Offline", "Sampling", "Train", "Test", "TN", "FP", "FN", "TP", "Recall", "Filtered"]
 
@@ -97,114 +95,108 @@ def test(addr_test, clf):
     return [tn, fp, fn, tp], round(recall, 4), round(filtered, 4)
 
 
-total_estimators_list = [40]
-add_estimators_list = [[i for i in range(2, 10)]]
-# for item in total_estimators_list:
-#     add_estimators_list.append([i for i in range(10, item, 10)])
+with open("/home/ubuntu/Weiyi/Reports/RF_Report_.xlsx", "w") as file_out:
+    workbook = xlsxwriter.Workbook(file_out)
+    abnormal_format = workbook.add_format()
+    abnormal_format.set_bg_color("red")
+    col_recall = __HEADER.index("Recall")
+    col_filtered = __HEADER.index("Filtered")
 
-for i in range(len(total_estimators_list)):
-    total_estimators = total_estimators_list[i]
-    for add_estimators in add_estimators_list[i]:
-        with open("/home/ubuntu/Weiyi/Reports/RF_Report_" + str(total_estimators) + "_" + str(add_estimators) + ".xlsx", "w") as file_out:
-            workbook = xlsxwriter.Workbook(file_out)
-            abnormal_format = workbook.add_format()
-            abnormal_format.set_bg_color("red")
-            col_recall = __HEADER.index("Recall")
-            col_filtered = __HEADER.index("Filtered")
+    for onoff_line in __ON_OFF_LINE:
+        if onoff_line == "Online":
+            if_warm_start = True
+            init_estimators = 30
+            add_estimators = 10
+        else:
+            if_warm_start = False
+            init_estimators = 40
+            add_estimators = 0
 
-            for onoff_line in __ON_OFF_LINE:
-                if onoff_line == "Online":
-                    if_warm_start = True
-                    init_estimators = total_estimators - add_estimators
-                else:
-                    if_warm_start = False
-                    init_estimators = total_estimators
-                    add_estimators = 0
+        for ratio in __SAMPLING_RATIO:
+            result = ["RF", onoff_line, ratio]
 
-                for ratio in __SAMPLING_RATIO:
-                    result = ["RF", onoff_line, ratio]
+            ws = workbook.add_worksheet(onoff_line+"-"+str(ratio))
+            row = 0
+            ws.write_row(row, 0, __HEADER)
+            row += 1
 
-                    ws = workbook.add_worksheet(onoff_line+"-"+str(ratio))
-                    row = 0
+            for mode in __TRAIN_TEST_MODE:
+                if mode == "Next_week":
+                    row += 3
                     ws.write_row(row, 0, __HEADER)
                     row += 1
 
-                    for mode in __TRAIN_TEST_MODE:
-                        if mode == "Next_week":
-                            row += 3
-                            ws.write_row(row, 0, __HEADER)
-                            row += 1
+                pairs_by_month = get_addr_in(mode)
+                recall_list = []
+                filtered_list = []
+                for item in pairs_by_month:
+                    clf = RandomForestClassifier(n_estimators=init_estimators,
+                                                 max_features=12,
+                                                 min_weight_fraction_leaf=0.00001,
+                                                 oob_score=True,
+                                                 warm_start=if_warm_start,
+                                                 n_jobs=-1,
+                                                 random_state=1514,
+                                                 class_weight={0:1, 1:5})
 
-                        pairs_by_month = get_addr_in(mode)
-                        recall_list = []
-                        filtered_list = []
-                        for item in pairs_by_month:
-                            clf = RandomForestClassifier(n_estimators=init_estimators,
-                                                         max_features=12,
-                                                         oob_score=True,
-                                                         warm_start=if_warm_start,
-                                                         n_jobs=-1,
-                                                         random_state=1514,
-                                                         class_weight={0:1, 1:10})
+                    train_test_pairs = item[0]
+                    dates_pairs = item[1]
+                    for i in range(len(train_test_pairs)):
+                        result_row = result[:]
+                        result_row.extend([dates_pairs[i][0], dates_pairs[i][1]])
 
-                            train_test_pairs = item[0]
-                            dates_pairs = item[1]
-                            for i in range(len(train_test_pairs)):
-                                result_row = result[:]
-                                result_row.extend([dates_pairs[i][0], dates_pairs[i][1]])
+                        pair = train_test_pairs[i]
+                        addr_train = pair[0]
 
-                                pair = train_test_pairs[i]
-                                addr_train = pair[0]
-
+                        model_loaded = False
+                        if __LOAD_MODEL:
+                            print "\n>>>>> Load Model for {}".format(addr_train)
+                            model_name = "RF" + "_" + onoff_line + "_" + str(ratio) + "_Model.p"
+                            path_in = os.path.join(addr_train, "Random_Forest_Models", model_name)
+                            try:
+                                with open(path_in, "r") as file_in:
+                                    clf = pickle.load(file_in)
+                                model_loaded = True
+                            except:
+                                print ">>>>> Error: Model cannot be loaded"
                                 model_loaded = False
-                                if __LOAD_MODEL:
-                                    print "\n>>>>> Load Model for {}".format(addr_train)
-                                    model_name = "RF" + "_" + onoff_line + "_" + str(ratio) + "_Model.p"
-                                    path_in = os.path.join(addr_train, "Random_Forest_Models", model_name)
-                                    try:
-                                        with open(path_in, "r") as file_in:
-                                            clf = pickle.load(file_in)
-                                        model_loaded = True
-                                    except:
-                                        print ">>>>> Error: Model cannot be loaded"
-                                        model_loaded = False
 
-                                if not model_loaded:
-                                    print "\n>>>>> Start Training on {}".format(addr_train)
-                                    start = time.time()
-                                    clf = train(addr_train, clf, ratio, add_estimators)
-                                    print ">>>>> Training completed in {} seconds".format(round(time.time()-start, 2))
+                        if not model_loaded:
+                            print "\n>>>>> Start Training on {}".format(addr_train)
+                            start = time.time()
+                            clf = train(addr_train, clf, ratio, add_estimators)
+                            print ">>>>> Training completed in {} seconds".format(round(time.time()-start, 2))
 
-                                addr_test = pair[1]
-                                print "\n>>>>> Start Testing on {}".format(addr_test)
-                                start = time.time()
-                                stats, recall, filtered = test(addr_test, clf)
-                                print ">>>>> Testing completed in {} seconds".format(round(time.time()-start, 2))
+                        addr_test = pair[1]
+                        print "\n>>>>> Start Testing on {}".format(addr_test)
+                        start = time.time()
+                        stats, recall, filtered = test(addr_test, clf)
+                        print ">>>>> Testing completed in {} seconds".format(round(time.time()-start, 2))
 
-                                recall_list.append(recall)
-                                filtered_list.append(filtered)
-                                result_row.extend(stats)
-                                ws.write_row(row, 0, result_row)
+                        recall_list.append(recall)
+                        filtered_list.append(filtered)
+                        result_row.extend(stats)
+                        ws.write_row(row, 0, result_row)
 
-                                if recall < 0.95:
-                                    ws.write(row, col_recall, recall, abnormal_format)
-                                else:
-                                    ws.write(row, col_recall, recall)
+                        if recall < 0.95:
+                            ws.write(row, col_recall, recall, abnormal_format)
+                        else:
+                            ws.write(row, col_recall, recall)
 
-                                if filtered < 0.1:
-                                    ws.write(row, col_filtered, filtered, abnormal_format)
-                                else:
-                                    ws.write(row, col_filtered, filtered)
+                        if filtered < 0.1:
+                            ws.write(row, col_filtered, filtered, abnormal_format)
+                        else:
+                            ws.write(row, col_filtered, filtered)
 
-                                row += 1
+                        row += 1
 
-                        recall_avg = round(sum(recall_list) / len(recall_list), 4)
-                        ws.write(row, col_recall, recall_avg)
+                recall_avg = round(sum(recall_list) / len(recall_list), 4)
+                ws.write(row, col_recall, recall_avg)
 
-                        filtered_avg = round(sum(filtered_list) / len(filtered_list), 4)
-                        ws.write(row, col_filtered, filtered_avg)
+                filtered_avg = round(sum(filtered_list) / len(filtered_list), 4)
+                ws.write(row, col_filtered, filtered_avg)
 
-            workbook.close()
+    workbook.close()
 
 
 
