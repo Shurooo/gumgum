@@ -75,12 +75,7 @@ def train(addr_train, clf, ratio, add_estimators):
 
 def test(addr_test, clf):
     path_in = os.path.join(addr_test, "day_samp_bin.npy")
-    with open(path_in, "r") as file_in:
-        X = smio.load_sparse_csr(file_in)
-
-    vector_len = len(X[0])
-    X_test = X[:, 0:vector_len-1]
-    y_test = X[:, vector_len-1]
+    X_test, y_test = gd.get(addr_test)
 
     prediction = clf.predict(X_test)
 
