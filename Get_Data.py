@@ -6,7 +6,6 @@ import Sparse_Matrix_IO as smio
 
 __FEATURES = ["hour", "day", "country", "margin", "tmax", "bkc", "site_typeid", "site_cat", "browser_type",
              "bidder_id", "vertical_id", "bid_floor", "format", "product", "banner", "response"]
-__FEATURES_TO_GET = ["bid_floor", "bidder_id", "format", "response"]
 # __FEATURES_TO_GET = []
 
 
@@ -40,18 +39,19 @@ def get_feature_indices():
     return feature_indices
 
 
-def get_cutoffs():
+def get_cutoffs(features_to_get):
     feature_indices = get_feature_indices()
     cutoffs = []
-    for item in __FEATURES_TO_GET:
+    for item in features_to_get:
         indices = feature_indices[item]
         cutoffs.append(indices[0])
         cutoffs.append(indices[1])
     return sorted(cutoffs)
 
 
-def select_features(matrix):
-    cutoffs = get_cutoffs()
+def select_features(matrix, features_to_get):
+    features_to_get.append("response")
+    cutoffs = get_cutoffs(features_to_get)
     matrix_new = []
     for line in matrix:
         new_line = []
@@ -66,7 +66,7 @@ def select_features(matrix):
 # with the specified ratio of positive responses and negative responses,
 # and return the feature matrix X and the corresponding response vector y
 # The ratio is given by pos/neg
-def get(addr_day, ratio=-1):
+def get(addr_day, ratio=-1, features_to_get=None):
     if ratio != -1:
         n = 100000
         neg = int(n / (1+ratio))
@@ -85,8 +85,8 @@ def get(addr_day, ratio=-1):
         with open(os.path.join(addr_day, "day_samp_bin.npy"), "r") as file_in:
             matrix = smio.load_sparse_csr(file_in)
 
-    if len(__FEATURES_TO_GET) > 0:
-        matrix = select_features(matrix)
+    if (not features_to_get == None) and (len(features_to_get) > 0):
+        matrix = select_features(matrix, features_to_get)
 
     width = np.size(matrix, 1)
     X = matrix[:, :width-1]

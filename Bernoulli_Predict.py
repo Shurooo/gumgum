@@ -15,7 +15,7 @@ __ROOT_MODEL = "/home/ubuntu/Weiyi/model_05_01_classprior"
 __TRAIN_DATA = [[6], [19]]
 __TEST_DATA = [[6], [20]]
 
-__RATIO = 0.72 
+__RATIO = 0.7
 
 def get_io_addr(data_in):
     list_io_addr = []
@@ -34,7 +34,7 @@ def get_io_addr(data_in):
 def train():
     print "\n========== Start Training =========="
     list_io_addr = get_io_addr(__TRAIN_DATA)
-    clf = BernoulliNB(class_prior=[0.01, 0.99], alpha=0.5)
+    clf = BernoulliNB(class_prior=[0.1, 0.9], alpha=0.5)
 
     for addr_in in list_io_addr:
         print "\nGenerating training set from {}".format(addr_in)

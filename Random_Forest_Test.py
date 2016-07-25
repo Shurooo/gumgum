@@ -22,6 +22,7 @@ __DATA_MAY = [(5, i) for i in range(1, 8)]
 __DATA_JUNE = [(6, i) for i in range(4, 26)]
 
 __HEADER = ["Model", "Online/Offline", "Sampling", "Train", "Test", "TN", "FP", "FN", "TP", "Recall", "Filtered"]
+__FEATURES_TO_GET = ["bid_floor", "bidder_id", "format", "response"]
 
 
 def format_addr(dates, mode):
@@ -54,7 +55,7 @@ def get_addr_in(mode):
 
 
 def train(addr_train, clf, ratio, add_estimators):
-    X_train, y_train = gd.get(addr_train, ratio)
+    X_train, y_train = gd.get(addr_day=addr_train, ratio=ratio, features_to_get=__FEATURES_TO_GET)
 
     print "Fitting Model......"
     clf.n_estimators += add_estimators
@@ -75,7 +76,7 @@ def train(addr_train, clf, ratio, add_estimators):
 
 def test(addr_test, clf):
     path_in = os.path.join(addr_test, "day_samp_bin.npy")
-    X_test, y_test = gd.get(addr_test)
+    X_test, y_test = gd.get(addr_day=addr_test, features_to_get=__FEATURES_TO_GET)
 
     prediction = clf.predict(X_test)
 
