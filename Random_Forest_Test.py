@@ -97,10 +97,10 @@ def test(addr_test, clf):
     return [tn, fp, fn, tp], round(recall, 4), round(filtered, 4)
 
 
-total_estimators_list = [i for i in range(30, 101, 10)]
-add_estimators_list = []
-for item in total_estimators_list:
-    add_estimators_list.append([i for i in range(10, item, 10)])
+total_estimators_list = [40]
+add_estimators_list = [[i for i in range(2, 10)]]
+# for item in total_estimators_list:
+#     add_estimators_list.append([i for i in range(10, item, 10)])
 
 for i in range(len(total_estimators_list)):
     total_estimators = total_estimators_list[i]
