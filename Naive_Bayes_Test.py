@@ -12,7 +12,7 @@ import Get_Data as gd
 __SAVE_MODEL = False
 __LOAD_MODEL = False
 
-__TRAIN_TEST_MODE = ["Next_day", "Next_wekk"]
+__TRAIN_TEST_MODE = ["Next_day", "Next_week"]
 __ON_OFF_LINE = ["Online"]
 __SAMPLING_RATIO = [3.2]
 
