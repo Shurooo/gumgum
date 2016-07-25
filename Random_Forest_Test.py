@@ -14,7 +14,7 @@ __LOAD_MODEL = False
 
 __TRAIN_TEST_MODE = ["Next_day"]
 __ON_OFF_LINE = ["Online"]
-__SAMPLING_RATIO = [3]
+__SAMPLING_RATIO = [2.75]
 
 # Date Format = [(Month, Day)]
 __DATA_MAY = [(5, i) for i in range(1, 8)]
@@ -22,7 +22,7 @@ __DATA_MAY = [(5, i) for i in range(1, 8)]
 __DATA_JUNE = [(6, i) for i in range(4, 26)]
 
 __HEADER = ["Model", "Online/Offline", "Sampling", "Train", "Test", "TN", "FP", "FN", "TP", "Recall", "Filtered"]
-__FEATURES_TO_GET = ["bid_floor", "bidder_id", "format"]
+__FEATURES_TO_GET = ["bidder_id", "bid_floor", "country", "site_cat", "hour"]
 
 
 def format_addr(dates, mode):
@@ -102,8 +102,8 @@ with open("/home/ubuntu/Weiyi/Reports/RF_Report.xlsx", "w") as file_out:
     for onoff_line in __ON_OFF_LINE:
         if onoff_line == "Online":
             if_warm_start = True
-            init_estimators = 30
-            add_estimators = 10
+            init_estimators = 20
+            add_estimators = 20
         else:
             if_warm_start = False
             init_estimators = 40
@@ -128,7 +128,7 @@ with open("/home/ubuntu/Weiyi/Reports/RF_Report.xlsx", "w") as file_out:
                 filtered_list = []
                 for item in pairs_by_month:
                     clf = RandomForestClassifier(n_estimators=init_estimators,
-                                                 max_features=12,
+                                                 max_features="sqrt",
                                                  oob_score=True,
                                                  warm_start=if_warm_start,
                                                  n_jobs=-1,
