@@ -64,7 +64,7 @@ def train(addr_train, clf, sampling, add_estimators):
         sm = SMOTE(ratio=0.95)
         X_train, y_train = sm.fit_sample(X_train, y_train)
     elif sampling == "Under":
-        X_train, y_train = US.undersample(X, 0.1)
+        X_train, y_train = US.undersample(X, 0.3)
 
     print "Fitting Model......"
     clf.n_estimators += add_estimators
@@ -146,7 +146,7 @@ with open("/home/ubuntu/Weiyi/Reports/RF_Report_Tmp.xlsx", "w") as file_out:
                                                  warm_start=if_warm_start,
                                                  n_jobs=-1,
                                                  random_state=1514,
-                                                 class_weight={0:1, 1:10})
+                                                 class_weight={0:1, 1:5})
 
                     train_test_pairs = item[0]
                     dates_pairs = item[1]
