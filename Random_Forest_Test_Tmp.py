@@ -59,7 +59,7 @@ def train(addr_train, clf, sampling, add_estimators):
         X = smio.load_sparse_csr(file_in)
     width = np.size(X, 1)
     X_train = X[:, :width-1]
-    y_train = X[:, width]
+    y_train = X[:, width-1]
     if sampling == "Over":
         sm = SMOTE(ratio=0.95)
         X_train, y_train = sm.fit_sample(X_train, y_train)
@@ -88,7 +88,7 @@ def test(addr_test, clf):
         X = smio.load_sparse_csr(file_in)
     width = np.size(X, 1)
     X_test = X[:, :width-1]
-    y_test = X[:, width]
+    y_test = X[:, width-1]
 
     prediction = clf.predict(X_test)
 
