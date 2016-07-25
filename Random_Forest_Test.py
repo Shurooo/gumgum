@@ -17,7 +17,8 @@ __ON_OFF_LINE = ["Online"]
 __SAMPLING_RATIO = [2.65]
 
 # Date Format = [(Month, Day)]
-__DATA_MAY = [(5, i) for i in range(1, 8)]
+# __DATA_MAY = [(5, i) for i in range(1, 8)]
+__DATA_MAY = []
 __DATA_JUNE = [(6, i) for i in range(4, 26)]
 
 __HEADER = ["Model", "Online/Offline", "Sampling", "Train", "Test", "TN", "FP", "FN", "TP", "Recall", "Filtered"]
@@ -95,7 +96,7 @@ def test(addr_test, clf):
     return [tn, fp, fn, tp], round(recall, 4), round(filtered, 4)
 
 
-with open("/home/ubuntu/Weiyi/Reports/RF_Report_.xlsx", "w") as file_out:
+with open("/home/ubuntu/Weiyi/Reports/RF_Report.xlsx", "w") as file_out:
     workbook = xlsxwriter.Workbook(file_out)
     abnormal_format = workbook.add_format()
     abnormal_format.set_bg_color("red")
@@ -132,7 +133,7 @@ with open("/home/ubuntu/Weiyi/Reports/RF_Report_.xlsx", "w") as file_out:
                 for item in pairs_by_month:
                     clf = RandomForestClassifier(n_estimators=init_estimators,
                                                  max_features=12,
-                                                 min_weight_fraction_leaf=0.00001,
+                                                 min_weight_fraction_leaf=0.000001,
                                                  oob_score=True,
                                                  warm_start=if_warm_start,
                                                  n_jobs=-1,
