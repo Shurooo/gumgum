@@ -5,7 +5,9 @@ import numpy as np
 import time
 from sklearn.ensemble import RandomForestClassifier
 from sklearn import metrics
-import Get_Data as gd
+from imblearn.over_sampling import SMOTE
+import Undersampling as US
+import Sparse_Matrix_IO as smio
 
 
 __SAVE_MODEL = False
@@ -13,15 +15,14 @@ __LOAD_MODEL = False
 
 __TRAIN_TEST_MODE = ["Next_day"]
 __ON_OFF_LINE = ["Online"]
-__SAMPLING_RATIO = [2.75]
+__SAMPLING_MODE = ["Over", "Under", "None"]
 
 # Date Format = [(Month, Day)]
 __DATA_MAY = [(5, i) for i in range(1, 8)]
-# __DATA_MAY = []
-__DATA_JUNE = [(6, i) for i in range(4, 26)]
+# __DATA_JUNE = [(6, i) for i in range(4, 26)]
+__DATA_JUNE = []
 
 __HEADER = ["Model", "Online/Offline", "Sampling", "Train", "Test", "TN", "FP", "FN", "TP", "Recall", "Filtered"]
-__FEATURES_TO_GET = ["bidder_id", "bid_floor", "country", "site_cat", "hour"]
 
 
 def format_addr(dates, mode):
@@ -53,8 +54,17 @@ def get_addr_in(mode):
     return pairs_by_month
 
 
-def train(addr_train, clf, ratio, add_estimators):
-    X_train, y_train = gd.get(addr_day=addr_train, ratio=ratio, features_to_get=__FEATURES_TO_GET)
+def train(addr_train, clf, sampling, add_estimators):
+    with open(os.path.join(addr_train, "day_samp_bin.npy"), "r") as file_in:
+        X = smio.load_sparse_csr(file_in)
+    width = np.size(X, 1)
+    X_train = X[:, :width-1]
+    y_train = X[:, width]
+    if sampling == "Over":
+        sm = SMOTE(ratio=0.95)
+        X_train, y_train = sm.fit_sample(X_train, y_train)
+    elif sampling == "Under":
+        X_train, y_train = US.undersample(X, 0.1)
 
     print "Fitting Model......"
     clf.n_estimators += add_estimators
@@ -62,7 +72,7 @@ def train(addr_train, clf, ratio, add_estimators):
     print "Done"
 
     if __SAVE_MODEL:
-        model_name = "RF_" + onoff_line + "_" + str(ratio) + "_Model.p"
+        model_name = "RF_" + onoff_line + "_" + sampling + "_Model.p"
         dir_out = os.path.join(addr_train, "Random_Forest_Models")
         if not os.path.isdir(dir_out):
             os.mkdir(dir_out)
@@ -74,8 +84,11 @@ def train(addr_train, clf, ratio, add_estimators):
 
 
 def test(addr_test, clf):
-    path_in = os.path.join(addr_test, "day_samp_bin.npy")
-    X_test, y_test = gd.get(addr_day=addr_test, features_to_get=__FEATURES_TO_GET)
+    with open(os.path.join(addr_test, "day_samp_bin.npy"), "r") as file_in:
+        X = smio.load_sparse_csr(file_in)
+    width = np.size(X, 1)
+    X_test = X[:, :width-1]
+    y_test = X[:, width]
 
     prediction = clf.predict(X_test)
 
@@ -91,7 +104,7 @@ def test(addr_test, clf):
     return [tn, fp, fn, tp], round(recall, 4), round(filtered, 4)
 
 
-with open("/home/ubuntu/Weiyi/Reports/RF_Report.xlsx", "w") as file_out:
+with open("/home/ubuntu/Weiyi/Reports/RF_Report_Tmp.xlsx", "w") as file_out:
     workbook = xlsxwriter.Workbook(file_out)
     abnormal_format = workbook.add_format()
     abnormal_format.set_bg_color("red")
@@ -108,10 +121,10 @@ with open("/home/ubuntu/Weiyi/Reports/RF_Report.xlsx", "w") as file_out:
             init_estimators = 40
             add_estimators = 0
 
-        for ratio in __SAMPLING_RATIO:
-            result = ["RF", onoff_line, ratio]
+        for sampling in __SAMPLING_MODE:
+            result = ["RF", onoff_line, sampling]
 
-            ws = workbook.add_worksheet(onoff_line+"-"+str(ratio))
+            ws = workbook.add_worksheet(onoff_line+"-"+sampling)
             row = 0
             ws.write_row(row, 0, __HEADER)
             row += 1
@@ -145,7 +158,7 @@ with open("/home/ubuntu/Weiyi/Reports/RF_Report.xlsx", "w") as file_out:
                         model_loaded = False
                         if __LOAD_MODEL:
                             print "\n>>>>> Load Model for {}".format(addr_train)
-                            model_name = "RF" + "_" + onoff_line + "_" + str(ratio) + "_Model.p"
+                            model_name = "RF" + "_" + onoff_line + "_" + sampling + "_Model.p"
                             path_in = os.path.join(addr_train, "Random_Forest_Models", model_name)
                             try:
                                 with open(path_in, "r") as file_in:
@@ -158,7 +171,7 @@ with open("/home/ubuntu/Weiyi/Reports/RF_Report.xlsx", "w") as file_out:
                         if not model_loaded:
                             print "\n>>>>> Start Training on {}".format(addr_train)
                             start = time.time()
-                            clf = train(addr_train, clf, ratio, add_estimators)
+                            clf = train(addr_train, clf, sampling, add_estimators)
                             print ">>>>> Training completed in {} seconds".format(round(time.time()-start, 2))
 
                         addr_test = pair[1]
@@ -191,7 +204,3 @@ with open("/home/ubuntu/Weiyi/Reports/RF_Report.xlsx", "w") as file_out:
                 ws.write(row, col_filtered, filtered_avg)
 
     workbook.close()
-
-
-
-

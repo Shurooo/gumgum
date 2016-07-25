@@ -20,7 +20,7 @@ __DATA_MAY = [(5, i) for i in range(1, 8)]
 # __DATA_MAY = []
 __DATA_JUNE = [(6, i) for i in range(4, 26)]
 
-__HEADER = ["Model", "Online/Offline", "Sampling", "Train", "Test", "TN", "FP", "FN", "TP", "Recall", "Filtered"]
+__HEADER = ["Model", "Train", "Test", "TN", "FP", "FN", "TP", "Recall", "Filtered"]
 __FEATURES_TO_GET = ["bidder_id", "bid_floor", "country", "site_cat", "hour"]
 
 
@@ -91,36 +91,48 @@ def test(addr_test, clf):
     return [tn, fp, fn, tp], round(recall, 4), round(filtered, 4)
 
 
-with open("/home/ubuntu/Weiyi/Reports/RF_Report.xlsx", "w") as file_out:
+def init_workbook(file_out):
     workbook = xlsxwriter.Workbook(file_out)
     abnormal_format = workbook.add_format()
     abnormal_format.set_bg_color("red")
     col_recall = __HEADER.index("Recall")
     col_filtered = __HEADER.index("Filtered")
+    return workbook, abnormal_format, col_recall, col_filtered
 
-    for onoff_line in __ON_OFF_LINE:
-        if onoff_line == "Online":
-            if_warm_start = True
-            init_estimators = 20
-            add_estimators = 20
-        else:
-            if_warm_start = False
-            init_estimators = 40
-            add_estimators = 0
 
-        for ratio in __SAMPLING_RATIO:
-            result = ["RF", onoff_line, ratio]
+def init_worksheet(workbook):
+    ws = workbook.add_worksheet()
+    ws.write_row(0, 0, __HEADER)
+    return ws
 
-            ws = workbook.add_worksheet(onoff_line+"-"+str(ratio))
-            row = 0
+def run_test(clf, model, data, train_test_mode, report_name=-1, report_root="/home/ubuntu/Weiyi/Reports"):
+    if report_name == -1:
+        report_name = model + "_Report.xlsx"
+    file_out = open(os.path.join(report_root, report_name), "w")
+    workbook, abnormal_format, col_recall, col_filtered = init_workbook()
+
+    ws = init_worksheet(workbook)
+    row = 1
+
+    for mode in train_test_mode:
+        if mode == "Next_week":
+            row += 3
             ws.write_row(row, 0, __HEADER)
             row += 1
 
-            for mode in __TRAIN_TEST_MODE:
-                if mode == "Next_week":
-                    row += 3
-                    ws.write_row(row, 0, __HEADER)
-                    row += 1
+        result = [model]
+
+        pairs_by_month = get_addr_in(mode)
+
+    workbook.close()
+    file_out.close()
+
+
+    for mode in train_test_mode:
+        if mode == "Next_week":
+            row += 3
+            ws.write_row(row, 0, __HEADER)
+            row += 1
 
                 pairs_by_month = get_addr_in(mode)
                 recall_list = []
@@ -191,7 +203,3 @@ with open("/home/ubuntu/Weiyi/Reports/RF_Report.xlsx", "w") as file_out:
                 ws.write(row, col_filtered, filtered_avg)
 
     workbook.close()
-
-
-
-
