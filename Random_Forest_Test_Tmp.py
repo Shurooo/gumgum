@@ -146,7 +146,7 @@ with open("/home/ubuntu/Weiyi/Reports/RF_Report_Tmp.xlsx", "w") as file_out:
                                                  warm_start=if_warm_start,
                                                  n_jobs=-1,
                                                  random_state=1514,
-                                                 class_weight={0:1, 1:10000})
+                                                 class_weight={0:1, 1:10})
 
                     train_test_pairs = item[0]
                     dates_pairs = item[1]
