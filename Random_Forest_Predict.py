@@ -16,8 +16,9 @@ __ROOT_MODEL = "/home/ubuntu/Weiyi/model_random_forest.p"
 __TRAIN_DATA = [[6], [4]]
 __TEST_DATA =  [[6], [5]]
 
-__FEATURES_TO_GET = ["bid_floor", "bidder_id", "format"]
-__RATIO = 3 
+__FEATURES_TO_GET = ["bidder_id", "bid_floor", "country", "site_cat", "hour"]
+# __FEATURES_TO_GET = []
+__RATIO = 2.75 
 
 def get_io_addr(data_in):
     list_io_addr = []
@@ -36,8 +37,7 @@ def get_io_addr(data_in):
 
 def train():
     clf = RandomForestClassifier(n_estimators=40,
-                                 max_features=4,
-                                 min_weight_fraction_leaf=0.000001,
+                                 max_features="sqrt",
                                  oob_score=True,
                                  warm_start=False,
                                  n_jobs=-1,
