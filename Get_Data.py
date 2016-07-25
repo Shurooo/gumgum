@@ -42,7 +42,7 @@ def get_feature_indices():
 def get_cutoffs(features_to_get):
     feature_indices = get_feature_indices()
     cutoffs = []
-    for item in features_to_get+"response":
+    for item in features_to_get:
         indices = feature_indices[item]
         cutoffs.append(indices[0])
         cutoffs.append(indices[1])
@@ -56,6 +56,7 @@ def select_features(matrix, features_to_get):
         new_line = []
         for i in range(0, len(cutoffs), 2):
             new_line.extend(line[cutoffs[i]:cutoffs[i+1]])
+        new_line.append(line[len(line)-1])
         matrix_new.append(new_line)
     return np.array(matrix_new)
 
