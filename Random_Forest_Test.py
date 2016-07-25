@@ -22,7 +22,7 @@ __DATA_MAY = [(5, i) for i in range(1, 8)]
 __DATA_JUNE = [(6, i) for i in range(4, 26)]
 
 __HEADER = ["Model", "Online/Offline", "Sampling", "Train", "Test", "TN", "FP", "FN", "TP", "Recall", "Filtered"]
-__FEATURES_TO_GET = ["bid_floor", "bidder_id", "format", "response"]
+__FEATURES_TO_GET = ["bid_floor", "bidder_id", "format"]
 
 
 def format_addr(dates, mode):
