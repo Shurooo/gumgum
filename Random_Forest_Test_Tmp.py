@@ -141,12 +141,12 @@ with open("/home/ubuntu/Weiyi/Reports/RF_Report_Tmp.xlsx", "w") as file_out:
                 for item in pairs_by_month:
                     clf = RandomForestClassifier(n_estimators=init_estimators,
                                                  max_features="sqrt",
-                                                 min_weight_fraction_leaf=0.00000001,
+                                                 min_weight_fraction_leaf=0.000000001,
                                                  oob_score=True,
                                                  warm_start=if_warm_start,
                                                  n_jobs=-1,
                                                  random_state=1514,
-                                                 class_weight={0:1, 1:1000})
+                                                 class_weight={0:1, 1:10000})
 
                     train_test_pairs = item[0]
                     dates_pairs = item[1]
