@@ -14,11 +14,11 @@ __LOAD_MODEL = False
 
 __TRAIN_TEST_MODE = ["Next_day"]
 __ON_OFF_LINE = ["Online"]
-__SAMPLING_RATIO = [1]
+__SAMPLING_RATIO = [2.65]
 
 # Date Format = [(Month, Day)]
-# __DATA_MAY = [(5, i) for i in range(1, 8)]
-__DATA_MAY = []
+__DATA_MAY = [(5, i) for i in range(1, 8)]
+# __DATA_MAY = []
 __DATA_JUNE = [(6, i) for i in range(4, 26)]
 
 __HEADER = ["Model", "Online/Offline", "Sampling", "Train", "Test", "TN", "FP", "FN", "TP", "Recall", "Filtered"]
@@ -133,12 +133,10 @@ with open("/home/ubuntu/Weiyi/Reports/RF_Report.xlsx", "w") as file_out:
                 for item in pairs_by_month:
                     clf = RandomForestClassifier(n_estimators=init_estimators,
                                                  max_features=12,
-                                                 min_weight_fraction_leaf=0.000001,
                                                  oob_score=True,
                                                  warm_start=if_warm_start,
                                                  n_jobs=-1,
-                                                 random_state=1514,
-                                                 class_weight={0:1, 1:5})
+                                                 random_state=1514)
 
                     train_test_pairs = item[0]
                     dates_pairs = item[1]

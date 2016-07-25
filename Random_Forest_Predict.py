@@ -41,7 +41,7 @@ def train():
                                  warm_start=False,
                                  n_jobs=-1,
                                  random_state=1514,
-                                 class_weight={0:1, 1:5})
+                                 class_weight={0:1, 1:1})
     list_io_addr = get_io_addr(__TRAIN_DATA)
 
     for path_in in list_io_addr:
