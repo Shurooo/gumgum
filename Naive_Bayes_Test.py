@@ -14,9 +14,9 @@ __LOAD_MODEL = False
 
 __TRAIN_TEST_MODE = ["Next_day", "Next_week"]
 __ON_OFF_LINE = ["Online"]
-__SAMPLING_RATIO = [3.2]
+__SAMPLING_RATIO = [0.72]
 
-__WEIGHT = [0.15, 0.85]
+__WEIGHT = [0.01, 0.99]
 
 # Date Format = [(Month, Day)]
 __DATA_MAY = [(5, i) for i in range(1, 8)]
@@ -60,7 +60,7 @@ def train(addr_train, clf, ratio, onoff_line):
     if onoff_line == "Offline":
         clf.fit(X_train, y_train)
     else:
-        clf.partial_fit(X_train, y_train, classes=[0,1])
+        clf.partial_fit(X_train, y_train, classes=[0, 1])
 
     if __SAVE_MODEL:
         model_name = "BNB_" + onoff_line + "_" + str(ratio) + "_Model"
@@ -72,14 +72,7 @@ def train(addr_train, clf, ratio, onoff_line):
 
 
 def test(addr_test, clf):
-    path_in = os.path.join(addr_test, "day_samp_bin.npy")
-    with open(path_in, "r") as file_in:
-        X = smio.load_sparse_csr(file_in)
-
-    vector_len = len(X[0])
-    X_test = X[:, 0:vector_len-1]
-    y_test = X[:, vector_len-1]
-
+    X_test, y_test = gd.get(addr_test)
     prediction = clf.predict(X_test)
 
     confusion_matrix = metrics.confusion_matrix(y_test, prediction)
@@ -93,7 +86,7 @@ def test(addr_test, clf):
     return [tn, fp, fn, tp], round(recall, 4), round(filtered, 4)
 
 
-with open('/home/ubuntu/Weiyi/Reports/BNB_Report.xlsx', "w") as file_out:
+with open('/home/ubuntu/Weiyi/Reports/BNB_Report_Select.xlsx', "w") as file_out:
     workbook = xlsxwriter.Workbook(file_out)
     abnormal_format = workbook.add_format()
     abnormal_format.set_bg_color("red")
