@@ -6,7 +6,7 @@ import Sparse_Matrix_IO as smio
 
 __FEATURES = ["hour", "day", "country", "margin", "tmax", "bkc", "site_typeid", "site_cat", "browser_type",
              "bidder_id", "vertical_id", "bid_floor", "format", "product", "banner", "response"]
-__FEATURES_TO_GET = ["bid_floor", "bidder_id", "format"]
+__FEATURES_TO_GET = ["bid_floor", "bidder_id", "format", "response"]
 # __FEATURES_TO_GET = []
 
 

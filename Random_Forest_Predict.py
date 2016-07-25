@@ -16,7 +16,7 @@ __ROOT_MODEL = "/home/ubuntu/Weiyi/model_random_forest.p"
 __TRAIN_DATA = [[6], [4]]
 __TEST_DATA =  [[6], [5]]
 
-__RATIO = 2.65 
+__RATIO = 3 
 
 def get_io_addr(data_in):
     list_io_addr = []
@@ -36,7 +36,6 @@ def get_io_addr(data_in):
 def train():
     clf = RandomForestClassifier(n_estimators=40,
                                  max_features=4,
-                                 min_weight_fraction_leaf=0.00001,
                                  oob_score=True,
                                  warm_start=False,
                                  n_jobs=-1,
