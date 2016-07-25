@@ -12,7 +12,7 @@ import Sparse_Matrix_IO as smio
 __SAVE_MODEL = False
 __LOAD_MODEL = False
 
-__TRAIN_TEST_MODE = ["Next_day"]
+__TRAIN_TEST_MODE = ["Next_day", "Next_week"]
 __ON_OFF_LINE = ["Online"]
 __SAMPLING_RATIO = [2.65]
 

@@ -12,8 +12,8 @@ __SAVE_MODEL = False
 __ROOT_MODEL = "/home/ubuntu/Weiyi/model_05_01_classprior"
 
 # Data Format = [[Month], [Day], [Hour]]
-__TRAIN_DATA = [[6], [4]]
-__TEST_DATA = [[6], [5]]
+__TRAIN_DATA = [[6], [19]]
+__TEST_DATA = [[6], [20]]
 
 __RATIO = 0.72 
 
