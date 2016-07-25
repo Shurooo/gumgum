@@ -34,7 +34,7 @@ def get_io_addr(data_in):
 def train():
     print "\n========== Start Training =========="
     list_io_addr = get_io_addr(__TRAIN_DATA)
-    clf = BernoulliNB(class_prior=[0.01, 0.99])
+    clf = BernoulliNB(class_prior=[0.01, 0.99], alpha=0.5)
 
     for addr_in in list_io_addr:
         print "\nGenerating training set from {}".format(addr_in)

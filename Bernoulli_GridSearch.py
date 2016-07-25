@@ -8,6 +8,7 @@ from sklearn.metrics import make_scorer, fbeta_score
 from sklearn.naive_bayes import BernoulliNB, MultinomialNB
 from sklearn import metrics, grid_search
 import Sparse_Matrix_IO as smio
+import Get_Data as gd
 
 
 __ADDR_OUT = "/home/ubuntu/Weiyi/GridSearch_Bern_None_05.txt"
@@ -92,13 +93,12 @@ def lm():
     myfile = open(__ADDR_OUT, "w")
 
     for ratio in [-1]:
-        sampling = "None"
 
         myfile.write("_____________________________________________\n")
-        myfile.write(sampling+"Sampling Ratio = "+str(ratio))
+        myfile.write("Sampling Ratio = "+str(ratio))
         myfile.write("\n")
 
-        X, y, X_test, y_test = get_data(ratio, sampling)
+        X, y, X_test, y_test = get_data(ratio)
         classes_weights = []
         step = np.arange(0.9, 0.991, 0.01)
         for i in step:
@@ -106,7 +106,7 @@ def lm():
         step = np.arange(0.991, 1, 0.001)
         for i in step:
             classes_weights.append([1-i, i])
-        parameters = {"class_prior": classes_weights, "alpha": [0.5, 1, 1.5, 2]}
+        parameters = {"class_prior": classes_weights, "alpha": [0.5]}
 
         gum_score = make_scorer(fbeta_score, beta = 10)  #using f1 score
         #gum_score = make_scorer(recall_score, beta = 12)  #using recall score
