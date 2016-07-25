@@ -63,14 +63,7 @@ def crawl(args):
     addr_in = args[0]
     clf = args[1]
 
-    print "Processing testing set from {}".format(addr_in)
-    with open(os.path.join(addr_in, "day_samp_bin.npy"), "r") as file_in:
-        X = smio.load_sparse_csr(file_in)
-
-    vector_len = len(X[0])
-    X_test = X[:, 0:vector_len-1]
-    y_test = X[:, vector_len-1]
-
+    X_test, y_test = gd.get(addr_in)
     prediction = clf.predict(X_test)
 
     return metrics.confusion_matrix(y_test, prediction)
