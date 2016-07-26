@@ -6,7 +6,7 @@ import multiprocessing
 def get_io_addr():
     may = [(5, i, j) for i in range(1, 8) for j in range(24)]
     june = [(6, i, j) for i in range(4, 26) for j in range(24)]
-    root = "/mnt/rips2/2016"
+    root = "/mnt/rips/2016"
 
     list_io_addr = []
     for item in may+june:
