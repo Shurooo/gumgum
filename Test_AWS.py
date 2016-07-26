@@ -4,7 +4,7 @@ import multiprocessing
 
 
 def get_io_addr():
-    may = [(5, i, j) for i in range(1, 8) for j in range(0)]
+    may = [(5, i, j) for i in range(1, 8) for j in range(1)]
     # june = [(6, i, j) for i in range(4, 26) for j in range(24)]
     june = []
     root = "/mnt/rips/2016"
