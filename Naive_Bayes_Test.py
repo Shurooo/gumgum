@@ -86,7 +86,7 @@ def test(addr_test, clf):
     return [tn, fp, fn, tp], round(recall, 4), round(filtered, 4)
 
 
-with open('/home/ubuntu/Weiyi/Reports/BNB_Report_Select.xlsx', "w") as file_out:
+with open('/home/ubuntu/Weiyi/Reports/BNB_Report.xlsx', "w") as file_out:
     workbook = xlsxwriter.Workbook(file_out)
     abnormal_format = workbook.add_format()
     abnormal_format.set_bg_color("red")

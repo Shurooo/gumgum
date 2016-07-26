@@ -27,33 +27,54 @@ def get_io_addr():
 def crawl(addr_in):
     print "Processing {}".format(addr_in)
 
-    count = 0
+    tmax_count = 0
+    imp_count = 0
+    tmax_result = []
+    imp_result = []
     line_count = 0
-    result_list = []
     with open(addr_in, "r") as file_in:
         for line in file_in:
             entry = json.loads(line)
-            if not (entry["auction"].has_key("bidrequests")) or (len(entry["auction"]["bidrequests"]) == 0):
-                count += 1
-                result_list.append(addr_in + ": line {}".format(line_count))
+            auction = entry["auction"]
+            if auction.has_key("tmax"):
+                if auction["tmax"] <= 0:
+                    tmax_count += 1
+                    tmax_result.append(addr_in + ": line {}".format(line_count))
+            if auction.has_key("bidrequests"):
+                bidreq_list = entry["auction"]["bidrequests"]
+                for bidreq in bidreq_list:
+                    if not (bidreq.has_key("impressions")) or (len(bidreq["impressions"]) == 0):
+                        imp_count += 1
+                        imp_result.append(addr_in + ": line {}".format(line_count))
             line_count += 1
-    return count, result_list
+    return tmax_count, tmax_result, imp_count, imp_result
 
 if __name__ == '__main__':
     cpus = multiprocessing.cpu_count()
     p = multiprocessing.Pool(cpus)
     list_io_addr = get_io_addr()
 
-    count = 0
+    tmax_count = 0
+    imp_count = 0
+    tmax_result = []
+    imp_result = []
     result_list = []
     for result in p.imap(crawl, list_io_addr):
-        count += result[0]
-        result_list.extend(result[1])
+        tmax_count += result[0]
+        tmax_result.extend(result[1])
+        imp_count += result[2]
+        imp_result.extend(result[3])
 
 
-    print "{} auctions do not have bid requests".format(count)
+    print "{} auctions have tmax <= 0".format(tmax_count)
+    print "{} bid requests do not have impressions".format(imp_count)
 
-    with open("/home/ubuntu/Weiyi/auctions_without_bidreqts_may.txt", "w") as file_out:
-        file_out.write("{} auctions do not have bid requests\n".format(count))
-        for line in result_list:
+    with open("/home/ubuntu/Weiyi/abnormal_tmax.txt", "w") as file_out:
+        file_out.write("{} auctions have tmax <= 0".format(tmax_count))
+        for line in tmax_result:
+            file_out.write(line + "\n")
+
+    with open("/home/ubuntu/Weiyi/bidreq_without_imps.txt", "w") as file_out:
+        file_out.write("{} bid requests do not have impressions".format(imp_count))
+        for line in imp_result:
             file_out.write(line + "\n")
