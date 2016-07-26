@@ -23,7 +23,9 @@ def get_io_addr():
     return list_io_addr
 
 
-def crawl(addr_in, dict_country):
+def crawl(args):
+    addr_in = args[0]
+    dict_country = args[1]
     print "Processing {}".format(addr_in)
     new_country = {}
     with open(addr_in, "r") as file_in:
@@ -44,8 +46,14 @@ if __name__ == '__main__':
     p = multiprocessing.Pool(cpus)
     list_io_addr = get_io_addr()
 
+    with open("/home/ubuntu/Weiyi/dict_country.json", "r") as file_in:
+        dict_country = json.load(file_in)
+    args = []
+    for item in list_io_addr:
+        args.append((item, dict_country))
+
     new_country = {}
-    for result in p.imap(crawl, list_io_addr):
+    for result in p.imap(crawl, args):
         for key in result:
             if new_country.has_key(key):
                 new_country[key] += result[key]
