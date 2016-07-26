@@ -45,7 +45,7 @@ def crawl(addr_in):
                 for bidreq in bidreq_list:
                     if (not bidreq.has_key("impressions")) or (len(bidreq["impressions"]) == 0):
                         imp_count += 1
-                        imp_result.append(addr_in + ": line {}".format(line_count))
+                        imp_result.append(json.dumps(entry))
             line_count += 1
     return tmax_count, tmax_result, imp_count, imp_result
 
