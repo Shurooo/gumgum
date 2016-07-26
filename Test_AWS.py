@@ -32,6 +32,7 @@ def crawl(addr_in):
     tmax_result = []
     imp_result = []
     line_count = 0
+    if_no_imp = False
     with open(addr_in, "r") as file_in:
         for line in file_in:
             entry = json.loads(line)
@@ -45,7 +46,9 @@ def crawl(addr_in):
                 for bidreq in bidreq_list:
                     if (not bidreq.has_key("impressions")) or (len(bidreq["impressions"]) == 0):
                         imp_count += 1
-                        imp_result.append(json.dumps(entry))
+                        if_no_imp = True
+            if if_no_imp:
+                imp_result.append(json.dumps(entry))
             line_count += 1
     return tmax_count, tmax_result, imp_count, imp_result
 
