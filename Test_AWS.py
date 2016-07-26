@@ -42,7 +42,7 @@ def crawl(addr_in):
                             if imp.has_key("banner"):
                                 w = imp["banner"]["w"]
                                 h = imp["banner"]["h"]
-                                if (w <= 0) or (h <= 0):
+                                if (w <= 0) and (h <= 0):
                                     small_count += 1
                                 if (w >= 500) and (h >= 200):
                                     large_count += 1
