@@ -4,11 +4,13 @@ import multiprocessing
 
 
 def get_io_addr():
-    june = [(6, i, j) for i in range(4, 26) for j in range(24)]
+    may = [(5, i, j) for i in range(4, 26) for j in range(24)]
+    # june = [(6, i, j) for i in range(4, 26) for j in range(24)]
+    june = []
     root = "/mnt/rips/2016"
 
     list_io_addr = []
-    for item in june:
+    for item in may+june:
         month = item[0]
         day = item[1]
         hour = item[2]
@@ -22,45 +24,36 @@ def get_io_addr():
     return list_io_addr
 
 
-def crawl(args):
-    addr_in = args[0]
-    dict_country = args[1]
+def crawl(addr_in):
     print "Processing {}".format(addr_in)
-    new_country = {}
+
+    count = 0
+    line_count = 0
+    result_list = []
     with open(addr_in, "r") as file_in:
         for line in file_in:
             entry = json.loads(line)
-            if entry["em"].has_key("cc"):
-                country = entry["em"]["cc"]
-                if not dict_country.has_key(country):
-                    if new_country.has_key(country):
-                        new_country[country] += 1
-                    else:
-                        new_country.update({country:1})
-
-    return new_country
+            if not (entry["auction"].has_key("bidrequests")) or (len(entry["auction"]["bidrequests"]) == 0):
+                count += 1
+                result_list.append(addr_in + ": line {}".format(line_count))
+            line_count += 1
+    return count, result_list
 
 if __name__ == '__main__':
     cpus = multiprocessing.cpu_count()
     p = multiprocessing.Pool(cpus)
     list_io_addr = get_io_addr()
 
-    with open("/home/ubuntu/Weiyi/dict_country.json", "r") as file_in:
-        dict_country = json.load(file_in)
-    args = []
-    for item in list_io_addr:
-        args.append((item, dict_country))
+    count = 0
+    result_list = []
+    for result in p.imap(crawl, list_io_addr):
+        count += result[0]
+        result_list.extend(result[1])
 
-    new_country = {}
-    for result in p.imap(crawl, args):
-        for key in result:
-            if new_country.has_key(key):
-                new_country[key] += result[key]
-            else:
-                new_country.update({key:result[key]})
 
-    print "{} distinct new countries recorded".format(len(new_country))
-    print "{} occurences in total".format(sum(new_country.values()))
+    print "{} auctions do not have bid requests".format(count)
 
-    with open("/home/ubuntu/Weiyi/new_countries.json", "w") as file_out:
-        json.dump(new_country, file_out)
+    with open("/home/ubuntu/Weiyi/auctions_without_bidreqts_may.txt", "w") as file_out:
+        file_out.write("{} auctions do not have bid requests\n".format(count))
+        for line in result_list:
+            file_out.write(line + "\n")
