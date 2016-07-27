@@ -8,8 +8,8 @@ import multiprocessing
 def get_io_addr():
     may = [(5, i, j) for i in range(1, 8) for j in range(24)]
     # may = []
-    # june = [(6, i, j) for i in range(4, 26) for j in range(24)]
-    june = []
+    june = [(6, i, j) for i in range(4, 26) for j in range(24)]
+    # june = []
     root = "/mnt/rips/2016"
 
     list_io_addr = []
@@ -62,7 +62,7 @@ if __name__ == '__main__':
     print "{} unique domains recorded".format(len(dict_domain))
 
     sorted_domain = sorted(dict_domain.items(), key=operator.itemgetter(1), reverse=True)
-    with open("/home/ubuntu/Weiyi/domains.ods", "w") as file_out:
+    with open("/home/ubuntu/Weiyi/domains_all.ods", "w") as file_out:
         wr = csv.writer(file_out)
         for item in sorted_domain:
             wr.writerow(item)
