@@ -8,20 +8,7 @@ from sklearn import metrics
 import Get_Data as gd
 
 
-__SAVE_MODEL = False
-__LOAD_MODEL = False
-
-__TRAIN_TEST_MODE = ["Next_day"]
-__ON_OFF_LINE = ["Online"]
-__SAMPLING_RATIO = [2.75]
-
-# Date Format = [(Month, Day)]
-__DATA_MAY = [(5, i) for i in range(1, 8)]
-# __DATA_MAY = []
-__DATA_JUNE = [(6, i) for i in range(4, 26)]
-
 __HEADER = ["Model", "Train", "Test", "TN", "FP", "FN", "TP", "Recall", "Filtered"]
-__FEATURES_TO_GET = ["bidder_id", "bid_floor", "country", "site_cat", "hour"]
 
 
 def format_addr(dates_by_month, mode):
@@ -48,7 +35,7 @@ def get_addr_in(mode, data):
             tuple_pairs = format_addr(dates_by_month, 1)
             pairs_by_month.append(tuple_pairs)
     else:
-        tuple_pairs = format_addr(__DATA_JUNE, 7)
+        tuple_pairs = format_addr(data[0], 7)
         pairs_by_month.append(tuple_pairs)
     return pairs_by_month
 
@@ -123,6 +110,21 @@ def run_test(clf, model, data, train_test_mode, report_name=-1, report_root="/ho
         result = [model]
 
         pairs_by_month = get_addr_in(data, mode)
+        recall_list = []
+        filtered_list = []
+        for item in pairs_by_month:
+            train_test_pairs = item[0]
+            dates_pairs = item[1]
+            for i in range(len(train_test_pairs)):
+                result_row = result[:]
+                result_row.extend([dates_pairs[i][0], dates_pairs[i][1]])
+
+                pair = train_test_pairs[i]
+                addr_train = pair[0]
+                print "\n>>>>> Start Training on {}".format(addr_train)
+                start = time.time()
+                clf = train(addr_train, clf, ratio, add_estimators)
+                print ">>>>> Training completed in {} seconds".format(round(time.time()-start, 2))
 
     workbook.close()
     file_out.close()
