@@ -57,7 +57,7 @@ if __name__ == '__main__':
 
     print "{} unique domains recorded".format(len(dict_domain))
 
-    sorted_domain = sorted(dict_domain.items(), operator.itemgetter(1), reverse=True)
+    sorted_domain = sorted(dict_domain.items(), key=operator.itemgetter(1), reverse=True)
     with open("/home/ubuntu/Weiyi/domains.ods", "w") as file_out:
         wr = csv.writer(file_out)
         for item in sorted_domain:
