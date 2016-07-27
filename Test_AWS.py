@@ -37,6 +37,8 @@ def crawl(addr_in):
             domain = (entry["auction"]["site"]["domain"])
             if (domain == None) or (len(domain) == 0):
                 domain = "NONE"
+            domain_tmp = domain.split("www.")
+            domain = domain_tmp[len(domain_tmp)-1]
             if dict_domain.has_key(domain):
                 dict_domain[domain] += 1
             else:
