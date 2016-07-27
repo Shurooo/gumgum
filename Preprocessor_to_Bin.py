@@ -7,24 +7,17 @@ import multiprocessing
 import time
 
 
-__FORMAT_COUNT = 31
-__FORMAT_TO_IGNORE = [1,2,3,4,6,7,20,21,22,25,26]
-__FORMAT_MASK = [0]*(__FORMAT_COUNT+1)
-for i in __FORMAT_TO_IGNORE:
-    __FORMAT_MASK[i] = 1
-__FORMAT_INDEX = {}
-count = 1
-for i in range(1,__FORMAT_COUNT+1):
-    if __FORMAT_MASK[i] == 0:
-        __FORMAT_INDEX.update({i:count})
-        count += 1
+def get_dict(var):
+    dicts_root_ = "dicts"
+    with open(os.path.join(dicts_root_, "dict_"+var+".txt"), "r") as file_in:
+        dict_var = [line.rstrip("\r\n") for line in file_in]
+    return dict_var
 
-__BROWSER_TYPE = [1,2,5,7,10,11,12,13]
-
-ADDR_COUNTRY_DICT = "dict_country.json"
-with open(ADDR_COUNTRY_DICT, "r") as file_in:
-    __DICT_COUNTRY = json.load(file_in)
-
+margins = [3.5, 2.45, 3.0, 2.0, 1.65, 0.85, 1.25, 0.45, 0.25, 0.15, 0.1, 4.5, 0.0, 4.0]
+countries_ = ["US", "GB", "CA", "DE", "FR", "NL", "IT"]
+region_ = get_dict("region")
+domains_ = get_dict("domain")
+browsers_ = [1,2,5,7,10,11,12,13]
 
 start = time.time()
 
