@@ -34,7 +34,9 @@ def crawl(addr_in):
     with open(addr_in, "r") as file_in:
         for line in file_in:
             entry = json.loads(line)
-            domain = (entry["auction"]["site"]["domain"]).replace(" ", "")
+            domain = (entry["auction"]["site"]["domain"])
+            if (domain == None) or (len(domain) == 0):
+                domain = "NONE"
             if dict_domain.has_key(domain):
                 dict_domain[domain] += 1
             else:
