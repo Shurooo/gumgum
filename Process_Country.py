@@ -9,8 +9,8 @@ result_list = []
 def get_dates():
     may = [(5, i, j) for i in range(1, 8) for j in range(24)]
     # may = []
-    # june = [(6, i, j) for i in range(4, 26) for j in range(24)]
-    june = []
+    june = [(6, i, j) for i in range(4, 26) for j in range(24)]
+    # june = []
     return may+june
 
 
