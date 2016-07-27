@@ -1,6 +1,7 @@
-import os
 import multiprocessing
-import Process_Margin as process
+import os
+
+from Processes import Process_Margin as process
 
 
 def get_io_addr(dates):
