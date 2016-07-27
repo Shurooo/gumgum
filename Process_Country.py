@@ -34,6 +34,7 @@ def run(addr_in):
 def add_result(result):
     result_list.append(result)
 
+
 def get_result():
     dict_country = {}
     for result in result_list:
