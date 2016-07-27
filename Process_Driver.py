@@ -1,15 +1,10 @@
 import os
-import csv
-import json
-import operator
 import multiprocessing
 import Process_Domain as process
 
 
 def get_io_addr(dates):
-
     root = "/mnt/rips/2016"
-
     list_io_addr = []
     for item in dates:
         month = item[0]
@@ -29,6 +24,7 @@ def crawl(addr_in):
     print "Processing {}".format(addr_in)
     return process.run(addr_in)
 
+
 if __name__ == '__main__':
     cpus = multiprocessing.cpu_count()
     p = multiprocessing.Pool(cpus)
@@ -38,5 +34,3 @@ if __name__ == '__main__':
         process.add_result(result)
 
     process.get_result()
-
-
