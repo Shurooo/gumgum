@@ -17,49 +17,13 @@ margins = [3.5, 2.45, 3.0, 2.0, 1.65, 0.85, 1.25, 0.45, 0.25, 0.15, 0.1, 4.5, 0.
 countries_ = ["US", "GB", "CA", "DE", "FR", "NL", "IT"]
 region_ = get_dict("region")
 domains_ = get_dict("domain")
-browsers_ = [1,2,5,7,10,11,12,13]
+formats_ = [16, 31, 9, 12, 14, 3, 2, 7, 5, 21, 20, 6, 8, 15, 22, 27, 26, 25, 13, 30]
+browsers_ = [1, 2, 5, 7, 10, 11, 12, 13]
+banners_ = [(300, 250), (728, 90), (160, 600), (320, 50), (300, 600), (970, 90), (468, 60), (234, 60), (13, 13),
+            (12, 12), (17, 17), (18, 18), (10, 10), (300, 120), (16, 16), (250, 100), (19, 19), (320, 480),
+            (250, 70), (0, 0), (450, 100), (21, 21), (20, 20), (400, 400), (300, 100)]
 
 start = time.time()
-
-
-def get_io_addr_random_sample():
-    list_io_addr = []
-    root = "/home/ubuntu/random_samples"
-    prefix = ["all", "", "new"]
-    suffix = [i for i in range(6)]
-    for i in prefix:
-        for j in suffix:
-            file_name = i+"data"+str(j)
-            addr_in = os.path.join(root, file_name+".txt")
-            addr_out = os.path.join(root, file_name+"_bin_new.npy")
-            list_io_addr.append((addr_in, addr_out))
-    return list_io_addr
-
-
-def get_io_addr_day_sample():
-    # list_may = [(5, i) for i in range(2,8)]
-    list_may = []
-    list_june = [(6, i) for i in range(4,26)]
-    list_dates = list_may+list_june
-
-    filename_in = "day_samp.txt"
-    root_in = "/mnt/rips2/2016"
-    filename_out = "day_samp_bin.npy"
-    root_out = "/mnt/rips2/2016"
-
-    list_io_addr = []
-    for date in list_dates:
-        month = date[0]
-        day = date[1]
-        io_addr = os.path.join(str(month).rjust(2, "0"),
-                               str(day).rjust(2, "0"))
-        addr_in = os.path.join(root_in, io_addr, filename_in)
-        path_out = os.path.join(root_out, io_addr)
-        if not os.path.isdir(path_out):
-            os.makedirs(path_out)
-        addr_out = os.path.join(path_out, filename_out)
-        list_io_addr.append((addr_in, addr_out))
-    return list_io_addr
 
 
 def get_io_addr():
@@ -320,7 +284,7 @@ def auction_bidrequest_impressions_process(bidreq, bid_responded, result_bid, re
 if __name__ == '__main__':
     cpus = multiprocessing.cpu_count()
     p = multiprocessing.Pool(cpus)
-    list_io_addr = get_io_addr_day_sample()
+    list_io_addr = get_io_addr()
 
     dumped = 0
     filtered = 0
