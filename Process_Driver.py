@@ -1,6 +1,6 @@
 import os
 import multiprocessing
-import Process_Domain as process
+import Process_Country as process
 
 
 def get_io_addr(dates):
