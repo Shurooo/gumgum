@@ -24,28 +24,28 @@ __HEADER = ["Model", "Train", "Test", "TN", "FP", "FN", "TP", "Recall", "Filtere
 __FEATURES_TO_GET = ["bidder_id", "bid_floor", "country", "site_cat", "hour"]
 
 
-def format_addr(dates, mode):
+def format_addr(dates_by_month, mode):
     root = "/mnt/rips2/2016"
     train_test_pairs = []
     dates_pairs = []
-    for i in range(len(dates)-mode):
-        train = dates[i]
-        test = dates[i+mode]
-        file_train = os.path.join(str(train[0]).rjust(2, "0"), str(train[1]).rjust(2, "0"))
-        file_test = os.path.join(str(test[0]).rjust(2, "0"), str(test[1]).rjust(2, "0"))
-        addr_train = os.path.join(root, file_train)
-        addr_test = os.path.join(root, file_test)
+    for i in range(len(dates_by_month)-mode):
+        train = dates_by_month[i]
+        test = dates_by_month[i+mode]
+        date_train = os.path.join(str(train[0]).rjust(2, "0"), str(train[1]).rjust(2, "0"))
+        date_test = os.path.join(str(test[0]).rjust(2, "0"), str(test[1]).rjust(2, "0"))
+        addr_train = os.path.join(root, date_train)
+        addr_test = os.path.join(root, date_test)
 
         train_test_pairs.append((addr_train, addr_test))
-        dates_pairs.append((file_train, file_test))
+        dates_pairs.append((date_train, date_test))
     return train_test_pairs, dates_pairs
 
 
-def get_addr_in(mode):
+def get_addr_in(mode, data):
     pairs_by_month = []
     if mode == "Next_day":
-        for dates in [__DATA_MAY, __DATA_JUNE]:
-            tuple_pairs = format_addr(dates, 1)
+        for dates_by_month in data:
+            tuple_pairs = format_addr(dates_by_month, 1)
             pairs_by_month.append(tuple_pairs)
     else:
         tuple_pairs = format_addr(__DATA_JUNE, 7)
@@ -109,7 +109,7 @@ def run_test(clf, model, data, train_test_mode, report_name=-1, report_root="/ho
     if report_name == -1:
         report_name = model + "_Report.xlsx"
     file_out = open(os.path.join(report_root, report_name), "w")
-    workbook, abnormal_format, col_recall, col_filtered = init_workbook()
+    workbook, abnormal_format, col_recall, col_filtered = init_workbook(file_out)
 
     ws = init_worksheet(workbook)
     row = 1
@@ -122,7 +122,7 @@ def run_test(clf, model, data, train_test_mode, report_name=-1, report_root="/ho
 
         result = [model]
 
-        pairs_by_month = get_addr_in(mode)
+        pairs_by_month = get_addr_in(data, mode)
 
     workbook.close()
     file_out.close()

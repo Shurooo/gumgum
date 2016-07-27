@@ -100,6 +100,8 @@ start = time.time()
 clf = train()
 print "----------Training Completed in {} seconds----------\n".format(round(time.time()-start, 2))
 
-start = time.time()
-test(clf)
-print "----------Testing Completed in {} seconds----------\n".format(round(time.time()-start, 2))
+print clf.feature_log_prob_
+
+# start = time.time()
+# test(clf)
+# print "----------Testing Completed in {} seconds----------\n".format(round(time.time()-start, 2))
