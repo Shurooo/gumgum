@@ -27,4 +27,4 @@ def add_result(result):
 
 
 def get_result():
-    gro.get_result(result_list, "countries")
+    gro.get_result(result_list, "tmax")
