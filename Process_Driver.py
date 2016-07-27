@@ -1,7 +1,7 @@
 import multiprocessing
 import os
 
-from Processes import BidFloor as process
+from Processes import Margin as process
 
 
 def get_io_addr():
