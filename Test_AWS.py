@@ -1,13 +1,15 @@
 import os
+import csv
 import json
+import operator
 import multiprocessing
 
 
 def get_io_addr():
     may = [(5, i, j) for i in range(1, 8) for j in range(24)]
     # may = []
-    june = [(6, i, j) for i in range(4, 26) for j in range(24)]
-    # june = []
+    # june = [(6, i, j) for i in range(4, 26) for j in range(24)]
+    june = []
     root = "/mnt/rips/2016"
 
     list_io_addr = []
@@ -28,46 +30,35 @@ def get_io_addr():
 def crawl(addr_in):
     print "Processing {}".format(addr_in)
 
-    small_count = 0
-    large_count = 0
+    dict_domain = {}
     with open(addr_in, "r") as file_in:
         for line in file_in:
             entry = json.loads(line)
-            auction = entry["auction"]
+            domain = entry["auction"]["site"]["domain"]
+            if dict_domain.has_key(domain):
+                dict_domain[domain] += 1
+            else:
+                dict_domain.update({domain:1})
 
-            if auction.has_key("bidrequests"):
-                for bidreq in entry["auction"]["bidrequests"]:
-                    if bidreq.has_key("impressions"):
-                        for imp in bidreq["impressions"]:
-                            if imp.has_key("banner"):
-                                w = imp["banner"]["w"]
-                                h = imp["banner"]["h"]
-                                if (w <= 0) and (h <= 0):
-                                    small_count += 1
-                                if (w >= 500) and (h >= 200):
-                                    large_count += 1
-    return small_count, large_count
+    return dict_domain
 
 if __name__ == '__main__':
     cpus = multiprocessing.cpu_count()
     p = multiprocessing.Pool(cpus)
     list_io_addr = get_io_addr()
 
-    small_count = 0
-    large_count = 0
+    dict_domain = {}
     for result in p.imap(crawl, list_io_addr):
-        small_count += result[0]
-        large_count += result[1]
+        for key in result:
+            if dict_domain.has_key(key):
+                dict_domain[key] += result[key]
+            else:
+                dict_domain.update({key:result[key]})
 
-    print "{} banners with width or heigh <= 0".format(small_count)
-    print "{} banners with width >= 500 and height >= 200".format(large_count)
-    #
-    # with open("/home/ubuntu/Weiyi/abnormal_tmax.txt", "w") as file_out:
-    #     file_out.write("{} auctions have tmax <= 0".format(tmax_count))
-    #     for line in tmax_result:
-    #         file_out.write(line + "\n")
-    #
-    # with open("/home/ubuntu/Weiyi/bidreq_without_imps.txt", "w") as file_out:
-    #     file_out.write("{} bid requests do not have impressions".format(imp_count))
-    #     for line in imp_result:
-    #         file_out.write(line + "\n")
+    print "{} unique domains recorded".format(len(dict_domain))
+
+    sorted_domain = sorted(dict_domain.items(), operator.itemgetter(1), reverse=True)
+    with open("/home/ubuntu/Weiyi/domains.ods", "w") as file_out:
+        wr = csv.writer(file_out)
+        for item in sorted_domain:
+            wr.writerow(item)
