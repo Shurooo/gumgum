@@ -8,13 +8,13 @@ result_list = []
 def get_dates():
     may = [(5, i, j) for i in range(1, 8) for j in range(24)]
     # may = []
-    june = [(6, i, j) for i in range(4, 26) for j in range(24)]
-    # june = []
+    # june = [(6, i, j) for i in range(4, 26) for j in range(24)]
+    june = []
     return may+june
 
 
 def run(addr_in):
-    dict_banner = {}
+    dict_bidfloor = {}
     with open(addr_in, "r") as file_in:
         for line in file_in:
             entry = json.loads(line)
@@ -22,18 +22,12 @@ def run(addr_in):
                 for bidreq in entry["auction"]["bidrequests"]:
                     if bidreq.has_key("impressions"):
                         for imp in bidreq["impressions"]:
-                            if imp.has_key("banner"):
-                                w = imp["banner"]["w"]
-                                h = imp["banner"]["h"]
-                                key = (w, h)
+                            bidfloor = imp["bidfloor"]
+                            if dict_bidfloor.has_key(bidfloor):
+                                dict_bidfloor[bidfloor] += 1
                             else:
-                                key = "None"
-
-                            if dict_banner.has_key(key):
-                                dict_banner[key] += 1
-                            else:
-                                dict_banner.update({key:1})
-    return dict_banner
+                                dict_bidfloor.update({bidfloor:1})
+    return dict_bidfloor
 
 
 def add_result(result):
@@ -41,4 +35,4 @@ def add_result(result):
 
 
 def get_result():
-    gro.get_result(result_list, "banners")
+    gro.get_result(result_list, "bidfloors")
