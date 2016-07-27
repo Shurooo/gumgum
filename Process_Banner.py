@@ -42,17 +42,17 @@ def add_result(result):
 
 
 def get_result():
-    dict_banner = {}
+    dict_result = {}
     for result in result_list:
         for key in result:
-            if dict_banner.has_key(key):
-                dict_banner[key] += result[key]
+            if dict_result.has_key(key):
+                dict_result[key] += result[key]
             else:
-                dict_banner.update({key:result[key]})
+                dict_result.update({key:result[key]})
 
-    print "{} unique banners recorded".format(len(dict_banner))
-    sorted_domain = sorted(dict_banner.items(), key=operator.itemgetter(1), reverse=True)
+    print "{} unique banners recorded".format(len(dict_result))
+    sorted_result = sorted(dict_result.items(), key=operator.itemgetter(1), reverse=True)
     with open("/home/ubuntu/Weiyi/banners.ods", "w") as file_out:
         wr = csv.writer(file_out)
-        for item in sorted_domain:
+        for item in sorted_result:
             wr.writerow(item)

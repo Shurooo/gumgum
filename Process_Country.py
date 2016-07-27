@@ -36,17 +36,17 @@ def add_result(result):
 
 
 def get_result():
-    dict_country = {}
+    dict_result = {}
     for result in result_list:
         for key in result:
-            if dict_country.has_key(key):
-                dict_country[key] += result[key]
+            if dict_result.has_key(key):
+                dict_result[key] += result[key]
             else:
-                dict_country.update({key:result[key]})
+                dict_result.update({key:result[key]})
 
-    print "{} unique countries recorded".format(len(dict_country))
-    sorted_domain = sorted(dict_country.items(), key=operator.itemgetter(1), reverse=True)
+    print "{} unique countries recorded".format(len(dict_result))
+    sorted_result = sorted(dict_result.items(), key=operator.itemgetter(1), reverse=True)
     with open("/home/ubuntu/Weiyi/countries.ods", "w") as file_out:
         wr = csv.writer(file_out)
-        for item in sorted_domain:
+        for item in sorted_result:
             wr.writerow(item)

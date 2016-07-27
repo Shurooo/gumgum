@@ -15,20 +15,16 @@ def get_dates():
 
 
 def run(addr_in):
-    dict_domain = {}
+    dict_margin = {}
     with open(addr_in, "r") as file_in:
         for line in file_in:
             entry = json.loads(line)
-            domain = (entry["auction"]["site"]["domain"])
-            if (domain == None) or (len(domain) == 0):
-                domain = "NONE"
-            domain_tmp = domain.split("www.")
-            domain = domain_tmp[len(domain_tmp)-1]
-            if dict_domain.has_key(domain):
-                dict_domain[domain] += 1
+            margin = entry["auction"]["margin"]
+            if dict_margin.has_key(margin):
+                dict_margin[margin] += 1
             else:
-                dict_domain.update({domain:1})
-    return dict_domain
+                dict_margin.update({margin:1})
+    return dict_margin
 
 
 def add_result(result):
@@ -44,9 +40,9 @@ def get_result():
             else:
                 dict_result.update({key:result[key]})
 
-    print "{} unique domains recorded".format(len(dict_result))
-    sorted_domain = sorted(dict_result.items(), key=operator.itemgetter(1), reverse=True)
-    with open("/home/ubuntu/Weiyi/domains.ods", "w") as file_out:
+    print "{} unique margins recorded".format(len(dict_result))
+    sorted_result = sorted(dict_result.items(), key=operator.itemgetter(1), reverse=True)
+    with open("/home/ubuntu/Weiyi/margins.ods", "w") as file_out:
         wr = csv.writer(file_out)
-        for item in sorted_domain:
+        for item in sorted_result:
             wr.writerow(item)
