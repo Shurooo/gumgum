@@ -22,7 +22,7 @@ def run(addr_in):
                 for bidreq in entry["auction"]["bidrequests"]:
                     if bidreq.has_key("impressions"):
                         for imp in bidreq["impressions"]:
-                            bidfloor = imp["bidfloor"]
+                            bidfloor = round(imp["bidfloor"], 2)
                             if dict_bidfloor.has_key(bidfloor):
                                 dict_bidfloor[bidfloor] += 1
                             else:

@@ -18,7 +18,7 @@ def run(addr_in):
     with open(addr_in, "r") as file_in:
         for line in file_in:
             entry = json.loads(line)
-            margin = entry["auction"]["margin"]
+            margin = round(entry["auction"]["margin"], 2)
             if dict_margin.has_key(margin):
                 dict_margin[margin] += 1
             else:
