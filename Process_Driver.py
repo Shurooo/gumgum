@@ -1,7 +1,7 @@
 import multiprocessing
 import os
 
-from Processes import BrowserType as process
+from Processes import AwsRegion as process
 
 
 def get_io_addr():
