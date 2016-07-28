@@ -287,24 +287,22 @@ def auction_bidrequest_impressions_process(bidreq, bid_responded, result_bid, re
         binarize(result_imp, imp["product"]-1, 6)
 
         # Auction - Bidrequests - Impressions - Banner
+        banner_cat = [0, 0, 0]
         if imp.has_key("banner"):
             width = imp["banner"]["w"]
             height = imp["banner"]["h"]
-            if height <= 0 or width <= 0:
-                banner = 1
-            elif height < 400:
-                if width < 500:
-                    banner = 2
-                else:
-                    banner = 3
-            else:
-                if width < 500:
-                    banner = 4
-                else:
-                    banner = 1
+            if 0 < height <= 200:
+                if 0 < width <= 500:
+                    banner_cat[0] = 1
+                elif width > 500:
+                    banner_cat[1] = 1
+            elif (height > 200) and (width <= 500):
+                banner_cat[2] = 1
+            add_to_result(result_imp, (width, height), banners_)
         else:
-            banner = 0
-        binarize(result_imp, banner, 5)
+            banner_index = 0
+        binarize(result_imp, len(banners_), len(banners_)+1)
+        result_imp.extend(banner_cat)
 
         # Response
         if imp["id"] == impid_responded:
