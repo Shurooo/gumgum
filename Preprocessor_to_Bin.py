@@ -13,12 +13,13 @@ def get_dict(var):
         dict_var = [line.rstrip("\r\n") for line in file_in]
     return dict_var
 
-margins = [3.5, 2.45, 3.0, 2.0, 1.65, 0.85, 1.25, 0.45, 0.25, 0.15, 0.1, 4.5, 0.0, 4.0]
 countries_ = ["US", "GB", "CA", "DE", "FR", "NL", "IT"]
-region_ = get_dict("region")
+regions_ = get_dict("region")
+margins_ = [3.5, 2.45, 3.0, 2.0, 1.65, 0.85, 1.25, 0.45, 0.25, 0.15, 0.1, 4.5, 0.0, 4.0]
+bkcids_ = get_dict("bkc")
 domains_ = get_dict("domain")
 formats_ = [16, 31, 9, 12, 14, 3, 2, 7, 5, 21, 20, 6, 8, 15, 22, 27, 26, 25, 13, 30]
-browsers_ = [1, 2, 5, 7, 10, 11, 12, 13]
+browsers_ = [1, 2, 13, 10, 5, 11, 12, 7]
 banners_ = [(300, 250), (728, 90), (160, 600), (320, 50), (300, 600), (970, 90), (468, 60), (234, 60), (13, 13),
             (12, 12), (17, 17), (18, 18), (10, 10), (300, 120), (16, 16), (250, 100), (19, 19), (320, 480),
             (250, 70), (0, 0), (450, 100), (21, 21), (20, 20), (400, 400), (300, 100)]
@@ -27,28 +28,29 @@ start = time.time()
 
 
 def get_io_addr():
-    list_day = [4]
-    list_hour = [1,6]
-    list_month = [6]
+    may = [(5, i, j) for i in range(1, 8) for j in range(24)]
+    june = [(6, i, j) for i in range(4, 26) for j in range(24)]
 
     filename_in = "part-00000"
     root_in = "/mnt/rips/2016"
-    filename_out = "output_bin.npy"
+    filename_out = "output_bin_2.npy"
     root_out = "/mnt/rips2/2016"
 
+    list_dates = may + june
     list_io_addr = []
-    for month in list_month:
-        for day in list_day:
-            for hour in list_hour:
-                io_addr = os.path.join(str(month).rjust(2, "0"),
-                                       str(day).rjust(2, "0"),
-                                       str(hour).rjust(2, "0"))
-                addr_in = os.path.join(root_in, io_addr, filename_in)
-                path_out = os.path.join(root_out, io_addr)
-                if not os.path.isdir(path_out):
-                    os.makedirs(path_out)
-                addr_out = os.path.join(path_out, filename_out)
-                list_io_addr.append((addr_in, addr_out))
+    for date in list_dates:
+        month = date[0]
+        day = date[1]
+        hour = date[2]
+        io_addr = os.path.join(str(month).rjust(2, "0"),
+                               str(day).rjust(2, "0"),
+                               str(hour).rjust(2, "0"))
+        addr_in = os.path.join(root_in, io_addr, filename_in)
+        path_out = os.path.join(root_out, io_addr)
+        if not os.path.isdir(path_out):
+            os.makedirs(path_out)
+        addr_out = os.path.join(path_out, filename_out)
+        list_io_addr.append((addr_in, addr_out))
     return list_io_addr
 
 
@@ -74,19 +76,19 @@ def crawl(io_addr):
                     if if_continue == 1:
                         filtered += 1
                         continue
-                    # print "Completed filtering"
+
                     event_process(entry, result)
                     auction_process(auction, result)
                     auction_site_process(auction, result)
                     auction_dev_process(auction, result)
                     auction_bidrequests_process(auction, result, result_list)
-                    # print "Completed feature extraction"
+
                     for item in result_list:
                         data_sparse_list.append(csr_matrix(item))
-                    # print "Completed processing one line"
+
                 except:
                     dumped += 1
-        # print "\nCompleted processing {}".format(addr_in)
+
         data_matrix = vstack(data_sparse_list)
         with open(addr_out, 'w') as file_out:
             np.savez(file_out,
@@ -94,9 +96,9 @@ def crawl(io_addr):
                      indices=data_matrix.indices,
                      indptr=data_matrix.indptr,
                      shape=data_matrix.shape)
-        # print "Completed saving sparse matrix for {}\n".format(addr_in)
+
     else:
-        print "\nMISSING FILE: {}\n".format(addr_in)
+        print "\nFile Missing: {}\n".format(addr_in)
 
     return [dumped, filtered]
 
@@ -116,7 +118,7 @@ def filter(auction):
                 imp_list = bidreq["impressions"][:]
                 for imp in imp_list:
                     # Filter out ad formats that should be ignored
-                    if (__FORMAT_MASK[imp["format"]] == 1) or (imp["bidfloor"] < 0):
+                    if (not imp["format"] in formats_) or (imp["bidfloor"] < 0):
                         bidreq_list[index]["impressions"].remove(imp)
             if len(bidreq_list[index]["impressions"]) == 0:
                 bidreq_list.remove(bidreq)
@@ -134,6 +136,14 @@ def binarize(result, item, length):
     result.extend(my_list)
 
 
+def add_to_result(result, var, dict_var):
+    try:
+        index = dict_var.index(var)
+    except:
+        index = len(dict_var)
+    binarize(result, index, len(dict_var)+1)
+
+
 def event_process(entry, result):
     event = entry["em"]
     t = event["t"] / 1000
@@ -144,19 +154,14 @@ def event_process(entry, result):
     day = datetime.fromtimestamp(t).weekday()
     binarize(result, day, 7)
 
-    try:
-        country = __DICT_COUNTRY[event["cc"]]
-    except:
-        country = __DICT_COUNTRY["EMPTY"]
-    binarize(result, country, len(__DICT_COUNTRY))
+    add_to_result(result, entry["cc"], countries_)
+    add_to_result(result, entry["rg"], regions_)
 
 
 def auction_process(auction, result):
     # Auction - Margin
-    margin = int(auction["margin"]) # Take the floor
-    if margin > 4:
-        margin = 4
-    binarize(result, margin, 5)
+    margin = round(float(auction["margin"]), 2)
+    add_to_result(result, margin, margins_)
 
     # Auction - Tmax
     if auction.has_key("tmax"):
@@ -172,6 +177,7 @@ def auction_process(auction, result):
     binarize(result, tmax, 4)
 
     # Auction - BKC
+    bkc_result = [0]*(len(bkcids_)+1)
     if auction["user"].has_key("bkc"):
         result.append(1)
     else:
