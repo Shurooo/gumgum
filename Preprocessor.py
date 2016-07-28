@@ -27,10 +27,24 @@ banners_ = [(300, 250), (728, 90), (160, 600), (320, 50), (300, 600), (970, 90),
 start = time.time()
 
 
+def get_io_addr_random_sample():
+    list_io_addr = []
+    root = "/home/ubuntu/random_samples"
+    prefix = ["all"]
+    suffix = [i for i in range(6)]
+    for i in prefix:
+        for j in suffix:
+            file_name = i+"data"+str(j)
+            addr_in = os.path.join(root, file_name+".txt")
+            addr_out = os.path.join(root, file_name+"_new.npy")
+            list_io_addr.append((addr_in, addr_out))
+    return list_io_addr
+
+
 def get_io_addr():
     may = [(5, i, j) for i in range(1, 2) for j in range(1)]
-    # june = [(6, i, j) for i in range(4, 26) for j in range(24)]
-    june = []
+    june = [(6, i, j) for i in range(4, 26) for j in range(24)]
+    # june = []
 
     filename_in = "part-00000"
     root_in = "/mnt/rips/2016"
@@ -389,7 +403,7 @@ def auction_bidrequest_impressions_process(margin, bidreq, bid_responded, result
 if __name__ == '__main__':
     cpus = multiprocessing.cpu_count()
     p = multiprocessing.Pool(cpus)
-    list_io_addr = get_io_addr()
+    list_io_addr = get_io_addr_random_sample()
 
     dumped = 0
     filtered = 0
