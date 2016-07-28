@@ -33,9 +33,9 @@ def get_io_addr():
     june = []
 
     filename_in = "part-00000-test"
-    root_in = "/mnt/rips/2016"
+    root_in = "/home/wlu/Desktop/rips16"
     filename_out = "output_bin_2.npy"
-    root_out = "/mnt/rips2/2016"
+    root_out = "/home/wlu/Desktop/rips16"
 
     list_dates = may + june
     list_io_addr = []
@@ -359,8 +359,7 @@ def auction_bidrequest_impressions_process(bidreq, bid_responded, result_bid, re
                 banner_cat[2] = 1
             add_to_result(result_imp, (width, height), banners_)
         else:
-            banner_index = 0
-        binarize(result_imp, len(banners_), len(banners_)+1)
+            binarize(result_imp, len(banners_), len(banners_)+1)
         result_imp.extend(banner_cat)
 
         # Response
