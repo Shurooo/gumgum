@@ -5,9 +5,9 @@ from Processes import BidFloor as process
 
 
 def get_io_addr():
-    may = [(5, i, j) for i in range(1, 8) for j in range(24)]
-    # may = []
-    june = [(6, i, j) for i in range(4, 26) for j in range(24)]
+    # may = [(5, i, j) for i in range(1, 8) for j in range(24)]
+    may = []
+    june = [(6, i, j) for i in range(24, 26) for j in range(24)]
     # june = []
 
     root = "/mnt/rips/2016"
