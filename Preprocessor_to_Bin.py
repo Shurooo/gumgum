@@ -154,8 +154,14 @@ def event_process(entry, result):
     day = datetime.fromtimestamp(t).weekday()
     binarize(result, day, 7)
 
-    add_to_result(result, entry["cc"], countries_)
-    add_to_result(result, entry["rg"], regions_)
+    try:
+        add_to_result(result, entry["cc"], countries_)
+    except:
+        binarize(result, len(countries_), len(countries_)+1)
+    try:
+        add_to_result(result, entry["rg"], regions_)
+    except:
+        binarize(result, len(regions_)-1, len(regions_)+1)
 
 
 def auction_process(auction, result):
@@ -196,12 +202,18 @@ def auction_site_process(auction, result):
     binarize(result, site["typeid"]-1, 3)
 
     # Auction - Site - Cat
-    site_cats = [0]*26  # Parse 26 different types of IAB categories
-    if site.has_key("cat"):
-        for cat in site["cat"]:
+    # Auction - Site - Pcat
+    for var in ["cat", "pcat"]:
+        cat_process(result, site, var)
+
+
+def cat_process(result, site, var):
+    cats = [0]*26  # Parse 26 different types of IAB categories
+    if site.has_key(var):
+        for cat in site[var]:
             cat_int = IAB_parser(cat)
-            site_cats[cat_int-1] = 1
-    result.extend(site_cats)
+            cats[cat_int-1] = 1
+    result.extend(cats)
 
 
 def IAB_parser(str):
@@ -215,10 +227,9 @@ def IAB_parser(str):
 
 def auction_dev_process(auction, result):
     try:
-        type_index = __BROWSER_TYPE.index(auction["dev"]["bti"]) + 1
+        add_to_result(result, auction["dev"]["bti"], browsers_)
     except:
-        type_index = 0
-    binarize(result, type_index, len(__BROWSER_TYPE)+1)
+        binarize(result, len(browsers_), len(browsers_)+1)
 
 
 def auction_bidrequests_process(auction, result, result_list):
