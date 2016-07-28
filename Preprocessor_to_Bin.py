@@ -32,10 +32,10 @@ def get_io_addr():
     # june = [(6, i, j) for i in range(4, 26) for j in range(24)]
     june = []
 
-    filename_in = "part-00000-test"
-    root_in = "/home/wlu/Desktop/rips16"
-    filename_out = "output_bin_2.npy"
-    root_out = "/home/wlu/Desktop/rips16"
+    filename_in = "part-00000"
+    root_in = "/mnt/rips/2016"
+    filename_out = "output2.npy"
+    root_out = "/mnt/rips2/2016"
 
     list_dates = may + june
     list_io_addr = []
@@ -79,10 +79,10 @@ def crawl(io_addr):
                         continue
 
                     event_process(entry, result)
-                    auction_process(auction, result)
+                    margin = auction_process(auction, result)
                     auction_site_process(auction, result)
                     auction_dev_process(auction, result)
-                    auction_bidrequests_process(auction, result, result_list)
+                    auction_bidrequests_process(margin, auction, result, result_list)
 
                     for item in result_list:
                         data_sparse_list.append(csr_matrix(item))
@@ -149,18 +149,24 @@ def event_process(entry, result):
     event = entry["em"]
     t = event["t"] / 1000
 
+    min = datetime.fromtimestamp(t).minute
+    binarize(result, min, 60)
+
     hour = datetime.fromtimestamp(t).hour
     binarize(result, hour, 24)
 
     day = datetime.fromtimestamp(t).weekday()
     binarize(result, day, 7)
 
+    hour_of_week = day*24+hour
+    binarize(result, hour_of_week, 7*24)
+
     try:
-        add_to_result(result, entry["cc"], countries_)
+        add_to_result(result, event["cc"], countries_)
     except:
         binarize(result, len(countries_), len(countries_)+1)
     try:
-        add_to_result(result, entry["rg"], regions_)
+        add_to_result(result, event["rg"], regions_)
     except:
         binarize(result, len(regions_)-1, len(regions_)+1)
 
@@ -237,6 +243,8 @@ def auction_process(auction, result):
             bkc_result[index] = 1
     result.extend(bkc_result)
 
+    return margin
+
 
 def auction_site_process(auction, result):
     # Auction - Site - Typeid
@@ -252,13 +260,16 @@ def auction_site_process(auction, result):
     index = 0
     try:
         domain = site["domain"]
-        for item in domains_:
-            if item in domain:
-                break
-            index += 1
+        if (domain == "NONE") or (len(domain) == 0):
+            index = len(domains_)
+        else:
+            for item in domains_:
+                if item in domain:
+                    break
+                index += 1
     except:
         index = len(domains_)
-    binarize(result, index, len(domains_))
+    binarize(result, index, len(domains_)+1)
 
 
 def cat_process(result, site, var):
@@ -286,7 +297,7 @@ def auction_dev_process(auction, result):
         binarize(result, len(browsers_), len(browsers_)+1)
 
 
-def auction_bidrequests_process(auction, result, result_list):
+def auction_bidrequests_process(margin, auction, result, result_list):
     # Record the bid ids and corresonding impression ids that are responded if any
     bid_responded = {}
     if auction.has_key("bids"):
@@ -301,7 +312,7 @@ def auction_bidrequests_process(auction, result, result_list):
             bidder_id = 35
         binarize(result_bid, bidder_id-1, 35)
         binarize(result_bid, bidreq["verticalid"]-1, 16)
-        auction_bidrequest_impressions_process(bidreq, bid_responded, result_bid, result_list)
+        auction_bidrequest_impressions_process(margin, bidreq, bid_responded, result_bid, result_list)
 
 
 def if_multiple_bid_floor(result_imp, bid_floor, n):
@@ -312,7 +323,7 @@ def if_multiple_bid_floor(result_imp, bid_floor, n):
         result_imp.append(0)
 
 
-def auction_bidrequest_impressions_process(bidreq, bid_responded, result_bid, result_list):
+def auction_bidrequest_impressions_process(margin, bidreq, bid_responded, result_bid, result_list):
     bidreq_id = bidreq["id"]
     # Determine if this impression is responded by any DSP
     impid_responded = -1
@@ -323,6 +334,10 @@ def auction_bidrequest_impressions_process(bidreq, bid_responded, result_bid, re
         # Auction - Bidrequests - Impressions - Bid Floor
         result_imp = result_bid[:]
         bid_floor = round(float(imp["bidfloor"]), 2)
+        if bid_floor-margin == 0:
+            result_imp.append(0)
+        else:
+            result_imp.append(1)
         result_imp.append(bid_floor)
 
         # Determine if bid floor is a multiple of 0.05 or of 0.1
@@ -338,6 +353,7 @@ def auction_bidrequest_impressions_process(bidreq, bid_responded, result_bid, re
             else:
                 n = len(thres_list) - index
                 result_imp.extend([0]*n)
+                break
 
         # Auction - Bidrequests - Impressions - Format
         binarize(result_imp, formats_.index(imp["format"]), len(formats_))
