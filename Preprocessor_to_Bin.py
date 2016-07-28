@@ -206,6 +206,18 @@ def auction_site_process(auction, result):
     for var in ["cat", "pcat"]:
         cat_process(result, site, var)
 
+    # Auction - Site - Domain
+    index = 0
+    try:
+        domain = site["domain"]
+        for item in domains_:
+            if item in domain:
+                break
+            index += 1
+    except:
+        index = len(domains_)
+    binarize(result, index, len(domains_))
+
 
 def cat_process(result, site, var):
     cats = [0]*26  # Parse 26 different types of IAB categories
@@ -269,8 +281,7 @@ def auction_bidrequest_impressions_process(bidreq, bid_responded, result_bid, re
         binarize(result_imp, bid_floor, 6)
 
         # Auction - Bidrequests - Impressions - Format
-        format_index = __FORMAT_INDEX[imp["format"]]
-        binarize(result_imp, format_index-1, len(__FORMAT_INDEX))
+        binarize(result_imp, formats_.index(imp["format"]), len(formats_))
 
         # Auction - Bidrequests - Impressions - Product
         binarize(result_imp, imp["product"]-1, 6)

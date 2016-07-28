@@ -50,8 +50,8 @@ def get_result():
     with open(os.path.join("/home/ubuntu/Weiyi", "tmax_new.ods"), "w") as file_out:
         wr = csv.writer(file_out)
         for item in sorted_result:
-            tmax = item[0]
+            var = item[0]
             req = item[1][0]
             res = item[1][1]
             ratio = round(float(res) / req, 4)
-            wr.writerow((tmax, req, res, ratio))
+            wr.writerow((var, req, res, ratio))
