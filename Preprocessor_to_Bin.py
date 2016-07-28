@@ -18,7 +18,7 @@ regions_ = get_dict("region")
 margins_ = [3.5, 2.45, 3.0, 2.0, 1.65, 0.85, 1.25, 0.45, 0.25, 0.15, 0.1, 4.5, 0.0, 4.0]
 bkcids_ = get_dict("bkc")
 domains_ = get_dict("domain")
-formats_ = [16, 31, 9, 12, 14, 3, 2, 7, 5, 21, 20, 6, 8, 15, 22, 27, 26, 25, 13, 30]
+formats_ = [16, 31, 9, 12, 14, 3, 2, 7, 5, 21, 8, 20, 15, 6, 22, 27, 25, 26, 30, 13, 23]
 browsers_ = [1, 2, 13, 10, 5, 11, 12, 7]
 banners_ = [(300, 250), (728, 90), (160, 600), (320, 50), (300, 600), (970, 90), (468, 60), (234, 60), (13, 13),
             (12, 12), (17, 17), (18, 18), (10, 10), (300, 120), (16, 16), (250, 100), (19, 19), (320, 480),
@@ -179,9 +179,15 @@ def auction_process(auction, result):
     # Auction - BKC
     bkc_result = [0]*(len(bkcids_)+1)
     if auction["user"].has_key("bkc"):
-        result.append(1)
-    else:
-        result.append(0)
+        bkc_str = auction["user"]["bkc"]
+        bkc_list = bkc_str.split(",")
+        for item in bkc_list:
+            try:
+                index = bkcids_.index(item)
+            except:
+                index = len(bkcids_)
+            bkc_result[index] = 1
+    result.extend(bkc_result)
 
 
 def auction_site_process(auction, result):
@@ -194,8 +200,7 @@ def auction_site_process(auction, result):
     if site.has_key("cat"):
         for cat in site["cat"]:
             cat_int = IAB_parser(cat)
-            if site_cats[cat_int-1] == 0:
-                site_cats[cat_int-1] = 1
+            site_cats[cat_int-1] = 1
     result.extend(site_cats)
 
 
