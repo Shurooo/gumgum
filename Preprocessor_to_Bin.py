@@ -28,10 +28,11 @@ start = time.time()
 
 
 def get_io_addr():
-    may = [(5, i, j) for i in range(1, 8) for j in range(24)]
-    june = [(6, i, j) for i in range(4, 26) for j in range(24)]
+    may = [(5, i, j) for i in range(1, 2) for j in range(1)]
+    # june = [(6, i, j) for i in range(4, 26) for j in range(24)]
+    june = []
 
-    filename_in = "part-00000"
+    filename_in = "part-00000-test"
     root_in = "/mnt/rips/2016"
     filename_out = "output_bin_2.npy"
     root_out = "/mnt/rips2/2016"
@@ -164,6 +165,14 @@ def event_process(entry, result):
         binarize(result, len(regions_)-1, len(regions_)+1)
 
 
+def if_multiple_tmax(result, tmax, n):
+    tmax_tmp = tmax / float(n)
+    if tmax_tmp == int(tmax_tmp):
+        result.append(1)
+    else:
+        result.append(0)
+
+
 def auction_process(auction, result):
     # Auction - Margin
     margin = round(float(auction["margin"]), 2)
@@ -172,15 +181,48 @@ def auction_process(auction, result):
     # Auction - Tmax
     if auction.has_key("tmax"):
         tmax = auction["tmax"]
-        if tmax < 85:
-            tmax = 0
-        elif tmax == 85:
-            tmax = 1
+
+        # Determine if tmax is multiple of 5 or 10
+        if_multiple_tmax(result, tmax, 5)
+        if_multiple_tmax(result, tmax, 10)
+
+        for thres in [500, 700]:
+            if tmax <= thres:
+                result.append(1)
+            else:
+                result.append(0)
+
+        if tmax <= 20:
+            result.append(1)
+            result.extend([0]*80)
+        elif tmax <= 85:
+            result.append(0)
+            result_tmp = [0]*65
+            result_tmp[tmax-21] = 1
+            result.extend(result_tmp)
+            result.extend([0]*15)
+        elif tmax <= 135:
+            result.extend([0]*66)
+            result_tmp = [0]*10
+            result_tmp[(tmax-86) / 5] = 1
+            result.extend(result_tmp)
+            result.extend([0]*5)
         else:
-            tmax = 2
+            result.extend([0]*76)
+            result_tmp = [0]*5
+            if tmax <= 200:
+                result_tmp[0] = 1
+            elif tmax <= 500:
+                result_tmp[1] = 1
+            elif tmax <= 999:
+                result_tmp[2] = 1
+            elif tmax == 1000:
+                result_tmp[3] = 1
+            else:
+                result_tmp[4] = 1
+            result.extend(result_tmp)
     else:
-        tmax = 3
-    binarize(result, tmax, 4)
+        result.extend([0]*85)
 
     # Auction - BKC
     bkc_result = [0]*(len(bkcids_)+1)
@@ -262,6 +304,14 @@ def auction_bidrequests_process(auction, result, result_list):
         auction_bidrequest_impressions_process(bidreq, bid_responded, result_bid, result_list)
 
 
+def if_multiple_bid_floor(result_imp, bid_floor, n):
+    bid_floor_tmp = n*bid_floor
+    if bid_floor_tmp == int(bid_floor_tmp):
+        result_imp.append(1)
+    else:
+        result_imp.append(0)
+
+
 def auction_bidrequest_impressions_process(bidreq, bid_responded, result_bid, result_list):
     bidreq_id = bidreq["id"]
     # Determine if this impression is responded by any DSP
@@ -272,13 +322,22 @@ def auction_bidrequest_impressions_process(bidreq, bid_responded, result_bid, re
     for imp in bidreq["impressions"]:
         # Auction - Bidrequests - Impressions - Bid Floor
         result_imp = result_bid[:]
-        bid_floor = int(imp["bidfloor"])    # Take the floor
-        if bid_floor > 4:
-            if bid_floor < 10:
-                bid_floor = 4
+        bid_floor = round(float(imp["bidfloor"]), 2)
+        result_imp.append(bid_floor)
+
+        # Determine if bid floor is a multiple of 0.05 or of 0.1
+        if_multiple_bid_floor(result_imp, bid_floor, 20)
+        if_multiple_bid_floor(result_imp, bid_floor, 10)
+
+        index = 0
+        thres_list = [1.5, 2, 2.5, 3, 28]
+        for thres in thres_list:
+            if bid_floor > thres:
+                result_imp.append(1)
+                index += 1
             else:
-                bid_floor = 5
-        binarize(result_imp, bid_floor, 6)
+                n = len(thres_list) - index
+                result_imp.extend([0]*n)
 
         # Auction - Bidrequests - Impressions - Format
         binarize(result_imp, formats_.index(imp["format"]), len(formats_))

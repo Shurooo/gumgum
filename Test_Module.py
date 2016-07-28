@@ -38,7 +38,7 @@ def get_addr_in(mode, data):
 
 
 def test(addr_test, clf):
-    y_test, prediction = md.test(addr_test, clf)
+    y_test, prediction = clf.test(addr_test)
     confusion_matrix = metrics.confusion_matrix(y_test, prediction)
 
     tp = confusion_matrix[1, 1]
@@ -64,6 +64,7 @@ def init_worksheet(workbook):
     ws = workbook.add_worksheet()
     ws.write_row(0, 0, __HEADER)
     return ws
+
 
 def run_test(clf, model, data, train_test_mode, report_name=-1, report_root="/home/ubuntu/Weiyi/Reports"):
     if report_name == -1:
@@ -95,7 +96,7 @@ def run_test(clf, model, data, train_test_mode, report_name=-1, report_root="/ho
                 addr_train = pair[0]
                 print "\n>>>>> Start Training on {}".format(addr_train)
                 start = time.time()
-                md.train(addr_train, clf)
+                clf.train(addr_train)
                 print ">>>>> Training completed in {} seconds".format(round(time.time()-start, 2))
 
                 addr_test = pair[1]
@@ -109,16 +110,8 @@ def run_test(clf, model, data, train_test_mode, report_name=-1, report_root="/ho
                 result_row.extend(stats)
                 ws.write_row(row, 0, result_row)
 
-                write_format_check()
-                if recall < 0.95:
-                    ws.write(row, col_recall, recall, abnormal_format)
-                else:
-                    ws.write(row, col_recall, recall)
-
-                if filtered < 0.1:
-                    ws.write(row, col_filtered, filtered, abnormal_format)
-                else:
-                    ws.write(row, col_filtered, filtered)
+                write_format_check(ws, row, col_recall, recall, 0.95, abnormal_format)
+                write_format_check(ws, row, col_filtered, filtered, 0.1, abnormal_format)
 
                 row += 1
 
@@ -130,3 +123,10 @@ def run_test(clf, model, data, train_test_mode, report_name=-1, report_root="/ho
 
     workbook.close()
     file_out.close()
+
+
+def write_format_check(ws, row, col, item, thres, abnormal_format):
+    if item < thres:
+        ws.write(row, col, item, abnormal_format)
+    else:
+        ws.write(row, col, item)
