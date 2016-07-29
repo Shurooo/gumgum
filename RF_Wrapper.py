@@ -31,7 +31,7 @@ class RandomForsetWrapper:
 
 
     def train(self, addr_in, sampling):
-        X, y = gd.get(addr_in, sampling)
+        X, y = gd.get(addr_in, sampling=sampling)
         self.clf.n_estimators += self.add_estimators
         self.clf.fit(X, y)
 
