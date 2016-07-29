@@ -15,9 +15,9 @@ def get_io_addr_day_samp():
     # june = [(6, i) for i in range(4, 26)]
     june = []
 
-    root = "/home/wlu/Desktop/rips16"
-    filename_in = "output_pos"
-    filename_out = "output_pos_new.npy"
+    root = "/mnt/rips2/2016"
+    filename_in = "day_samp_raw_"
+    filename_out = "day_samp_new_.npy"
 
     list_io_addr = []
     for item in may+june:
