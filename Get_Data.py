@@ -10,7 +10,7 @@ import Sparse_Matrix_IO as smio
 # with the specified ratio of positive responses and negative responses,
 # and return the feature matrix X and the corresponding response vector y
 # The ratio is given by pos/neg
-def get(addr_day, file_name="day_samp_new.npy", ratio=-1, features_to_get=None, sampling="None"):
+def get(addr_day, file_name="day_samp_new.npy", ratio=-1, sampling="None"):
     if not ratio == -1:
         n = 100000
         neg = int(n / (1+ratio))
