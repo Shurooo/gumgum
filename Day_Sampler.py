@@ -66,7 +66,8 @@ def crawl(addr_day):
 
 
 if __name__ == '__main__':
-    p = multiprocessing.Pool(4)
+    cpus = multiprocessing.cpu_count()
+    p = multiprocessing.Pool(cpus)
     list_io_addr = get_io_addr()
 
     for result in p.imap(crawl, list_io_addr):
