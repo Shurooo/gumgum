@@ -38,7 +38,6 @@ def crawl(addr_day):
     for path_in in list_path_in:
         with open(path_in, "r") as file_in:
             line_count = 0
-            print "Counting lines in {}".format(path_in)
             for line in file_in:
                 line_count += 1
         total_line += line_count
