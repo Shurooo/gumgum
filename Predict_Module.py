@@ -24,7 +24,6 @@ def get_io_addr(data_in):
 
 
 def train(clf, data_train, sampling):
-    print "sampling = ", sampling
     list_io_addr = get_io_addr(data_train)
 
     if len(list_io_addr) > 1:
