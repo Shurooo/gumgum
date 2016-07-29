@@ -1,9 +1,7 @@
 import os
 import time
-import multiprocessing
-from scipy.sparse import csr_matrix, vstack
 import numpy as np
-import Sparse_Matrix_IO as smio
+import multiprocessing
 
 
 num = 50000
@@ -52,7 +50,7 @@ def crawl(addr_day):
         with open(path_in, "r") as file_in:
             data_list = list(file_in)
         while (index < num) and (line_indices[index]-setoff < len(data_list)):
-            res.append(csr_matrix(data_list[line_indices[index]-setoff]))
+            res.append(data_list[line_indices[index]-setoff])
             index += 1
         if index >= num:
             break
