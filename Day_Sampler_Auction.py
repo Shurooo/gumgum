@@ -26,8 +26,6 @@ def get_io_addr():
 
 
 def crawl(addr_day):
-    print "Processing {}".format(addr_day)
-
     root_in = "/mnt/rips/2016"
     list_path_in = []
     for hour in range(0, 24):
@@ -47,6 +45,7 @@ def crawl(addr_day):
     index = 0
     res = []
     for path_in in list_path_in:
+        print "Sampling from {}".format(addr_day)
         with open(path_in, "r") as file_in:
             data_list = list(file_in)
         while (index < num) and (line_indices[index]-setoff < len(data_list)):
