@@ -9,6 +9,7 @@ import Sparse_Matrix_IO as smio
 num = 100000
 start = time.time()
 
+
 def get_io_addr():
     root = "/mnt/rips2/2016"
 
