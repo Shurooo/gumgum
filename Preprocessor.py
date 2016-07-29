@@ -12,12 +12,13 @@ start = time.time()
 
 def get_io_addr_day_samp():
     may = [(5, i) for i in range(1, 3)]
-    # june = [(6, i) for i in range(4, 26)]
-    june = []
+    # may = []
+    june = [(6, i) for i in range(4, 6)]
+    # june = []
 
     root = "/home/wlu/Desktop/rips16"
-    filename_in = "day_samp_raw"
-    filename_out = "day_samp_new.npy"
+    filename_in = "day_samp_raw_"
+    filename_out = "day_samp_new_"
 
     list_io_addr = []
     for item in may+june:
@@ -48,14 +49,13 @@ def get_io_addr_random_sample():
 
 
 def crawl(io_addr):
-    addr_in = io_addr[0]
-    addr_out = io_addr[1]
-
     dumped = 0
     data_sparse_list = []
-    for suffix in ["pos", "neg"]:
-        addr_in = addr_in + suffix + "_bin.npy"
-        addr_out = addr_out + suffix + "_bin.npy"
+    for suffix in ["pos"]:
+        addr_in = io_addr[0]
+        addr_out = io_addr[1]
+        addr_in = addr_in + suffix
+        addr_out = addr_out + suffix + ".npy"
         if os.path.isfile(addr_in):
             with open(addr_in, "r") as file_in:
                 print "Processing {}".format(addr_in)
