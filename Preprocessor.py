@@ -28,9 +28,9 @@ start = time.time()
 
 
 def get_io_addr_day_samp():
-    may = [(5, i) for i in range(1, 2)]
-    # june = [(6, i) for i in range(4, 26)]
-    june = []
+    may = [(5, i) for i in range(2, 8)]
+    june = [(6, i) for i in range(4, 26)]
+    # june = []
 
     root = "/mnt/rips2/2016"
     filename_in = "day_samp_raw"
