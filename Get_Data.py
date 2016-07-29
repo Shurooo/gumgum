@@ -1,6 +1,7 @@
 import os
 import numpy as np
 from scipy import vstack
+from imblearn.over_sampling import SMOTE
 import Sparse_Matrix_IO as smio
 
 
@@ -9,7 +10,7 @@ import Sparse_Matrix_IO as smio
 # with the specified ratio of positive responses and negative responses,
 # and return the feature matrix X and the corresponding response vector y
 # The ratio is given by pos/neg
-def get(addr_day, file_name="day_samp_new.npy", ratio=-1, features_to_get=None):
+def get(addr_day, file_name="day_samp_new.npy", ratio=-1, features_to_get=None, sampling="None"):
     if not ratio == -1:
         n = 100000
         neg = int(n / (1+ratio))
@@ -31,5 +32,9 @@ def get(addr_day, file_name="day_samp_new.npy", ratio=-1, features_to_get=None):
     width = np.size(matrix, 1)
     X = matrix[:, :width-1]
     y = matrix[:, width-1]
+
+    if sampling == "Over":
+        sm = SMOTE(ratio=0.95)
+        X, y = sm.fit_sample(X, y)
 
     return X, y

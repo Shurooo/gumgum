@@ -30,21 +30,21 @@ class RandomForsetWrapper:
                                       random_state=random_state)
 
 
-    def train(self, addr_in):
-        X, y = gd.get(addr_in)
+    def train(self, addr_in, sampling):
+        X, y = gd.get(addr_in, sampling)
         self.clf.n_estimators += self.add_estimators
         self.clf.fit(X, y)
 
-    def train_online(self, addr_in):
-        self.train(addr_in)
+    def train_online(self, addr_in, sampling):
+        self.train(addr_in, sampling)
 
     def test(self, addr_in):
         X, y = gd.get(addr_in)
         prediction = self.clf.predict(X)
         return y, prediction
 
-    def run_predict(self, data_train, data_test):
-        predm.run(self, data_train, data_test)
+    def run_predict(self, data_train, data_test, sampling="None"):
+        predm.run(self, data_train, data_test, sampling)
 
     def run_test(self,
                  data,
