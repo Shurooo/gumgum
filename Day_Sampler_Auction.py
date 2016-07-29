@@ -42,6 +42,7 @@ def crawl(addr_day):
     setoff = 0
     index = 0
     res = []
+    print "Here"
     for path_in in list_path_in:
         print "Sampling from {}".format(addr_day)
         with open(path_in, "r") as file_in:
