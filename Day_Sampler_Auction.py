@@ -11,8 +11,8 @@ start = time.time()
 def get_io_addr():
     may = [(5, i) for i in range(2, 8)]
     # may = []
-    # june = [(6, i) for i in range(4, 26)]
-    june = []
+    june = [(6, i) for i in range(4, 26)]
+    # june = []
     list_dates = may + june
 
     list_io_addr = []
@@ -36,7 +36,6 @@ def crawl(addr_day):
 
     total_line = 0
     for path_in in list_path_in:
-        print "Counting lines in {}".format(path_in)
         with open(path_in, "r") as file_in:
             line_count = 0
             for line in file_in:
@@ -49,7 +48,6 @@ def crawl(addr_day):
     res = []
     for path_in in list_path_in:
         with open(path_in, "r") as file_in:
-            print "Sampling from {}".format(path_in)
             for line in file_in:
                 if line_indices[index]-setoff == 0:
                     res.append(line)
@@ -68,7 +66,8 @@ def crawl(addr_day):
 
 
 if __name__ == '__main__':
-    p = multiprocessing.Pool(4)
+    cpus = multiprocessing.cpu_count()
+    p = multiprocessing.Pool(cpus)
     list_io_addr = get_io_addr()
 
     for result in p.imap(crawl, list_io_addr):
