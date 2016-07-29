@@ -36,6 +36,7 @@ def crawl(addr_day):
 
     total_line = 0
     for path_in in list_path_in:
+        print "Counting lines in {}".format(path_in)
         with open(path_in, "r") as file_in:
             line_count = 0
             for line in file_in:
@@ -48,6 +49,7 @@ def crawl(addr_day):
     res = []
     for path_in in list_path_in:
         with open(path_in, "r") as file_in:
+            print "Sampling from {}".format(path_in)
             for line in file_in:
                 if line_indices[index]-setoff == 0:
                     res.append(line)
