@@ -44,7 +44,7 @@ class RandomForsetWrapper:
         return y, prediction
 
     def run_predict(self, data_train, data_test):
-        predm.run(self.clf, data_train, data_test)
+        predm.run(self, data_train, data_test)
 
     def run_test(self,
                  data,
@@ -54,4 +54,4 @@ class RandomForsetWrapper:
                  report_root="/home/ubuntu/Weiyi/Reports"):
         if train_test_mode == -1:
             train_test_mode = ["day"]
-        testm.run(self.clf, data, train_test_mode, on_off_line, report_name, report_root)
+        testm.run(self, data, train_test_mode, on_off_line, report_name, report_root)
