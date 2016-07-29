@@ -9,7 +9,7 @@ start = time.time()
 
 
 def get_io_addr():
-    may = [(5, i) for i in range(2, 8)]
+    may = [(5, i) for i in range(1, 2)]
     # may = []
     june = [(6, i) for i in range(4, 26)]
     # june = []
@@ -37,9 +37,11 @@ def crawl(addr_day):
     total_line = 0
     for path_in in list_path_in:
         with open(path_in, "r") as file_in:
+            line_count = 0
             print "Counting lines in {}".format(path_in)
-            data_list = list(file_in)
-        total_line += len(data_list)
+            for line in file_in:
+                line_count += 1
+        total_line += line_count
     line_indices = sorted(np.random.choice(total_line, num, replace=False))
 
     setoff = 0
@@ -47,13 +49,15 @@ def crawl(addr_day):
     res = []
     for path_in in list_path_in:
         with open(path_in, "r") as file_in:
-            data_list = list(file_in)
-        while (index < num) and (line_indices[index]-setoff < len(data_list)):
-            res.append(data_list[line_indices[index]-setoff])
-            index += 1
+            for line in file_in:
+                if line_indices[index]-setoff == 0:
+                    res.append(line)
+                    index += 1
+                setoff += 1
+                if index >= num:
+                    break
         if index >= num:
             break
-        setoff += len(data_list)
 
     root_out = "/mnt/rips2/2016"
     path_out = os.path.join(root_out, addr_day, "day_samp_raw")
