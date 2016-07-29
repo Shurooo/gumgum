@@ -8,8 +8,6 @@ class_weight={0:1, 1:1000},
 max_features="sqrt"
 
 clf = rfw.RandomForsetWrapper(init_estimators,
-                              add_estimators,
-                              min_weight_fraction_leaf=min_weight_fraction_leaf,
-                              max_features=max_features)
+                              add_estimators)
 
 clf.run_predict([(5, 1)], [(5, 2)])
