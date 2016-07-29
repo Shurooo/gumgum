@@ -11,7 +11,7 @@ class RandomForsetWrapper:
                  min_weight_fraction_leaf=0.,
                  class_weight=None,
                  max_features="auto",
-                 oob_score=True,
+                 oob_score=False,
                  n_jobs=-1,
                  random_state=1514):
         self.add_estimators = add_estimators
