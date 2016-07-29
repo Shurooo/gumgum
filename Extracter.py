@@ -75,11 +75,15 @@ def crawl(io_addr):
 
         with open(os.path.join(addr_out, "output_pos"), 'w') as file_out:
             for line in pos:
-                file_out.write(line)
+                entry = json.dumps(line)
+                file_out.write(entry)
+                file_out.write("\n")
 
         with open(os.path.join(addr_out, "output_neg"), 'w') as file_out:
             for line in neg:
-                file_out.write(line)
+                entry = json.dumps(line)
+                file_out.write(entry)
+                file_out.write("\n")
 
     else:
         print "\nFile Missing: {}\n".format(addr_in)
