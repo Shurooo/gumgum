@@ -29,7 +29,6 @@ class RandomForsetWrapper:
                                           n_jobs=n_jobs,
                                           random_state=random_state)
 
-
     def train(self, addr_in, sampling):
         X, y = gd.get(addr_in, sampling=sampling)
         self.clf.n_estimators += self.add_estimators

@@ -29,7 +29,6 @@ def crawl(addr_day):
     print "Processing {}".format(addr_day)
     root = "/mnt/rips2/2016"
 
-
     list_path_in = []
     for hour in range(0, 24):
         hour_str = str(hour).rjust(2, "0")
