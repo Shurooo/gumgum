@@ -9,8 +9,8 @@ formats_ = [16, 31, 9, 12, 14, 3, 2, 7, 5, 21, 8, 20, 15, 6, 22, 27, 25, 26, 30,
 
 def get_io_addr():
     may = [(5, i, j) for i in range(1, 2) for j in range(1)]
-    june = [(6, i, j) for i in range(4, 26) for j in range(24)]
-    # june = []
+    # june = [(6, i, j) for i in range(4, 26) for j in range(24)]
+    june = []
 
     filename_in = "part-00000"
     root_in = "/mnt/rips/2016"
@@ -41,8 +41,8 @@ def crawl(io_addr):
     filtered = 0
     dumped = 0
 
-    pos_list = []
-    neg_list = []
+    pos = []
+    neg = []
     if os.path.isfile(addr_in):
         with open(addr_in, "r") as file_in:
             print addr_in
@@ -50,7 +50,8 @@ def crawl(io_addr):
                 try:
                     entry = json.loads(line)
                     result = {}
-                    result_list = {}
+                    result_pos = []
+                    result_neg = []
 
                     auction = entry["auction"]
                     if_continue = filter(auction)   # Filter out auctions that do not contain any bid requests
@@ -58,22 +59,27 @@ def crawl(io_addr):
                         filtered += 1
                         continue
 
-                    # Event
-                    event = entry["em"]
-                    t = event["t"] / 1000
-                    for item in result_list:
-                        line_list.append(item)
+                    event_process(entry, result)
+                    auction_process(auction, result)
+                    auction_site_process(auction, result)
+                    auction_dev_process(auction, result)
+                    auction_bidrequests_process(auction, result, result_pos, result_neg)
+
+                    for item in result_pos:
+                        pos.append(item)
+                    for item in result_neg:
+                        neg.append(item)
 
                 except:
                     dumped += 1
 
+        with open(os.path.join(addr_out, "output_pos"), 'w') as file_out:
+            for line in pos:
+                file_out.write(line)
 
-        with open(addr_out, 'w') as file_out:
-            np.savez(file_out,
-                     data=data_matrix.data,
-                     indices=data_matrix.indices,
-                     indptr=data_matrix.indptr,
-                     shape=data_matrix.shape)
+        with open(os.path.join(addr_out, "output_neg"), 'w') as file_out:
+            for line in neg:
+                file_out.write(line)
 
     else:
         print "\nFile Missing: {}\n".format(addr_in)
@@ -105,7 +111,145 @@ def filter(auction):
         if len(auction["bidrequests"]) == 0:
             return 1
 
+
+def update_result(result, key, val):
+    result.update({key: val})
+
+
+def event_process(entry, result):
+    # Event - t
+    event = entry["em"]
+    t = event["t"]
+    update_result(result, "t", t)
+
+    # Event - country
+    try:
+        country = event["cc"]
+    except:
+        country = "None"
+    update_result(result, "cc", country)
+
+    # Event - region
+    try:
+        region = event["rg"]
+    except:
+        region = "None"
+    update_result(result, "rg", region)
+
+
+def auction_process(auction, result):
+    # Auction - margin
+    margin = auction["margin"]
+    update_result(result, "margin", margin)
+
+    # Auction - tmax
+    try:
+        tmax = auction["tmax"]
+    except:
+        tmax = "None"
+    update_result(result, "tmax", tmax)
+
+    # Auction - bkc
+    try:
+        bkc = auction["user"]["bkc"]
+    except:
+        bkc = ""
+    update_result(result, "bkc", bkc)
+
+
+def auction_site_process(auction, result):
+    try:
+        site = auction["site"]
+        # Auction - Site - type id
+        typeid = site["typeid"]
+
+        # Auction - Site - site category
+        try:
+            cat = site["cat"]
+        except:
+            cat = []
+
+        # Auction - Site - page category
+        try:
+            pcat = site["pcat"]
+        except:
+            pcat = []
+    except:
+        typeid = -1
+        cat = []
+        pcat = []
+
+    update_result(result, "typeid", typeid)
+    update_result(result, "cat", cat)
+    update_result(result, "pcat", pcat)
+
+
+def auction_dev_process(auction, result):
+    # Auction - Dev - browser type
+    try:
+        bti = auction["dev"]["bti"]
+    except:
+        bti = -1
+    update_result(result, "bti", bti)
+
+
+def auction_bidrequests_process(auction, result, result_pos, result_neg):
+    # Record the bid ids and corresonding impression ids that are responded if any
+    bid_responded = {}
+    if auction.has_key("bids"):
+        for bid in auction["bids"]:
+            bid_responded.update({bid["requestid"]:bid["impid"]})
+
+    for bidreq in auction["bidrequests"]:
+        result_bid = result.copy()
+        bidderid = bidreq["bidderid"]
+        update_result(result_bid, "bidderid", bidderid)
+        auction_bidrequest_impressions_process(bidreq, bid_responded, result_bid, result_pos, result_neg)
+
+
+def auction_bidrequest_impressions_process(bidreq, bid_responded, result_bid, result_pos, result_neg):
+    bidreq_id = bidreq["id"]
+    # Determine if this impression is responded by any DSP
+    impid_responded = -1
+    if bid_responded.has_key(bidreq_id):
+        impid_responded = bid_responded[bidreq_id]
+
+    for imp in bidreq["impressions"]:
+        # Auction - Bidrequests - Impressions - bid Floor
+        result_imp = result_bid.copy()
+        bidfloor = imp["bidfloor"]
+        update_result(result_imp, "bidfloor", bidfloor)
+
+        # Auction - Bidrequests - Impressions - format
+        format = imp["format"]
+        update_result(result_imp, "format", format)
+
+        # Auction - Bidrequests - Impressions - product
+        product = imp["product"]
+        update_result(result_imp, "product", product)
+
+        # Auction - Bidrequests - Impressions - banner
+        try:
+            w = imp["banner"]["w"]
+            h = imp["banner"]["h"]
+        except:
+            w = -1
+            h = -1
+        update_result(result_imp, "w", w)
+        update_result(result_imp, "h", h)
+
+        # Response
+        if imp["id"] == impid_responded:
+            update_result(result_imp, "response", 1)
+            result_pos.append(result_imp)
+        else:
+            update_result(result_imp, "response", 0)
+            result_neg.append(result_imp)
+
+
 if __name__ == '__main__':
+    start = time.time()
+
     cpus = multiprocessing.cpu_count()
     p = multiprocessing.Pool(cpus)
     list_io_addr = get_io_addr()
@@ -120,4 +264,4 @@ if __name__ == '__main__':
     print "{} lines filtered".format(filtered)
     print "{} lines dumped".format(dumped)
 
-print "Completed in {} seconds\n".format(round(time.time()-start, 2))
+    print "Completed in {} seconds\n".format(round(time.time()-start, 2))

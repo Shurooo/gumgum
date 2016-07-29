@@ -21,13 +21,13 @@ class RandomForsetWrapper:
         else:
             warm_start = True
         self.clf = RandomForestClassifier(n_estimators=n_estimators,
-                                      min_weight_fraction_leaf=min_weight_fraction_leaf,
-                                      class_weight=class_weight,
-                                      max_features=max_features,
-                                      oob_score=oob_score,
-                                      warm_start=warm_start,
-                                      n_jobs=n_jobs,
-                                      random_state=random_state)
+                                          min_weight_fraction_leaf=min_weight_fraction_leaf,
+                                          class_weight=class_weight,
+                                          max_features=max_features,
+                                          oob_score=oob_score,
+                                          warm_start=warm_start,
+                                          n_jobs=n_jobs,
+                                          random_state=random_state)
 
 
     def train(self, addr_in, sampling):
