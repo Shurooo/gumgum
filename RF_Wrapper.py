@@ -21,7 +21,7 @@ class RandomForsetWrapper:
         else:
             warm_start = True
         self.clf = RandomForestClassifier(n_estimators=n_estimators,
-                                      min_weight_fraction_leaf=min_weight_fraction_leaf,
+                                      min_weight_fraction_leaf=float(min_weight_fraction_leaf),
                                       class_weight=class_weight,
                                       max_features=max_features,
                                       oob_score=oob_score,
