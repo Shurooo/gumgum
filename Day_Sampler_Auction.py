@@ -37,8 +37,6 @@ def crawl(addr_day):
         with open(path_in, "r") as file_in:
             data_list = list(file_in)
             total_line += len(data_list)
-
-
     line_indices = sorted(np.random.choice(total_line, num, replace=False))
 
     setoff = 0
