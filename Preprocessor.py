@@ -53,32 +53,32 @@ def crawl(io_addr):
 
     dumped = 0
     data_sparse_list = []
-    # for suffix in ["pos", "neg"]:
-    #     addr_in = addr_in + suffix + "_bin.npy"
-    #     addr_out = addr_out + suffix + "_bin.npy"
-    if os.path.isfile(addr_in):
-        with open(addr_in, "r") as file_in:
-            print "Processing {}".format(addr_in)
-            for line in file_in:
-                # try:
-                entry = json.loads(line)
-                result = []
-                Driver.process(entry, result, "bin")
-                data_sparse_list.append(csr_matrix(result))
+    for suffix in ["pos", "neg"]:
+        addr_in = addr_in + suffix + "_bin.npy"
+        addr_out = addr_out + suffix + "_bin.npy"
+        if os.path.isfile(addr_in):
+            with open(addr_in, "r") as file_in:
+                print "Processing {}".format(addr_in)
+                for line in file_in:
+                    # try:
+                    entry = json.loads(line)
+                    result = []
+                    Driver.process(entry, result, "bin")
+                    data_sparse_list.append(csr_matrix(result))
 
-                # except:
-                #     dumped += 1
+                    # except:
+                    #     dumped += 1
 
-        data_matrix = vstack(data_sparse_list)
-        with open(addr_out, 'w') as file_out:
-            np.savez(file_out,
-                     data=data_matrix.data,
-                     indices=data_matrix.indices,
-                     indptr=data_matrix.indptr,
-                     shape=data_matrix.shape)
+            data_matrix = vstack(data_sparse_list)
+            with open(addr_out, 'w') as file_out:
+                np.savez(file_out,
+                         data=data_matrix.data,
+                         indices=data_matrix.indices,
+                         indptr=data_matrix.indptr,
+                         shape=data_matrix.shape)
 
-    else:
-        print "\nFile Missing: {}\n".format(addr_in)
+        else:
+            print "\nFile Missing: {}\n".format(addr_in)
 
     return dumped
 
