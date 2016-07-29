@@ -57,14 +57,14 @@ def crawl(io_addr):
         with open(addr_in, "r") as file_in:
             print "Processing {}".format(addr_in)
             for line in file_in:
-                try:
-                    entry = json.loads(line)
-                    result = []
-                    Driver.process(entry, result)
-                    data_sparse_list.append(csr_matrix(result))
+                # try:
+                entry = json.loads(line)
+                result = []
+                Driver.process(entry, result)
+                data_sparse_list.append(csr_matrix(result))
 
-                except:
-                    dumped += 1
+                # except:
+                #     dumped += 1
 
         data_matrix = vstack(data_sparse_list)
         with open(addr_out, 'w') as file_out:

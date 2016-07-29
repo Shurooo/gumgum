@@ -178,14 +178,25 @@ def auction_site_process(auction, result):
             pcat = site["pcat"]
         except:
             pcat = []
+
+        # Auction - Site - domain
+        try:
+            domain = site["domain"]
+        except:
+            domain = "None"
+        if len(domain) == 0:
+            domain = "None"
+
     except:
         typeid = -1
         cat = []
         pcat = []
+        domain = "None"
 
     update_result(result, "typeid", typeid)
     update_result(result, "cat", cat)
     update_result(result, "pcat", pcat)
+    update_result(result, "domain", domain)
 
 
 def auction_dev_process(auction, result):
@@ -206,8 +217,15 @@ def auction_bidrequests_process(auction, result, result_pos, result_neg):
 
     for bidreq in auction["bidrequests"]:
         result_bid = result.copy()
+
+        # Auction - Bidrequests - bidder id
         bidderid = bidreq["bidderid"]
         update_result(result_bid, "bidderid", bidderid)
+
+        # Auction - Bidrequests - vertical id
+        verticalid = bidreq["verticalid"]
+        update_result(result_bid, "verticalid", verticalid)
+
         auction_bidrequest_impressions_process(bidreq, bid_responded, result_bid, result_pos, result_neg)
 
 
