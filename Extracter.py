@@ -41,15 +41,16 @@ def crawl(io_addr):
     filtered = 0
     dumped = 0
 
-    result_list = []
+    pos_list = []
+    neg_list = []
     if os.path.isfile(addr_in):
         with open(addr_in, "r") as file_in:
             print addr_in
             for line in file_in:
                 try:
                     entry = json.loads(line)
-                    result = []
-                    result_list = []
+                    result = {}
+                    result_list = {}
 
                     auction = entry["auction"]
                     if_continue = filter(auction)   # Filter out auctions that do not contain any bid requests
@@ -57,14 +58,16 @@ def crawl(io_addr):
                         filtered += 1
                         continue
 
-
+                    # Event
+                    event = entry["em"]
+                    t = event["t"] / 1000
                     for item in result_list:
-                        data_sparse_list.append(csr_matrix(item))
+                        line_list.append(item)
 
                 except:
                     dumped += 1
 
-        data_matrix = vstack(data_sparse_list)
+
         with open(addr_out, 'w') as file_out:
             np.savez(file_out,
                      data=data_matrix.data,
