@@ -9,16 +9,6 @@ import Sparse_Matrix_IO as smio
 import multiprocessing
 
 
-__SAVE_MODEL = False
-__ROOT_MODEL = "/home/ubuntu/Weiyi/model_random_forest.p"
-
-__TRAIN_DATA = [(6, 4)]
-__TEST_DATA =  [(6, 5)]
-
-__FEATURES_TO_GET = ["bidder_id", "bid_floor", "country", "site_cat", "hour"]
-# __FEATURES_TO_GET = []
-__RATIO = 2.75
-
 def get_io_addr(data_in):
     list_io_addr = []
     root = "/mnt/rips2/2016"
@@ -36,37 +26,23 @@ def get_io_addr(data_in):
 def train(clf, data_train):
     list_io_addr = get_io_addr(data_train)
 
-    if len(list_io_addr > 1):
+    if len(list_io_addr) > 1:
         for path_in in list_io_addr:
-            print "\n>>>>> Start Training on {}".format(path_in)
             clf.train_online(path_in)
-
-    if __SAVE_MODEL:
-        with open(__ROOT_MODEL, "w") as file_out:
-            pickle.dump(clf, file_out)
-
-    return clf
+    else:
+        for path_in in list_io_addr:
+            clf.train(path_in)
 
 
 def crawl(args):
     addr_in = args[0]
     clf = args[1]
-
-    X_test, y_test = gd.get(addr_day=addr_in, features_to_get=__FEATURES_TO_GET)
-    prediction = clf.predict(X_test)
-
+    y_test, prediction = clf.test(addr_in)
     return metrics.confusion_matrix(y_test, prediction)
 
 
-def test(clf):
-    print "\n========== Start Testing =========="
-    print "\nLoad Model......"
-    if __SAVE_MODEL:
-        with open(__ROOT_MODEL, "r") as file_in:
-            clf = pickle.load(file_in)
-    print "Done\n"
-
-    list_io_addr = get_io_addr(__TEST_DATA)
+def test(clf, data_test):
+    list_io_addr = get_io_addr(data_test)
 
     confusion_matrix = [0, 0, 0, 0]
     args = []
@@ -79,9 +55,7 @@ def test(clf):
         confusion_matrix[1] += result[0, 1]   # fp
         confusion_matrix[2] += result[0, 0]   # tn
         confusion_matrix[3] += result[1, 0]   # fn
-    print "Done"
 
-    print "\nGenerate statistics"
     tp = confusion_matrix[0]
     fp = confusion_matrix[1]
     tn = confusion_matrix[2]
@@ -92,11 +66,13 @@ def test(clf):
     print "recall = {0:.4f}, filtering = {1:.4f}".format(round(recall, 4), round(filtering, 4))
 
 
-def run_predict(clf, data):
+def run(clf, data_train, data_test):
     start = time.time()
-    clf = train(clf, data[0])
-    print "----------Training Completed in {} seconds----------\n".format(round(time.time()-start, 2))
+    print ">>>>> Start Training"
+    train(clf, data_train)
+    print ">>>>> Training Completed in {} seconds\n".format(round(time.time()-start, 2))
 
     start = time.time()
-    test(clf, data[1])
-    print "----------Testing Completed in {} seconds----------\n".format(round(time.time()-start, 2))
+    print ">>>>> Start Testing"
+    test(clf, data_test)
+    print ">>>>> Testing Completed in {} seconds\n".format(round(time.time()-start, 2))

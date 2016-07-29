@@ -1,6 +1,5 @@
 import os
 import xlsxwriter
-import numpy as np
 import time
 from sklearn import metrics
 
@@ -66,7 +65,7 @@ def init_worksheet(workbook):
     return ws
 
 
-def run_test(clf, model, data, train_test_mode, report_name=-1, report_root="/home/ubuntu/Weiyi/Reports"):
+def run(clf, model, data, train_test_mode, on_off_line, report_name=-1, report_root="/home/ubuntu/Weiyi/Reports"):
     if report_name == -1:
         report_name = model + "_Report.xlsx"
     file_out = open(os.path.join(report_root, report_name), "w")
@@ -96,7 +95,10 @@ def run_test(clf, model, data, train_test_mode, report_name=-1, report_root="/ho
                 addr_train = pair[0]
                 print "\n>>>>> Start Training on {}".format(addr_train)
                 start = time.time()
-                clf.train(addr_train)
+                if on_off_line == "Online":
+                    clf.train_online(addr_train)
+                else:
+                    clf.train(addr_train)
                 print ">>>>> Training completed in {} seconds".format(round(time.time()-start, 2))
 
                 addr_test = pair[1]
