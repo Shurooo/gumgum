@@ -7,4 +7,4 @@ clf = rfw.RandomForsetWrapper(init_estimators=100,
                               min_weight_fraction_leaf=0.00001,
                               class_weight={0:1, 1:100})
 
-clf.run_predict([(5, 1)], [(5, 2)], sampling="Over")
+clf.run_predict([(6, 4)], [(6, 5)], sampling="Over")
