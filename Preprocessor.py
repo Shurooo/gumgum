@@ -51,7 +51,7 @@ def get_io_addr_random_sample():
 def crawl(io_addr):
     dumped = 0
     data_sparse_list = []
-    for suffix in ["neg"]:
+    for suffix in ["pos"]:
         addr_in = io_addr[0]
         addr_out = io_addr[1]
         addr_in = addr_in + suffix
