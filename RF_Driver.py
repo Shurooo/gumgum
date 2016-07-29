@@ -1,7 +1,7 @@
 import RF_Wrapper as rfw
 
 
-clf = rfw.RandomForsetWrapper(init_estimators = 40,
+clf = rfw.RandomForsetWrapper(init_estimators = 100,
                               add_estimators = 0,
                               max_features="sqrt",
                               min_weight_fraction_leaf=0.00000001,
