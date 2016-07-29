@@ -15,7 +15,7 @@ def if_multiple_bid_floor(result_imp, bid_floor, n):
         result_imp.append(0)
 
 
-def process(margin, entry, result):
+def process(margin, entry, result, mode):
     # Auction - Bidrequests - bidder id
     bidder_id = entry["bidderid"]
     if bidder_id == 36: # Adjusting the index for DSP 36 since we ignore DSP 35 and 37
@@ -27,11 +27,20 @@ def process(margin, entry, result):
 
     # Auction - Bidrequests - Impressions - Bid Floor
     bid_floor = round(float(entry["bidfloor"]), 2)
+
     if bid_floor-margin == 0:
         result.append(0)
     else:
         result.append(1)
-    result.append(bid_floor)
+    if mode == "bin":
+        index = 0
+        if bid_floor < 28:
+            index = int(bid_floor*20)
+        bid_floor_list = [0]*560
+        bid_floor_list[index] = 1
+        result.extend(bid_floor_list)
+    else:
+        result.append(bid_floor)
 
     # Determine if bid floor is a multiple of 0.05 or of 0.1
     if_multiple_bid_floor(result, bid_floor, 20)
