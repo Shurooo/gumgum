@@ -21,4 +21,4 @@ def add_to_result(result, var, dict_var):
         index = dict_var.index(var)
     except:
         index = len(dict_var)
-    binarize(result, index, len(dict_var))
+    binarize(result, index, len(dict_var)+1)

@@ -2,12 +2,15 @@ import Shared as sd
 
 
 domains_ = sd.get_dict("domain")
-browsers_ = [1, 2, 10, 13, 5, 11, 12, 7, -1]
+browsers_ = [1, 2, 10, 13, 5, 11, 12, 7]
 
 
 def process(entry, result):
     # Auction - Site - typeid
-    sd.binarize(result, entry["typeid"]-1, 3)
+    if entry["typeid"] == -1:
+        result.extend([0]*3)
+    else:
+        sd.binarize(result, entry["typeid"]-1, 3)
 
     # Auction - Site - cat
     # Auction - Site - pcat
@@ -21,7 +24,7 @@ def process(entry, result):
         if item in domain:
             break
         index += 1
-    sd.binarize(result, index, len(domains_))
+    sd.binarize(result, index, len(domains_)+1)
 
     # Auction - Dev - browser type
     sd.add_to_result(result, entry["bti"], browsers_)
@@ -30,8 +33,9 @@ def process(entry, result):
 def cat_process(result, site, var):
     cats = [0]*26  # Parse 26 different types of IAB categories
     for cat in site[var]:
-        cat_int = IAB_parser(cat)
-        cats[cat_int-1] = 1
+        if "IAB" in cat:
+            cat_int = IAB_parser(cat)
+            cats[cat_int-1] = 1
     result.extend(cats)
 
 
