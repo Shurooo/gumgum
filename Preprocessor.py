@@ -52,7 +52,6 @@ def crawl(io_addr):
     addr_out = io_addr[1]
 
     dumped = 0
-
     data_sparse_list = []
     if os.path.isfile(addr_in):
         with open(addr_in, "r") as file_in:

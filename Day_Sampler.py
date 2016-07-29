@@ -27,13 +27,13 @@ def get_io_addr():
 
 def crawl(addr_day):
     print "Processing {}".format(addr_day)
-    root_in = "/mnt/rips/2016"
+    root = "/mnt/rips2/2016"
 
     for suffix in ["pos", "neg"]:
         list_path_in = []
         for hour in range(0, 24):
             hour_str = str(hour).rjust(2, "0")
-            list_path_in.append(os.path.join(root_in, addr_day, hour_str, "output_" + suffix))
+            list_path_in.append(os.path.join(root, addr_day, hour_str, "output_" + suffix))
 
         total_line = 0
         for path_in in list_path_in:
@@ -59,8 +59,7 @@ def crawl(addr_day):
             if index >= num:
                 break
 
-        root_out = "/mnt/rips2/2016"
-        path_out = os.path.join(root_out, addr_day, "day_samp_raw_" + suffix)
+        path_out = os.path.join(root, addr_day, "day_samp_raw_" + suffix)
         with open(path_out, "w") as file_out:
             for line in res:
                 file_out.write(line)
