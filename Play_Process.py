@@ -32,7 +32,6 @@ def get_io_addr():
 
 
 def add_to_dict(dict_var, value, res):
-    print ">>>>> add", value
     if dict_var.has_key(value):
         dict_var[value][0] += 1
         dict_var[value][1] += res
@@ -42,7 +41,7 @@ def add_to_dict(dict_var, value, res):
 
 def process_var(index, dict_list, entry, res, var):
     value = entry[var]
-    if (var == "bidfloor" or var == "margin"):
+    if var == "bidfloor" or var == "margin":
         value = round(value, 2)
     add_to_dict(dict_list[index], value, res)
 
@@ -92,6 +91,7 @@ def process_banner(index, dict_list, entry, res):
 
 
 def switch(var, dict_list, index, entry, res):
+    print ">>>>> switch", var
     options = {
         "bidfloor": None,
         "margin": None,
@@ -149,15 +149,15 @@ if __name__ == '__main__':
                 else:
                     dict_var.update({key:[result_var[key][0], result_var[key][1]]})
 
-    for i in range(len(var_)):
-        var = var_[i]
-        if var == "t":
-            var = "hour"
-        elif var == "w":
-            var = "day"
-        elif var == "h":
-            var = "banner"
-        print "{} unique {} recorded".format(len(dict_list[i]), var)
+    # for i in range(len(var_)):
+    #     var = var_[i]
+    #     if var == "t":
+    #         var = "hour"
+    #     elif var == "w":
+    #         var = "day"
+    #     elif var == "h":
+    #         var = "banner"
+    #     print "{} unique {} recorded".format(len(dict_list[i]), var)
 
         # sorted_result = sorted(dict_list[i].items(), key=operator.itemgetter(1), reverse=True)
         # with open(os.path.join("/home/ubuntu/Weiyi/Play", var+".ods"), "w") as file_out:
