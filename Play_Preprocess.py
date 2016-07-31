@@ -123,7 +123,7 @@ def crawl(io_addr):
     result = []
 
     with open(addr_in, "r") as file_in:
-        print "Processing {}".format(file_in)
+        print "Processing {}".format(addr_in)
         for line in file_in:
             entry = json.loads(line)
             for var in var_:
