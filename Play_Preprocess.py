@@ -14,7 +14,7 @@ with open("dict_all.json", "r") as file_in:
 def get_io_addr_day_samp():
     # may = [(5, i) for i in range(1, 8)]
     may = []
-    june = [(6, i) for i in range(4, 6)]
+    june = [(6, i) for i in range(4, 5)]
     # june = []
 
     root = "/home/wlu/Desktop/rips16"
@@ -132,7 +132,9 @@ def crawl(io_addr):
                 list_value = dict_var[0]
                 list_ratio = dict_var[1]
                 process(result, var, value, list_value, list_ratio)
-                data_sparse_list.append(csr_matrix(result))
+
+            result.append(entry["response"])
+            data_sparse_list.append(csr_matrix(result))
 
     data_matrix = vstack(data_sparse_list)
     with open(addr_out, 'w') as file_out:
