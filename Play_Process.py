@@ -7,7 +7,7 @@ import os
 
 
 # var_ = ["cc", "rg", "margin", "tmax", "typeid", "bti", "bidderid", "verticalid", "bidfloor", "format", "product", "cat", "pcat", "domain", "bkc", "t", "w", "h"]
-var_ = ["rg", "h"]
+var_ = ["margin", "h"]
 
 
 def get_io_addr():
