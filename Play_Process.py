@@ -10,7 +10,7 @@ var_ = ["cc", "rg", "margin", "tmax", "typeid", "bti", "bidderid", "verticalid",
 
 
 def get_io_addr():
-    may = [(5, i, j) for i in range(1, 2) for j in range(1)]
+    may = [(5, i, j) for i in range(1, 2) for j in range(24)]
     # may = []
     # june = [(6, i, j) for i in range(4, 26) for j in range(24)]
     june = []
@@ -156,10 +156,17 @@ if __name__ == '__main__':
         print "{} unique {} recorded".format(len(dict_list[i]), var)
 
         sorted_result = sorted(dict_list[i].items(), key=operator.itemgetter(1), reverse=True)
+        index = 0
+        while index < len(sorted_result):
+            req = sorted_result[index][1][0]
+            if req <= 1000:
+                break
+            index += 1
+        sorted_result = sorted_result[:index+1]
         with open(os.path.join("/home/ubuntu/Weiyi/Play", var+".ods"), "w") as file_out:
             wr = csv.writer(file_out)
             for item in sorted_result:
                 req = item[1][0]
                 res = item[1][1]
                 ratio = round(float(res) / req, 4)
-                wr.writerow((var, ratio))
+                wr.writerow((var, req, res, ratio))
