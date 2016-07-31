@@ -106,12 +106,12 @@ def switch(var, dict_list, index, entry, res):
         "t": process_time(index, dict_list, entry, res),
         "w":process_banner(index, dict_list, entry, res)
     }
-    try:
-        print "Yes"
-        dumb = options[var]
-    except:
-        print "No"
-        dumb = process_var(index, dict_list, entry, res, var)
+    # try:
+    #     print "Yes"
+    #     dumb = options[var]
+    # except:
+    #     print "No"
+    #     dumb = process_var(index, dict_list, entry, res, var)
 
 
 def crawl(path_in):
