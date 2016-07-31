@@ -96,16 +96,16 @@ def foo():
 
 def switch(var, dict_list, index, entry, res):
     print ">>>>> switch", var
-    options = {
-        "bidfloor": None,
-        "margin": foo(),
-        "cat": process_cat(index, dict_list, entry, res, var),
-        "pcat": process_cat(index, dict_list, entry, res, var),
-        "domain": process_domain(index, dict_list, entry, res),
-        "bkc": process_bkc(index, dict_list, entry, res),
-        "t": process_time(index, dict_list, entry, res),
-        "w":process_banner(index, dict_list, entry, res)
-    }
+    # options = {
+    #     "bidfloor": None,
+    #     "margin": foo(),
+    #     "cat": process_cat(index, dict_list, entry, res, var),
+    #     "pcat": process_cat(index, dict_list, entry, res, var),
+    #     "domain": process_domain(index, dict_list, entry, res),
+    #     "bkc": process_bkc(index, dict_list, entry, res),
+    #     "t": process_time(index, dict_list, entry, res),
+    #     "w":process_banner(index, dict_list, entry, res)
+    # }
     # try:
     #     print "Yes"
     #     dumb = options[var]
