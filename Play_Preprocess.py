@@ -120,11 +120,10 @@ def crawl(io_addr):
     addr_in = io_addr[0]
     addr_out = io_addr[1]
     data_sparse_list = []
-    result = []
-
     with open(addr_in, "r") as file_in:
         print "Processing {}".format(addr_in)
         for line in file_in:
+            result = []
             entry = json.loads(line)
             for var in var_:
                 value = get_value(entry, var)
