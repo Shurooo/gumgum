@@ -10,10 +10,10 @@ var_ = ["cc", "rg", "margin", "tmax", "typeid", "bti", "bidderid", "verticalid",
 
 
 def get_io_addr():
-    may = [(5, i, j) for i in range(1, 2) for j in range(24)]
-    # may = []
-    # june = [(6, i, j) for i in range(4, 26) for j in range(24)]
-    june = []
+    # may = [(5, i, j) for i in range(1, 2) for j in range(24)]
+    may = []
+    june = [(6, i, j) for i in range(4, 26) for j in range(24)]
+    # june = []
 
     root = "/mnt/rips2/2016"
     list_io_addr = []
@@ -159,10 +159,10 @@ if __name__ == '__main__':
         index = 0
         while index < len(sorted_result):
             req = sorted_result[index][1][0]
-            if req <= 1000:
+            if req < 1000:
                 break
             index += 1
-        sorted_result = sorted_result[:index+1]
+        sorted_result = sorted_result[:index]
         with open(os.path.join("/home/ubuntu/Weiyi/Play", var+".ods"), "w") as file_out:
             wr = csv.writer(file_out)
             for item in sorted_result:
