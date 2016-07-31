@@ -149,11 +149,11 @@ if __name__ == '__main__':
             var = "banner"
         print "{} unique {} recorded".format(len(dict_list[i]), var)
 
-        sorted_result = sorted(dict_list[i].items(), key=operator.itemgetter(1), reverse=True)
-        with open(os.path.join("/home/ubuntu/Weiyi/Play", var+".ods"), "w") as file_out:
-            wr = csv.writer(file_out)
-            for item in sorted_result:
-                req = item[1][0]
-                res = item[1][1]
-                ratio = round(float(res) / req, 4)
-                wr.writerow((var, ratio))
+        # sorted_result = sorted(dict_list[i].items(), key=operator.itemgetter(1), reverse=True)
+        # with open(os.path.join("/home/ubuntu/Weiyi/Play", var+".ods"), "w") as file_out:
+        #     wr = csv.writer(file_out)
+        #     for item in sorted_result:
+        #         req = item[1][0]
+        #         res = item[1][1]
+        #         ratio = round(float(res) / req, 4)
+        #         wr.writerow((var, ratio))
