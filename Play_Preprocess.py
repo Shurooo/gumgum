@@ -17,7 +17,7 @@ def get_io_addr_day_samp():
     june = [(6, i) for i in range(4, 5)]
     # june = []
 
-    root = "/home/wlu/Desktop/rips16"
+    root = "/mnt/rips2/2016"
     filename_in = "day_samp_raw_test"
     filename_out = "day_samp_test_play.npy"
 
