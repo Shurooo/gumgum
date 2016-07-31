@@ -31,6 +31,7 @@ def get_io_addr():
 
 
 def add_to_dict(dict_var, value, res):
+    print ">>>>> switch", var
     if dict_var.has_key(value):
         dict_var[value][0] += 1
         dict_var[value][1] += res
@@ -103,7 +104,6 @@ def switch(var, dict_list, index, entry, res):
     }
     try:
         dumb = options[var]
-        print ">>>>> switch", var
     except:
         dumb = process_var(index, dict_list, entry, res, var)
         print ">>>>> switch", var
