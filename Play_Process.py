@@ -10,7 +10,7 @@ var_ = ["cc", "rg", "margin", "tmax", "typeid", "bti", "bidderid", "verticalid",
 
 
 def get_io_addr():
-    may = [(5, i, j) for i in range(1, 2) for j in range(2)]
+    may = [(5, i, j) for i in range(1, 2) for j in range(1)]
     # may = []
     # june = [(6, i, j) for i in range(4, 26) for j in range(24)]
     june = []
