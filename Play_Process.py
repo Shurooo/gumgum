@@ -6,7 +6,8 @@ import csv
 import os
 
 
-var_ = ["cc", "rg", "margin", "tmax", "typeid", "bti", "bidderid", "verticalid", "bidfloor", "format", "product", "cat", "pcat", "domain", "bkc", "t", "w", "h"]
+# var_ = ["cc", "rg", "margin", "tmax", "typeid", "bti", "bidderid", "verticalid", "bidfloor", "format", "product", "cat", "pcat", "domain", "bkc", "t", "w", "h"]
+var_ = ["cc", "rg"]
 
 
 def get_io_addr():
@@ -40,7 +41,6 @@ def add_to_dict(dict_var, value, res):
 
 
 def process_var(index, dict_list, entry, res, var):
-    print var
     value = entry[var]
     if (var == "bidfloor" or var == "margin"):
         value = round(value, 2)
@@ -106,7 +106,6 @@ def switch(var, dict_list, index, entry, res):
         dumb = options[var]
     except:
         dumb = process_var(index, dict_list, entry, res, var)
-        print ">>>>> switch", var
 
 
 def crawl(path_in):
