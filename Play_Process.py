@@ -166,7 +166,8 @@ if __name__ == '__main__':
         with open(os.path.join("/home/ubuntu/Weiyi/Play", var+".ods"), "w") as file_out:
             wr = csv.writer(file_out)
             for item in sorted_result:
+                feature = item[0]
                 req = item[1][0]
                 res = item[1][1]
                 ratio = round(float(res) / req, 4)
-                wr.writerow((var, req, res, ratio))
+                wr.writerow((feature, req, res, ratio))
