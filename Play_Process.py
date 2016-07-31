@@ -15,7 +15,7 @@ def get_io_addr():
     # june = [(6, i, j) for i in range(4, 26) for j in range(24)]
     june = []
 
-    root = "/mnt/rips/2016"
+    root = "/mnt/rips2/2016"
     list_io_addr = []
     for item in may+june:
         month = item[0]
