@@ -104,8 +104,10 @@ def switch(var, dict_list, index, entry, res):
     }
     try:
         dumb = options[var]
+        print "Yes"
     except:
         dumb = process_var(index, dict_list, entry, res, var)
+        print "No"
 
 
 def crawl(path_in):
