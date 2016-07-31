@@ -107,11 +107,11 @@ def switch(var, dict_list, index, entry, res):
         "w":process_banner(index, dict_list, entry, res)
     }
     try:
-        dumb = options[var]
         print "Yes"
+        dumb = options[var]
     except:
-        dumb = process_var(index, dict_list, entry, res, var)
         print "No"
+        dumb = process_var(index, dict_list, entry, res, var)
 
 
 def crawl(path_in):
