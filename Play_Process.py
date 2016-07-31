@@ -146,15 +146,15 @@ if __name__ == '__main__':
                 else:
                     dict_var.update({key:[result_var[key][0], result_var[key][1]]})
 
-    # for i in range(len(var_)):
-    #     var = var_[i]
-    #     if var == "t":
-    #         var = "hour"
-    #     elif var == "w":
-    #         var = "day"
-    #     elif var == "h":
-    #         var = "banner"
-    #     print "{} unique {} recorded".format(len(dict_list[i]), var)
+    for i in range(len(var_)):
+        var = var_[i]
+        if var == "t":
+            var = "hour"
+        elif var == "w":
+            var = "day"
+        elif var == "h":
+            var = "banner"
+        print "{} unique {} recorded".format(len(dict_list[i]), var)
 
         # sorted_result = sorted(dict_list[i].items(), key=operator.itemgetter(1), reverse=True)
         # with open(os.path.join("/home/ubuntu/Weiyi/Play", var+".ods"), "w") as file_out:
