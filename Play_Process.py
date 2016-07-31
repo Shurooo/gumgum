@@ -6,7 +6,7 @@ import csv
 import os
 
 
-var_ = ["cc", "rg", "tmax", "typeid", "bti", "bidderid", "verticalid", "bidfloor", "format", "product", "cat", "pcat", "domain", "bkc", "t", "w", "h"]
+var_ = ["cc", "rg", "margin", "tmax", "typeid", "bti", "bidderid", "verticalid", "bidfloor", "format", "product", "cat", "pcat", "domain", "bkc", "t", "w", "h"]
 
 
 def get_io_addr():
@@ -91,6 +91,7 @@ def process_banner(index, dict_list, entry, res):
 
 
 def switch(var, dict_list, index, entry, res):
+    print ">>>>> switch", var
     return {
         "bidfloor": None,
         "margin": None,
