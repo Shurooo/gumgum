@@ -40,6 +40,8 @@ def add_to_dict(dict_var, value, res):
 
 def process_var(index, dict_list, entry, res, var):
     value = entry[var]
+    if (var == "bidfloor" or var == "margin"):
+        value = round(value, 2)
     add_to_dict(dict_list[index], value, res)
 
 
@@ -89,6 +91,8 @@ def process_banner(index, dict_list, entry, res):
 
 def switch(var, dict_list, index, entry, res):
     return {
+        "bidfloor": None,
+        "margin": None,
         "cat": process_cat(index, dict_list, entry, res, var),
         "pcat": process_cat(index, dict_list, entry, res, var),
         "domain": process_domain(index, dict_list, entry, res),
