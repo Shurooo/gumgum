@@ -134,6 +134,7 @@ def crawl(io_addr):
                 process(result, var, value, list_value, list_ratio)
 
             result.append(entry["response"])
+            print len(result)
             data_sparse_list.append(csr_matrix(result))
 
     data_matrix = vstack(data_sparse_list)
