@@ -31,7 +31,7 @@ def get_io_addr():
 
 
 def add_to_dict(dict_var, value, res):
-    print ">>>>> switch", var
+    print ">>>>> add", value
     if dict_var.has_key(value):
         dict_var[value][0] += 1
         dict_var[value][1] += res
