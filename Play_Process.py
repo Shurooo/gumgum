@@ -90,11 +90,15 @@ def process_banner(index, dict_list, entry, res):
     add_to_dict(dict_list[index+1], (w, h), res)
 
 
+def foo():
+    print "foo"
+
+
 def switch(var, dict_list, index, entry, res):
     print ">>>>> switch", var
     options = {
         "bidfloor": None,
-        "margin": None,
+        "margin": foo(),
         "cat": process_cat(index, dict_list, entry, res, var),
         "pcat": process_cat(index, dict_list, entry, res, var),
         "domain": process_domain(index, dict_list, entry, res),
