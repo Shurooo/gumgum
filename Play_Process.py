@@ -92,7 +92,7 @@ def process_banner(index, dict_list, entry, res):
 
 def switch(var, dict_list, index, entry, res):
     print ">>>>> switch", var
-    return {
+    options = {
         "bidfloor": None,
         "margin": None,
         "cat": process_cat(index, dict_list, entry, res, var),
@@ -101,7 +101,11 @@ def switch(var, dict_list, index, entry, res):
         "bkc": process_bkc(index, dict_list, entry, res),
         "t": process_time(index, dict_list, entry, res),
         "w":process_banner(index, dict_list, entry, res)
-    }.get(var, process_var(index, dict_list, entry, res, var))
+    }
+    try:
+        dumb = options[var]
+    except:
+        dumb = process_var(index, dict_list, entry, res, var)
 
 
 def crawl(path_in):
