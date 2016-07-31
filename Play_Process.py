@@ -119,7 +119,7 @@ def crawl(path_in):
             res = 1
         else:
             res = 0
-        addr_in = os.path.join(path_in, "output_"+suffix)
+        addr_in = os.path.join(path_in, "output_test_"+suffix)
         with open(addr_in) as file_in:
             for line in file_in:
                 entry = json.loads(line)
