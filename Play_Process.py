@@ -10,7 +10,7 @@ var_ = ["cc", "rg", "margin", "tmax", "typeid", "bti", "bidderid", "verticalid",
 
 
 def get_io_addr():
-    may = [(5, i, j) for i in range(1, 2) for j in range(24)]
+    may = [(5, i, j) for i in range(1, 2) for j in range(2)]
     # may = []
     # june = [(6, i, j) for i in range(4, 26) for j in range(24)]
     june = []
@@ -39,6 +39,7 @@ def add_to_dict(dict_var, value, res):
 
 
 def process_var(index, dict_list, entry, res, var):
+    print var
     value = entry[var]
     if (var == "bidfloor" or var == "margin"):
         value = round(value, 2)
