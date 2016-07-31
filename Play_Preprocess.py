@@ -14,12 +14,12 @@ with open("dict_all.json", "r") as file_in:
 def get_io_addr_day_samp():
     # may = [(5, i) for i in range(1, 8)]
     may = []
-    june = [(6, i) for i in range(4, 5)]
+    june = [(6, i) for i in range(4, 6)]
     # june = []
 
-    root = "/mnt/rips2/2016"
-    filename_in = "day_samp_raw_test"
-    filename_out = "day_samp_test_play.npy"
+    root = "/home/wlu/Desktop/rips16"
+    filename_in = "day_samp_raw"
+    filename_out = "day_samp_play.npy"
 
     list_io_addr = []
     for item in may+june:
@@ -45,7 +45,7 @@ def get_value(entry, var):
     elif var == "banner":
         w = entry["w"]
         h = entry["h"]
-        value = (w, h)
+        value = [w, h]
     elif var == "margin" or var == "bidfloor":
         value = round(entry[var], 2)
     else:
@@ -75,7 +75,7 @@ def process_bkc(result, value, list_value, list_ratio):
         if not item == "":
             bkc = int(item)
             try:
-                index = list_value(bkc)
+                index = list_value.index(bkc)
                 result_tmp[index] = list_ratio[index]
             except:
                 pass
@@ -85,7 +85,7 @@ def process_bkc(result, value, list_value, list_ratio):
 def process_domain(result, value, list_value, list_ratio):
     index = 0
     for item in list_value:
-        if value in item:
+        if item in value:
             break
         index += 1
     if index < len(list_ratio):
