@@ -90,28 +90,19 @@ def process_banner(index, dict_list, entry, res):
     add_to_dict(dict_list[index+1], (w, h), res)
 
 
-def foo():
-    print "foo"
-
-
 def switch(var, dict_list, index, entry, res):
-    print ">>>>> switch", var
-    # options = {
-    #     "bidfloor": None,
-    #     "margin": foo(),
-    #     "cat": process_cat(index, dict_list, entry, res, var),
-    #     "pcat": process_cat(index, dict_list, entry, res, var),
-    #     "domain": process_domain(index, dict_list, entry, res),
-    #     "bkc": process_bkc(index, dict_list, entry, res),
-    #     "t": process_time(index, dict_list, entry, res),
-    #     "w":process_banner(index, dict_list, entry, res)
-    # }
-    # try:
-    #     print "Yes"
-    #     dumb = options[var]
-    # except:
-    #     print "No"
-    #     dumb = process_var(index, dict_list, entry, res, var)
+    if var == "cat" or var == "pcat":
+        process_cat(index, dict_list, entry, res, var)
+    elif var == "domain":
+        process_domain(index, dict_list, entry, res),
+    elif var == "bkc":
+        process_bkc(index, dict_list, entry, res),
+    elif var == "t":
+        process_time(index, dict_list, entry, res),
+    elif var == "w":
+        process_banner(index, dict_list, entry, res)
+    else:
+        process_var(index, dict_list, entry, res, var)
 
 
 def crawl(path_in):
