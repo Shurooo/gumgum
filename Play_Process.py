@@ -91,7 +91,6 @@ def process_banner(index, dict_list, entry, res):
 
 
 def switch(var, dict_list, index, entry, res):
-    print ">>>>> switch", var
     options = {
         "bidfloor": None,
         "margin": None,
@@ -104,8 +103,10 @@ def switch(var, dict_list, index, entry, res):
     }
     try:
         dumb = options[var]
+        print ">>>>> switch", var
     except:
         dumb = process_var(index, dict_list, entry, res, var)
+        print ">>>>> switch", var
 
 
 def crawl(path_in):
