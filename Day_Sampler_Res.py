@@ -1,6 +1,6 @@
 import os
+import sys
 import time
-import multiprocessing
 import numpy as np
 from scipy import vstack
 import Sparse_Matrix_IO as smio
@@ -21,10 +21,12 @@ def get_io_addr():
         addr_in = os.path.join(root,
                                str(month).rjust(2, "0"),
                                str(day-1).rjust(2, "0"),
-                               "day_samp_res_75.npy")
+                               "PosNeg",
+                               "day_samp_res_pos_75.npy")
         addr_day_out = os.path.join(root,
-                                str(month).rjust(2, "0"),
-                                str(day).rjust(2, "0"))
+                                    str(month).rjust(2, "0"),
+                                    str(day).rjust(2, "0"),
+                                    "PosNeg")
         list_io_addr.append((addr_in, addr_day_out))
     return list_io_addr
 
@@ -40,14 +42,15 @@ def crawl(addr_io):
     addr_in = addr_io[0]
     addr_day_out = addr_io[1]
     print "Processing {}".format(addr_day_out)
+    sys.stdout.flush()
 
     data_old = get_data(addr_in, 25000)
-    data_new = get_data(os.path.join(addr_day_out, "day_samp_new.npy"), 75000)
+    data_new = get_data(os.path.join(addr_day_out, "day_samp_new_pos.npy"), 75000)
 
     data = vstack([data_old, data_new])
     np.random.shuffle(data)
 
-    with open(os.path.join(addr_day_out, "day_samp_res_75.npy"), "w") as file_out:
+    with open(os.path.join(addr_day_out, "day_samp_res_pos_75.npy"), "w") as file_out:
         smio.save_sparse_csr(file_out, data)
 
 
@@ -56,3 +59,4 @@ list_io_addr = get_io_addr()
 for addr_io in list_io_addr:
     crawl(addr_io)
 print "Completed in {} seconds\n".format(round(time.time()-start, 2))
+sys.stdout.flush()
