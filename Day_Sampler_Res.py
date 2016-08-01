@@ -35,7 +35,7 @@ def get_io_addr():
 def get_data(addr_in):
     with open(addr_in, "r") as file_in:
         data = smio.load_sparse_csr(file_in)
-    indices = sorted(np.random.choice(np.size(data, 0), 500000, replace=False))
+    indices = sorted(np.random.choice(np.size(data, 0), 50000, replace=False))
     return data[indices, :]
 
 
