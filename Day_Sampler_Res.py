@@ -22,7 +22,7 @@ def get_io_addr():
                                str(month).rjust(2, "0"),
                                str(day-1).rjust(2, "0"),
                                "PosNeg",
-                               "day_samp_res_pos_75.npy")
+                               "day_samp_res_neg_75.npy")
         addr_day_out = os.path.join(root,
                                     str(month).rjust(2, "0"),
                                     str(day).rjust(2, "0"),
@@ -45,12 +45,12 @@ def crawl(addr_io):
     sys.stdout.flush()
 
     data_old = get_data(addr_in, 25000)
-    data_new = get_data(os.path.join(addr_day_out, "day_samp_new_pos.npy"), 75000)
+    data_new = get_data(os.path.join(addr_day_out, "day_samp_neg_pos.npy"), 75000)
 
     data = vstack([data_old, data_new])
     np.random.shuffle(data)
 
-    with open(os.path.join(addr_day_out, "day_samp_res_pos_75.npy"), "w") as file_out:
+    with open(os.path.join(addr_day_out, "day_samp_res_neg_75.npy"), "w") as file_out:
         smio.save_sparse_csr(file_out, data)
 
 
