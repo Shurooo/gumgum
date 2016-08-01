@@ -9,7 +9,7 @@ import Sparse_Matrix_IO as smio
 def get_io_addr():
     # may = [(5, i) for i in range(1, 8)]
     may = []
-    june = [(6, i) for i in range(6, 26)]
+    june = [(6, i) for i in range(5, 26)]
     # june = []
     list_dates = may + june
     root = "/mnt/rips2/2016"
@@ -21,7 +21,7 @@ def get_io_addr():
         addr_in = os.path.join(root,
                                str(month).rjust(2, "0"),
                                str(day-1).rjust(2, "0"),
-                               "day_samp_res.npy")
+                               "day_samp_res_pos.npy")
         addr_day_out = os.path.join(root,
                                 str(month).rjust(2, "0"),
                                 str(day).rjust(2, "0"))
@@ -42,12 +42,12 @@ def crawl(addr_io):
     print "Processing {}".format(addr_day_out)
 
     data_old = get_data(addr_in)
-    data_new = get_data(os.path.join(addr_day_out, "day_samp_new.npy"))
+    data_new = get_data(os.path.join(addr_day_out, "day_samp_new_pos.npy"))
 
     data = vstack([data_old, data_new])
     np.random.shuffle(data)
 
-    with open(os.path.join(addr_day_out, "day_samp_res.npy"), "w") as file_out:
+    with open(os.path.join(addr_day_out, "day_samp_res_pos.npy"), "w") as file_out:
         smio.save_sparse_csr(file_out, data)
 
 
