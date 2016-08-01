@@ -51,7 +51,7 @@ def crawl(addr_io):
     np.random.shuffle(data)
 
     with open(os.path.join(addr_day_out, "day_samp_res.npy"), "w") as file_out:
-        smio.save_sparse_csr(data)
+        smio.save_sparse_csr(file_out, data)
 
 
 if __name__ == '__main__':
