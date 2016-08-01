@@ -12,14 +12,14 @@ with open("dict_all.json", "r") as file_in:
 
 
 def get_io_addr_day_samp():
-    # may = [(5, i) for i in range(1, 8)]
-    may = []
-    june = [(6, i) for i in range(19, 21)]
-    # june = []
+    may = [(5, i) for i in range(1, 3)]
+    # may = []
+    # june = [(6, i) for i in range(4, 6)]
+    june = []
 
     root = "/home/wlu/Desktop/rips16"
-    filename_in = "day_samp_raw"
-    filename_out = "day_samp_play.npy"
+    filename_in = "day_samp_raw_neg"
+    filename_out = "day_samp_play_neg.npy"
 
     list_io_addr = []
     for item in may+june:

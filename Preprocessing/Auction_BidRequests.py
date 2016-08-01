@@ -25,7 +25,7 @@ def process(margin, entry, result, mode):
     # Auction - Bidrequests - vertical id
     sd.binarize(result, entry["verticalid"]-1, 16)
 
-    # Auction - Bidrequests - Impressions - Bid Floor
+    # Auction - Bidrequests - Impressions - bid Floor
     bid_floor = round(float(entry["bidfloor"]), 2)
 
     if bid_floor-margin == 0:
@@ -63,7 +63,7 @@ def process(margin, entry, result, mode):
     # Auction - Bidrequests - Impressions - product
     sd.binarize(result, entry["product"]-1, 6)
 
-    # Auction - Bidrequests - Impressions - Banner
+    # Auction - Bidrequests - Impressions - banner
     width = entry["w"]
     height = entry["h"]
     banner_cat = [0, 0, 0]

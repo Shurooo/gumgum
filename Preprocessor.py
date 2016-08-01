@@ -63,7 +63,7 @@ def crawl(io_addr):
                 # try:
                 entry = json.loads(line)
                 result = []
-                Driver.process(entry, result, mode="bin")
+                Driver.process(entry, result)
                 data_sparse_list.append(csr_matrix(result))
 
                 # except:
