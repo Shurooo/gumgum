@@ -6,9 +6,6 @@ from scipy import vstack
 import Sparse_Matrix_IO as smio
 
 
-start = time.time()
-
-
 def get_io_addr():
     # may = [(5, i) for i in range(1, 8)]
     may = []
@@ -54,12 +51,8 @@ def crawl(addr_io):
         smio.save_sparse_csr(file_out, data)
 
 
-if __name__ == '__main__':
-    # cpus = multiprocessing.cpu_count()
-    p = multiprocessing.Pool(4)
-    list_io_addr = get_io_addr()
-
-    for result in p.imap(crawl, list_io_addr):
-        pass
-
-    print "Completed in {} seconds\n".format(round(time.time()-start, 2))
+start = time.time()
+list_io_addr = get_io_addr()
+for addr_io in list_io_addr:
+    crawl(addr_io)
+print "Completed in {} seconds\n".format(round(time.time()-start, 2))
