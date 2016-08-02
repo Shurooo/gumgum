@@ -47,8 +47,8 @@ class RandomForsetWrapper:
         prediction = self.clf.predict(X)
         return y, prediction
 
-    def run_predict(self, data_train, data_test, sampling="None"):
-        predm.run(self, data_train, data_test, sampling)
+    def run_predict(self, data_train, data_test, sampling_ratio=2.65, sampling_mode="normal"):
+        predm.run(self, data_train, data_test, sampling_ratio, sampling_mode)
 
     def run_test(self,
                  data,

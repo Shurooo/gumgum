@@ -23,15 +23,15 @@ def get_io_addr(data_in):
     return list_io_addr
 
 
-def train(clf, data_train, sampling):
+def train(clf, data_train, sampling_ratio, sampling_mode):
     list_io_addr = get_io_addr(data_train)
 
     if len(list_io_addr) > 1:
         for path_in in list_io_addr:
-            clf.train_online(path_in, sampling)
+            clf.train_online(path_in, sampling_ratio, sampling_mode)
     else:
         for path_in in list_io_addr:
-            clf.train(path_in, sampling)
+            clf.train(path_in, sampling_ratio, sampling_mode)
 
 
 def crawl(args):
@@ -66,10 +66,10 @@ def test(clf, data_test):
     print "recall = {0:.4f}, filtering = {1:.4f}".format(round(recall, 4), round(filtering, 4))
 
 
-def run(clf, data_train, data_test, sampling):
+def run(clf, data_train, data_test, sampling_ratio, sampling_mode):
     start = time.time()
     print ">>>>> Start Training"
-    train(clf, data_train, sampling)
+    train(clf, data_train, sampling_ratio, sampling_mode)
     print ">>>>> Training Completed in {} seconds\n".format(round(time.time()-start, 2))
 
     start = time.time()
