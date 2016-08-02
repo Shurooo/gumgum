@@ -8,15 +8,28 @@ from scipy.sparse import csr_matrix, vstack
 from Preprocessing import Driver
 
 
-mode_in = "neg"
-if mode_in == "normal":
-    filename_in = "day_samp_raw"
-    filename_out = "day_samp_new.npy"
-else:
-    filename_in = "PosNeg/day_samp_raw_{}".format(mode_in)
-    filename_out = "PosNeg/day_samp_new_{}.npy".format(mode_in)
-
 start = time.time()
+
+
+def get_io_addr_hour():
+    may = [(5, i, j) for i in range(1, 2) for j in range(1)]
+    # may = []
+    # june = [(6, i) for i in range(4, 26)]
+    june = []
+    root = "/mnt/rips2/2016"
+
+    list_io_addr = []
+    for date in may+june:
+        month = date[0]
+        day = date[1]
+        hour = date[2]
+        addr_io = os.path.join(root,
+                               str(month).rjust(2, "0"),
+                               str(day).rjust(2, "0"),
+                               str(hour).rjust(2, "0"))
+        addr_in = os.path.join(addr_io, "output_raw")
+        addr_out = os.path.join(addr_io, "output_new.npy")
+        list_io_addr.append((addr_in, addr_out))
 
 
 def get_io_addr_day_samp():
@@ -24,10 +37,16 @@ def get_io_addr_day_samp():
     # may = []
     june = [(6, i) for i in range(4, 26)]
     # june = []
+    mode_in = "neg"
+
+    if mode_in == "normal":
+        filename_in = "day_samp_raw"
+        filename_out = "day_samp_new.npy"
+    else:
+        filename_in = "PosNeg/day_samp_raw_{}".format(mode_in)
+        filename_out = "PosNeg/day_samp_new_{}.npy".format(mode_in)
 
     root = "/mnt/rips2/2016"
-
-
     list_io_addr = []
     for item in may+june:
         month = item[0]
@@ -93,7 +112,7 @@ def crawl(io_addr):
 if __name__ == '__main__':
     cpus = multiprocessing.cpu_count()
     p = multiprocessing.Pool(cpus)
-    list_io_addr = get_io_addr_day_samp()
+    list_io_addr = get_io_addr_hour()
 
     dumped = 0
     for result in p.imap(crawl, list_io_addr):
