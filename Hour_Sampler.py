@@ -33,21 +33,12 @@ def get_io_addr():
 def crawl(addr_in):
     print "Processing {}".format(addr_in)
 
-    list_path_in = []
-    total_line = 0
-    for suffix in ["pos", "neg"]:
-        path_in = os.path.join(addr_in, "output_" + suffix)
-        list_path_in.append(path_in)
-        with open(path_in, "r") as file_in:
-            line_count = 0
-            for line in file_in:
-                line_count += 1
-            total_line += line_count
-    with open(list_path_in[0]) as file_in:
+    with open(os.path.join(addr_in, "output_pos"), "r") as file_in:
         data = list(file_in)
-    with open(list_path_in[1]) as file_in:
+    with open(os.path.join(addr_in, "output_neg"), "r") as file_in:
         data.extend(list(file_in))
 
+    total_line = len(data)
     line_to_discard = total_line - num
     if line_to_discard > 0:
         line_indices = sorted(np.random.choice(total_line, line_to_discard, replace=False))
