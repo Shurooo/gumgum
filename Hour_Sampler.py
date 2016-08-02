@@ -50,7 +50,7 @@ def crawl(addr_in):
     shuffle(data)
     path_out = os.path.join(addr_in, "output_raw")
     with open(path_out, "w") as file_out:
-        for line in shuffle:
+        for line in data:
             file_out.write(line)
 
 
