@@ -67,7 +67,7 @@ def init_worksheet(workbook, param):
     return ws
 
 
-def run(clf, model, data, train_test_mode, on_off_line, param, report_name=-1, report_root="/home/ubuntu/Weiyi/Reports"):
+def run(clf, model, data, sampling_ratio, sampling_mode, train_test_mode, on_off_line, param, report_name, report_root):
     if report_name == -1:
         report_name = model + "_Report.xlsx"
     file_out = open(os.path.join(report_root, report_name), "w")
@@ -99,9 +99,9 @@ def run(clf, model, data, train_test_mode, on_off_line, param, report_name=-1, r
                 print "\n>>>>> Start Training on {}".format(addr_train)
                 start = time.time()
                 if on_off_line == "Online":
-                    clf.train_online(addr_train)
+                    clf.train_online(addr_train, sampling_ratio, sampling_mode)
                 else:
-                    clf.train(addr_train)
+                    clf.train(addr_train, sampling_ratio)
                 print ">>>>> Training completed in {} seconds".format(round(time.time()-start, 2))
 
                 addr_test = pair[1]

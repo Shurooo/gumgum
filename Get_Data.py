@@ -10,7 +10,7 @@ import Sparse_Matrix_IO as smio
 # with the specified ratio of positive responses and negative responses,
 # and return the feature matrix X and the corresponding response vector y
 # The ratio is given by pos/neg
-def get(addr_day, mode="normal", ratio=-1, sampling="None", bin=False):
+def get(addr_day, mode="normal", ratio=-1, sampling_method="None", bin=False):
     if "res" in mode:
         res_ratio = mode.split("-")[1]
         prefix = "day_samp_res"
@@ -43,7 +43,7 @@ def get(addr_day, mode="normal", ratio=-1, sampling="None", bin=False):
     X = matrix[:, :width-1]
     y = matrix[:, width-1]
 
-    if sampling == "Over":
+    if "Over" in sampling_method:
         sm = SMOTE(ratio=0.95)
         X, y = sm.fit_sample(X, y)
 

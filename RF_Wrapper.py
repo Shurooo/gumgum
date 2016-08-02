@@ -14,7 +14,11 @@ class RandomForsetWrapper:
                  oob_score=False,
                  n_jobs=-1,
                  random_state=1514):
+        self.init_estimators = init_estimators
         self.add_estimators = add_estimators
+        self.min_weight_fraction_leaf = min_weight_fraction_leaf
+        self.class_weight = class_weight
+
         n_estimators = init_estimators - add_estimators
         if add_estimators == 0:
             warm_start = False
@@ -29,13 +33,13 @@ class RandomForsetWrapper:
                                           n_jobs=n_jobs,
                                           random_state=random_state)
 
-    def train(self, addr_in, sampling):
-        X, y = gd.get(addr_in, sampling=sampling)
+    def train(self, addr_in, sampling_ratio, sampling_mode):
+        X, y = gd.get(addr_in, ratio=sampling_ratio, mode=sampling_mode)
         self.clf.n_estimators += self.add_estimators
         self.clf.fit(X, y)
 
-    def train_online(self, addr_in, sampling):
-        self.train(addr_in, sampling)
+    def train_online(self, addr_in, sampling_ratio, sampling_mode):
+        self.train(addr_in, sampling_ratio, sampling_mode)
 
     def test(self, addr_in):
         X, y = gd.get(addr_in)
@@ -47,10 +51,14 @@ class RandomForsetWrapper:
 
     def run_test(self,
                  data,
+                 sampling_ratio = 2.65,
+                 sampling_mode = "normal",
                  train_test_mode=-1,
                  on_off_line="Online",
                  report_name=-1,
                  report_root="/home/ubuntu/Weiyi/Reports"):
         if train_test_mode == -1:
             train_test_mode = ["day"]
-        testm.run(self, data, train_test_mode, on_off_line, report_name, report_root)
+        param = []
+
+        testm.run(self, "RF", data, sampling_ratio, sampling_mode, train_test_mode, on_off_line, param, report_name, report_root)
