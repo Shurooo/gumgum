@@ -51,8 +51,8 @@ class RandomForsetWrapper:
 
     def run_test(self,
                  data,
-                 sampling_ratio = 2.65,
-                 sampling_mode = "normal",
+                 sampling_ratio=2.65,
+                 sampling_mode="normal",
                  train_test_mode=-1,
                  on_off_line="Online",
                  report_name=-1,
