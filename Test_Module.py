@@ -1,4 +1,5 @@
 import os
+import sys
 import xlsxwriter
 import time
 from sklearn import metrics
@@ -97,18 +98,22 @@ def run(clf, model, data, sampling_ratio, sampling_mode, train_test_mode, on_off
                 pair = train_test_pairs[i]
                 addr_train = pair[0]
                 print "\n>>>>> Start Training on {}".format(addr_train)
+                sys.stdout.flush()
                 start = time.time()
                 if on_off_line == "Online":
                     clf.train_online(addr_train, sampling_ratio, sampling_mode)
                 else:
                     clf.train(addr_train, sampling_ratio)
                 print ">>>>> Training completed in {} seconds".format(round(time.time()-start, 2))
+                sys.stdout.flush()
 
                 addr_test = pair[1]
                 print "\n>>>>> Start Testing on {}".format(addr_test)
+                sys.stdout.flush()
                 start = time.time()
                 stats, recall, filtered, net_savings = test(addr_test, clf)
                 print ">>>>> Testing completed in {} seconds".format(round(time.time()-start, 2))
+                sys.stdout.flush()
 
                 recall_list.append(recall)
                 filtered_list.append(filtered)
