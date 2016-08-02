@@ -71,7 +71,7 @@ def get_io_addr_random_sample():
     for i in prefix:
         for j in suffix:
             file_name = i+"data"+str(j)
-            addr_in = os.path.join(root, file_name+".txt")
+            addr_in = os.path.join(root, file_name+"_raw")
             addr_out = os.path.join(root, file_name+"_new.npy")
             list_io_addr.append((addr_in, addr_out))
     return list_io_addr
