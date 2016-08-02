@@ -76,6 +76,8 @@ def run(clf, model, data, sampling_ratio, sampling_mode, train_test_mode, on_off
     file_out = open(os.path.join(report_root, report_name), "w")
     workbook, abnormal_format, col_recall= init_workbook(file_out)
 
+    print "Train_Test_Mode =", train_test_mode
+
     ws = init_worksheet(workbook, param)
     row = 1
 
