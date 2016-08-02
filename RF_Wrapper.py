@@ -60,7 +60,10 @@ class RandomForsetWrapper:
                  report_root="/home/ubuntu/Weiyi/Reports"):
         if train_test_mode == -1:
             train_test_mode = ["Next_day"]
+
         param = []
+        param.append("sampling ratio = {}".format(sampling_ratio))
+        param.append("sampling mode = {}".format(sampling_mode))
         param.append("init_estimators = {}".format(self.init_estimators))
         param.append("add_estimators = {}".format(self.add_estimators))
         param.append("min_weight_fraction_leaf = {}".format(self.min_weight_fraction_leaf))
