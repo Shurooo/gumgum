@@ -61,4 +61,4 @@ class RandomForsetWrapper:
             train_test_mode = ["Next_day"]
         param = []
 
-        testm.run(self, "RF", data, sampling_ratio, sampling_mode, train_test_mode, on_off_line, param, report_name, report_root)
+        testm.run(self.clf, "RF", data, sampling_ratio, sampling_mode, train_test_mode, on_off_line, param, report_name, report_root)
