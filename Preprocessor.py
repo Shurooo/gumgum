@@ -12,7 +12,7 @@ start = time.time()
 
 
 def get_io_addr_hour():
-    may = [(5, i, j) for i in range(1, 2) for j in range(1)]
+    may = [(5, i, j) for i in range(1, 8) for j in range(24)]
     # may = []
     # june = [(6, i) for i in range(4, 26)]
     june = []
