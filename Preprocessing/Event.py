@@ -27,3 +27,14 @@ def process(entry, result):
 
     # Event - region
     sd.add_to_result(result, entry["rg"], regions_)
+
+
+def get_header():
+    minute = ("minute", 60)
+    hour = ("hour", 24)
+    day = ("day", 7)
+    hour_of_week = ("hour_of_week", 168)
+    country = ("country", len(countries_)+1)
+    region = ("region", len(regions_)+1)
+
+    return [minute, hour, day, hour_of_week, country, region]

@@ -81,3 +81,11 @@ def process(entry, result):
     result.extend(bkc_result)
 
     return margin
+
+
+def get_header():
+    margin = ("margin", len(margins_)+1)
+    tmax = ("tmax", 86)
+    bkc = ("bkc", len(bkcids_)+2)
+
+    return [margin, tmax, bkc]
