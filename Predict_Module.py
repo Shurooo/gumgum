@@ -59,7 +59,9 @@ def test(clf, data_test):
     total = tp+fp+tn+fn
     recall = tp / float(tp+fn)
     filtering = float(tn+fn) / total
+    net_savings = 127000*filtering - 5200 - 850000*(1-recall)
     print "recall = {0:.4f}, filtering = {1:.4f}".format(round(recall, 4), round(filtering, 4))
+    print "net savings = {0:.4f}".format(round(net_savings, 2))
 
 
 def run(clf, data_train, data_test, sampling_ratio, sampling_mode):
