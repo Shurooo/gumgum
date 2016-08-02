@@ -31,6 +31,8 @@ def get_io_addr_hour():
         addr_out = os.path.join(addr_io, "output_new.npy")
         list_io_addr.append((addr_in, addr_out))
 
+    return list_io_addr
+
 
 def get_io_addr_day_samp():
     may = [(5, i) for i in range(1, 8)]
