@@ -48,9 +48,9 @@ def crawl(addr_in):
     with open(list_path_in[1]) as file_in:
         data.extend(list(file_in))
 
-    line_to_discard = total_line-num
+    line_to_discard = total_line - num
     if line_to_discard > 0:
-        line_indices = sorted(np.random.choice(line_to_discard, total_line, replace=False))
+        line_indices = sorted(np.random.choice(total_line, line_to_discard, replace=False))
         setoff = 0
         for index in line_indices:
             del data[index-setoff]
