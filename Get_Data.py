@@ -12,9 +12,9 @@ import Sparse_Matrix_IO as smio
 # The ratio is given by pos/neg
 def get(addr_day, mode="normal", ratio=-1, sampling="None", bin=False):
     if "res" in mode:
-        ratio = mode.split("-")[1]
+        res_ratio = mode.split("-")[1]
         prefix = "day_samp_res"
-        suffix = "_{}.npy".format(ratio)
+        suffix = "_{}.npy".format(res_ratio)
         res = "Reservoir"
     else:
         prefix = "day_samp_new"
