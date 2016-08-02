@@ -25,10 +25,8 @@ def format_addr(dates_by_month, mode):
     return train_test_pairs, dates_pairs
 
 
-def get_addr_in(mode, data):
+def get_addr_in(data, mode):
     pairs_by_month = []
-    print "mode =", mode
-    sys.stdout.flush()
     if mode == "Next_day":
         for dates_by_month in data:
             tuple_pairs = format_addr(dates_by_month, 1)
@@ -75,8 +73,6 @@ def run(clf, model, data, sampling_ratio, sampling_mode, train_test_mode, on_off
         report_name = model + "_Report.xlsx"
     file_out = open(os.path.join(report_root, report_name), "w")
     workbook, abnormal_format, col_recall= init_workbook(file_out)
-
-    print "Train_Test_Mode =", train_test_mode
 
     ws = init_worksheet(workbook, param)
     row = 1
