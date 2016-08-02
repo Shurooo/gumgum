@@ -1,4 +1,5 @@
 import os
+import sys
 import json
 import time
 import numpy as np
@@ -7,18 +8,25 @@ from scipy.sparse import csr_matrix, vstack
 from Preprocessing import Driver
 
 
+mode_in = "neg"
+if mode_in == "normal":
+    filename_in = "day_samp_raw"
+    filename_out = "day_samp_new.npy"
+else:
+    filename_in = "PosNeg/day_samp_raw_{}".format(mode_in)
+    filename_out = "PosNeg/day_samp_new_{}.npy".format(mode_in)
+
 start = time.time()
 
 
 def get_io_addr_day_samp():
-    # may = [(5, i) for i in range(1, 8)]
-    may = []
-    june = [(6, i) for i in range(19, 21)]
+    may = [(5, i) for i in range(1, 8)]
+    # may = []
+    june = [(6, i) for i in range(4, 26)]
     # june = []
 
     root = "/mnt/rips2/2016"
-    filename_in = "day_samp_raw"
-    filename_out = "day_samp_new.npy"
+
 
     list_io_addr = []
     for item in may+june:
@@ -56,6 +64,7 @@ def crawl(io_addr):
     if os.path.isfile(addr_in):
         with open(addr_in, "r") as file_in:
             print "Processing {}".format(addr_in)
+            sys.stdout.flush()
             for line in file_in:
                 try:
                     entry = json.loads(line)
@@ -76,6 +85,7 @@ def crawl(io_addr):
 
     else:
         print "\nFile Missing: {}\n".format(addr_in)
+        sys.stdout.flush()
 
     return dumped
 
@@ -90,5 +100,7 @@ if __name__ == '__main__':
         dumped += result
 
     print "{} lines dumped".format(dumped)
+    sys.stdout.flush()
 
 print "Completed in {} seconds\n".format(round(time.time()-start, 2))
+sys.stdout.flush()
