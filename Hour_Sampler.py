@@ -41,13 +41,12 @@ def crawl(addr_in):
     shuffle(data)
     total_line = len(data)
 
-    line_to_discard = total_line - num
-    if line_to_discard > 0:
-        line_indices = sorted(np.random.choice(total_line, line_to_discard, replace=False))
-        setoff = 0
+    if total_line > num:
+        data_new = []
+        line_indices = sorted(np.random.choice(total_line, num, replace=False))
         for index in line_indices:
-            del data[index-setoff]
-            setoff += 1
+            data_new.append(data[index])
+        data = data_new
 
     path_out = os.path.join(addr_in, "output_raw")
     with open(path_out, "w") as file_out:
