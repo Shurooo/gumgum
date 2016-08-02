@@ -18,6 +18,7 @@ class RandomForsetWrapper:
         self.add_estimators = add_estimators
         self.min_weight_fraction_leaf = min_weight_fraction_leaf
         self.class_weight = class_weight
+        self.max_features = max_features
 
         n_estimators = init_estimators - add_estimators
         if add_estimators == 0:
@@ -60,5 +61,10 @@ class RandomForsetWrapper:
         if train_test_mode == -1:
             train_test_mode = ["Next_day"]
         param = []
+        param.append("init_estimators = {}".format(self.init_estimators))
+        param.append("add_estimators = {}".format(self.add_estimators))
+        param.append("min_weight_fraction_leaf = {}".format(self.min_weight_fraction_leaf))
+        param.append("class weight = {}".format(str(self.class_weight)))
+        param.append(("max_features = {}".format(self.max_features)))
 
         testm.run(self, "RF", data, sampling_ratio, sampling_mode, train_test_mode, on_off_line, param, report_name, report_root)
