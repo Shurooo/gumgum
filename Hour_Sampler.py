@@ -10,7 +10,7 @@ start = time.time()
 
 
 def get_io_addr():
-    may = [(5, i, j) for i in range(1, 2) for j in range(1)]
+    may = [(5, i, j) for i in range(1, 8) for j in range(24)]
     # may = []
     # june = [(6, i) for i in range(4, 26)]
     june = []
@@ -38,7 +38,9 @@ def crawl(addr_in):
     with open(os.path.join(addr_in, "output_neg"), "r") as file_in:
         data.extend(list(file_in))
 
+    shuffle(data)
     total_line = len(data)
+
     line_to_discard = total_line - num
     if line_to_discard > 0:
         line_indices = sorted(np.random.choice(total_line, line_to_discard, replace=False))
@@ -47,7 +49,6 @@ def crawl(addr_in):
             del data[index-setoff]
             setoff += 1
 
-    shuffle(data)
     path_out = os.path.join(addr_in, "output_raw")
     with open(path_out, "w") as file_out:
         for line in data:
