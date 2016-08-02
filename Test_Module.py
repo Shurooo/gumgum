@@ -27,7 +27,7 @@ def format_addr(dates_by_month, mode):
 
 def get_addr_in(mode, data):
     pairs_by_month = []
-    print "I'm Here"
+    print "mode =", mode
     sys.stdout.flush()
     if mode == "Next_day":
         for dates_by_month in data:
