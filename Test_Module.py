@@ -4,7 +4,7 @@ import time
 from sklearn import metrics
 
 
-__HEADER = ["Model", "Train", "Test", "TN", "FP", "FN", "TP", "Recall", "Filtered"]
+__HEADER = ["Model", "Train", "Test", "TN", "FP", "FN", "TP", "Recall", "Filtered", "Net Savings"]
 
 
 def format_addr(dates_by_month, mode):
@@ -47,7 +47,9 @@ def test(addr_test, clf):
     total = tp+fp+tn+fn
     recall = round(tp / float(tp+fn), 4)
     filtered = round(float(tn+fn) / total, 4)
-    return [tn, fp, fn, tp], round(recall, 4), round(filtered, 4)
+    net_savings = round(127000*filtered - 5200 - 850000*(1-recall), 2)
+
+    return [tn, fp, fn, tp], recall, filtered, net_savings
 
 
 def init_workbook(file_out):
@@ -55,23 +57,23 @@ def init_workbook(file_out):
     abnormal_format = workbook.add_format()
     abnormal_format.set_bg_color("red")
     col_recall = __HEADER.index("Recall")
-    col_filtered = __HEADER.index("Filtered")
-    return workbook, abnormal_format, col_recall, col_filtered
+    return workbook, abnormal_format, col_recall
 
 
-def init_worksheet(workbook):
+def init_worksheet(workbook, param):
     ws = workbook.add_worksheet()
     ws.write_row(0, 0, __HEADER)
+    ws.write_column(1, len(__HEADER)+1, param)
     return ws
 
 
-def run(clf, model, data, train_test_mode, on_off_line, report_name=-1, report_root="/home/ubuntu/Weiyi/Reports"):
+def run(clf, model, data, train_test_mode, on_off_line, param, report_name=-1, report_root="/home/ubuntu/Weiyi/Reports"):
     if report_name == -1:
         report_name = model + "_Report.xlsx"
     file_out = open(os.path.join(report_root, report_name), "w")
-    workbook, abnormal_format, col_recall, col_filtered = init_workbook(file_out)
+    workbook, abnormal_format, col_recall= init_workbook(file_out)
 
-    ws = init_worksheet(workbook)
+    ws = init_worksheet(workbook, param)
     row = 1
 
     for mode in train_test_mode:
@@ -84,6 +86,7 @@ def run(clf, model, data, train_test_mode, on_off_line, report_name=-1, report_r
         pairs_by_month = get_addr_in(data, mode)
         recall_list = []
         filtered_list = []
+        net_savings_list = []
         for item in pairs_by_month:
             train_test_pairs = item[0]
             dates_pairs = item[1]
@@ -104,24 +107,29 @@ def run(clf, model, data, train_test_mode, on_off_line, report_name=-1, report_r
                 addr_test = pair[1]
                 print "\n>>>>> Start Testing on {}".format(addr_test)
                 start = time.time()
-                stats, recall, filtered = test(addr_test, clf)
+                stats, recall, filtered, net_savings = test(addr_test, clf)
                 print ">>>>> Testing completed in {} seconds".format(round(time.time()-start, 2))
 
                 recall_list.append(recall)
                 filtered_list.append(filtered)
+                net_savings_list.append(net_savings)
                 result_row.extend(stats)
                 ws.write_row(row, 0, result_row)
 
                 write_format_check(ws, row, col_recall, recall, 0.95, abnormal_format)
-                write_format_check(ws, row, col_filtered, filtered, 0.1, abnormal_format)
+                write_format_check(ws, row, col_recall+1, filtered, 0.1, abnormal_format)
+                write_format_check(ws, row, col_recall+2, net_savings, 0, abnormal_format)
 
                 row += 1
 
         recall_avg = round(sum(recall_list) / len(recall_list), 4)
-        ws.write(row, col_recall, recall_avg)
+        write_format_check(ws, row, col_recall, recall_avg, 0.95, abnormal_format)
 
         filtered_avg = round(sum(filtered_list) / len(filtered_list), 4)
-        ws.write(row, col_filtered, filtered_avg)
+        write_format_check(ws, row, col_recall+1, filtered_avg, 0.1, abnormal_format)
+
+        net_savings_avg = round(sum(net_savings_list) / len(net_savings_list), 4)
+        write_format_check(ws, row, col_recall+2, net_savings_avg, 0, abnormal_format)
 
     workbook.close()
     file_out.close()
