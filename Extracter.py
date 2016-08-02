@@ -1,4 +1,5 @@
 import multiprocessing
+from random import shuffle
 import time
 import json
 import os
@@ -31,6 +32,20 @@ def get_io_addr():
             os.makedirs(path_out)
         addr_out = os.path.join(path_out)
         list_io_addr.append((addr_in, addr_out))
+    return list_io_addr
+
+
+def get_io_addr_random_sample():
+    list_io_addr = []
+    root = "/home/ubuntu/random_samples"
+    prefix = ["new"]
+    suffix = [i for i in range(1)]
+    for i in prefix:
+        for j in suffix:
+            file_name = i+"data"+str(j)
+            addr_in = os.path.join(root, file_name+".txt")
+            addr_out = os.path.join(root, file_name+"_raw")
+            list_io_addr.append((addr_in, addr_out))
     return list_io_addr
 
 
@@ -73,17 +88,25 @@ def crawl(io_addr):
                 except:
                     dumped += 1
 
-        with open(os.path.join(addr_out, "output_pos"), 'w') as file_out:
-            for line in pos:
+        all = pos + neg
+        shuffle(all)
+        with open(addr_out, 'w') as file_out:
+            for line in all:
                 entry = json.dumps(line)
                 file_out.write(entry)
                 file_out.write("\n")
 
-        with open(os.path.join(addr_out, "output_neg"), 'w') as file_out:
-            for line in neg:
-                entry = json.dumps(line)
-                file_out.write(entry)
-                file_out.write("\n")
+        # with open(os.path.join(addr_out, "output_pos"), 'w') as file_out:
+        #     for line in pos:
+        #         entry = json.dumps(line)
+        #         file_out.write(entry)
+        #         file_out.write("\n")
+        #
+        # with open(os.path.join(addr_out, "output_neg"), 'w') as file_out:
+        #     for line in neg:
+        #         entry = json.dumps(line)
+        #         file_out.write(entry)
+        #         file_out.write("\n")
 
     else:
         print "\nFile Missing: {}\n".format(addr_in)

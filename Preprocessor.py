@@ -66,8 +66,8 @@ def get_io_addr_day_samp():
 def get_io_addr_random_sample():
     list_io_addr = []
     root = "/home/ubuntu/random_samples"
-    prefix = ["all", "new", ""]
-    suffix = [i for i in range(6)]
+    prefix = ["new"]
+    suffix = [i for i in range(1)]
     for i in prefix:
         for j in suffix:
             file_name = i+"data"+str(j)
