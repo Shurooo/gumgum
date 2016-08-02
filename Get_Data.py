@@ -11,9 +11,14 @@ import Sparse_Matrix_IO as smio
 # and return the feature matrix X and the corresponding response vector y
 # The ratio is given by pos/neg
 def get(addr_day, mode="normal", ratio=-1, sampling="None", bin=False):
-    if mode == "res":
+    if "res" in mode:
+        ratio = mode.split("-")[1]
+        prefix = "day_samp_res"
+        suffix = "_{}.npy".format(ratio)
         res = "Reservoir"
     else:
+        prefix = "day_samp_new"
+        suffix = ".npy"
         res = ""
 
     if not ratio == -1:
@@ -21,17 +26,17 @@ def get(addr_day, mode="normal", ratio=-1, sampling="None", bin=False):
         neg = int(n / (1+ratio))
         pos = n - neg
 
-        with open(os.path.join(addr_day, "PosNeg", res, "day_samp_new_neg.npy"), "r") as file_neg:
+        with open(os.path.join(addr_day, "PosNeg", res, prefix + "_neg" + suffix), "r") as file_neg:
             matrix_neg = smio.load_sparse_csr(file_neg)
         matrix_neg = matrix_neg[:neg, :]
-        with open(os.path.join(addr_day, "PosNeg", res, "day_samp_new_pos.npy"), "r") as file_pos:
+        with open(os.path.join(addr_day, "PosNeg", res, prefix + "_pos" + suffix), "r") as file_pos:
             matrix_pos = smio.load_sparse_csr(file_pos)
         matrix_pos = matrix_pos[:pos, :]
 
         matrix = vstack((matrix_neg, matrix_pos))
         np.random.shuffle(matrix)
     else:
-        with open(os.path.join(addr_day, res, "day_samp_new.npy"), "r") as file_in:
+        with open(os.path.join(addr_day, res, prefix + suffix), "r") as file_in:
             matrix = smio.load_sparse_csr(file_in)
 
     width = np.size(matrix, 1)
