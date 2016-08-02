@@ -1,11 +1,7 @@
 import os
-import pickle
-import numpy as np
+import sys
 import time
-from sklearn.ensemble import RandomForestClassifier
 from sklearn import metrics
-import Get_Data as gd
-import Sparse_Matrix_IO as smio
 import multiprocessing
 
 
@@ -69,10 +65,12 @@ def test(clf, data_test):
 def run(clf, data_train, data_test, sampling_ratio, sampling_mode):
     start = time.time()
     print ">>>>> Start Training"
+    sys.stdout.flush()
     train(clf, data_train, sampling_ratio, sampling_mode)
     print ">>>>> Training Completed in {} seconds\n".format(round(time.time()-start, 2))
 
     start = time.time()
     print ">>>>> Start Testing"
+    sys.stdout.flush()
     test(clf, data_test)
     print ">>>>> Testing Completed in {} seconds\n".format(round(time.time()-start, 2))
