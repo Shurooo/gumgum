@@ -58,7 +58,7 @@ class RandomForsetWrapper:
                  report_name=-1,
                  report_root="/home/ubuntu/Weiyi/Reports"):
         if train_test_mode == -1:
-            train_test_mode = ["day"]
+            train_test_mode = ["Next_day"]
         param = []
 
         testm.run(self, "RF", data, sampling_ratio, sampling_mode, train_test_mode, on_off_line, param, report_name, report_root)
