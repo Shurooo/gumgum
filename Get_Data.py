@@ -15,7 +15,7 @@ def get(addr_day, mode="normal", ratio=-1, sampling="None", bin=False):
         res_ratio = mode.split("-")[1]
         prefix = "day_samp_res"
         suffix = "_{}.npy".format(res_ratio)
-        res = "Reservoir"
+        res = "Reservoir_Data"
     else:
         prefix = "day_samp_new"
         suffix = ".npy"
