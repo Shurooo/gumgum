@@ -11,7 +11,7 @@ import Sparse_Matrix_IO as smio
 # and return the feature matrix X and the corresponding response vector y
 # The ratio is given by pos/neg
 def get(addr_day, mode="normal", ratio=-1, sampling="None", bin=False):
-    if not mode == "res":
+    if mode == "res":
         res = "Reservoir"
     else:
         res = ""
