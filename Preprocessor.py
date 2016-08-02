@@ -66,7 +66,7 @@ def get_io_addr_day_samp():
 def get_io_addr_random_sample():
     list_io_addr = []
     root = "/home/ubuntu/random_samples"
-    prefix = ["all"]
+    prefix = ["all", "new", ""]
     suffix = [i for i in range(6)]
     for i in prefix:
         for j in suffix:
@@ -114,7 +114,7 @@ def crawl(io_addr):
 if __name__ == '__main__':
     cpus = multiprocessing.cpu_count()
     p = multiprocessing.Pool(cpus)
-    list_io_addr = get_io_addr_hour()
+    list_io_addr = get_io_addr_random_sample()
 
     dumped = 0
     for result in p.imap(crawl, list_io_addr):
