@@ -60,7 +60,7 @@ class RandomForsetWrapper:
                  report_root="/home/ubuntu/Weiyi/Reports"):
         if train_test_mode == -1:
             train_test_mode = ["Next_day"]
-
+        print self.min_weight_fraction_leaf
         param = []
         param.append("sampling ratio = {}".format(sampling_ratio))
         param.append("sampling mode = {}".format(sampling_mode))
@@ -70,4 +70,4 @@ class RandomForsetWrapper:
         param.append("class weight = {}".format(str(self.class_weight)))
         param.append(("max_features = {}".format(self.max_features)))
 
-        testm.run(self, "RF", data, sampling_ratio, sampling_mode, train_test_mode, on_off_line, param, report_name, report_root)
+        # testm.run(self, "RF", data, sampling_ratio, sampling_mode, train_test_mode, on_off_line, param, report_name, report_root)
