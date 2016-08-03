@@ -1,20 +1,31 @@
 import os
+import sys
+import time
 import numpy as np
-from sklearn import metrics
+import operator
+import Sparse_Matrix_IO as smio
 import xgboost as xgb
-import Get_Data as gd
 
 
-data = (6, 4)
-root = "/mnt/rips2/2016"
+def get_data(month, day):
+    root = "/home/wlu/Desktop/Data"
+    file_name = "day_samp_new_" + str(month).rjust(2, "0") + str(day).rjust(2, "0") + ".npy"
+    addr_in = os.path.join(root, file_name)
 
-month = data[0]
-day = data[1]
-addr_train = os.path.join(root, str(month).rjust(2, "0"), str(day).rjust(2, "0"))
-addr_test = os.path.join(root, str(month).rjust(2, "0"), str(day+1).rjust(2, "0"))
+    with open(addr_in, "r") as file_in:
+        data = smio.load_sparse_csr(file_in)
+    X = data[:, :-1]
+    y = data[:, -1]
+    return X, y
 
-X_train, y_train = gd.get(addr_train)
-X_test, y_test = gd.get(addr_test)
+
+def create_feature_map(features, feature_imp):
+    outfile = open('xgb.fmap', 'w')
+    for i in range(len(features)):
+        outfile.write('{0}\t{1}\tq\n'.format(i, features[i]))
+        feature_imp.append([])
+    outfile.close()
+
 
 param = {'booster': 'gbtree',   # Tree, not linear regression
          'objective': 'binary:logistic',   # Output probabilities
@@ -30,31 +41,39 @@ param = {'booster': 'gbtree',   # Tree, not linear regression
          'nthread': 6,   # Number of cores used; otherwise, auto-detect
          'seed': 25}
 
-data_train = xgb.DMatrix(X_train, label=y_train)
-data_test = xgb.DMatrix(X_test, label=y_test)
+features = ["f" + str(i) for i in range(0, 2531)]   # Feature names are f0..f2530
+feature_imp = []
+create_feature_map(features, feature_imp)
 
-eval_list = [(data_train,'train'), (data_test,'eval')]  # Want to train until eval error stops decreasing
+for data in [(6, i) for i in range(4, 25)]:
+    X_train, y_train = get_data(data[0], data[1])
+    X_test, y_test = get_data(data[0], data[1]+1)
 
-num_round = 1000   # Number of rounds of training, increasing this increases the range of output values
-bst = xgb.train(param,
-                data_train,
-                num_round,
-                eval_list,
-                early_stopping_rounds=10)   # If error doesn't decrease in n rounds, stop early
+    data_train = xgb.DMatrix(X_train, label=y_train)
+    data_test = xgb.DMatrix(X_test, label=y_test)
 
-prediction = bst.predict(data_test)
+    eval_list = [(data_train,'train'), (data_test,'eval')]  # Want to train until eval error stops decreasing
 
-results = [0, 0, 0, 0, 0]
-for cutoff in range(0, 31):
-    cut = cutoff/float(100)   # Cutoff in decimal form
-    y = prediction > cut   # If y values are greater than the cutoff
-    recall = metrics.recall_score(y_test, y)
-    # true_negative_rate = sum(np.logical_not(np.logical_or(test_label, y)))/float(len(y_pred))
-    filter_rate = sum(np.logical_not(y))/float(len(prediction))
-    if recall*6.7+filter_rate > results[0]:
-        results[0] = recall*6.7+filter_rate
-        results[1] = metrics.roc_auc_score(y_test, y)
-        results[2] = recall
-        results[3] = filter_rate
-        results[4] = cut
-print results
+    num_round = 1000   # Number of rounds of training, increasing this increases the range of output values
+    start = time.time()
+    print ">>>>> Fitting Model on {}".format(data)
+    sys.stdout.flush()
+    bst = xgb.train(param,
+                    data_train,
+                    num_round,
+                    eval_list,
+                    verbose_eval=0,
+                    early_stopping_rounds=10)   # If error doesn't decrease in n rounds, stop early
+    print ">>>>> Completed in {} seconds\n".format(round(time.time()-start, 2))
+
+    feature_imp_bitmap = [0]*2531
+    for item in bst.get_fscore(fmap='xgb.fmap').iteritems():
+        index = int(item[0][1:])
+        feature_imp_bitmap[index] = 1
+        feature_imp[index].append(item[1])
+    for i in range(len(feature_imp)):
+        if feature_imp_bitmap[i] == 0:
+            feature_imp[i].append(0)
+
+feature_imp = np.array(feature_imp)
+np.save("/home/wlu/Desktop/feature_imp_XGB", feature_imp)
