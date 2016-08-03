@@ -2,16 +2,23 @@ import os
 import sys
 import time
 import numpy as np
-import operator
 import Sparse_Matrix_IO as smio
 import xgboost as xgb
 
 
-def get_data(month, day):
-    root = "/home/wlu/Desktop/Data"
-    file_name = "day_samp_new_" + str(month).rjust(2, "0") + str(day).rjust(2, "0") + ".npy"
-    addr_in = os.path.join(root, file_name)
-
+def get_data(month, day, hour=-1):
+    root = "/mnt/rips2/2016"
+    if hour == -1:
+        addr_in = os.path.join(root,
+                               str(month).rjust(2, "0"),
+                               str(day).rjust(2, "0"),
+                               "day_samp_new.npy")
+    else:
+        addr_in = os.path.join(root,
+                               str(month).rjust(2, "0"),
+                               str(day).rjust(2, "0"),
+                               str(hour).rjust(2, "0"),
+                               "output_new.npy")
     with open(addr_in, "r") as file_in:
         data = smio.load_sparse_csr(file_in)
     X = data[:, :-1]
@@ -45,7 +52,7 @@ features = ["f" + str(i) for i in range(0, 2531)]   # Feature names are f0..f253
 feature_imp = []
 create_feature_map(features, feature_imp)
 
-for data in [(6, i) for i in range(4, 25)]:
+for data in [(6, i, j) for i in range(4, 5) for j in range(2)]:
     X_train, y_train = get_data(data[0], data[1])
     X_test, y_test = get_data(data[0], data[1]+1)
 
@@ -76,4 +83,4 @@ for data in [(6, i) for i in range(4, 25)]:
             feature_imp[i].append(0)
 
 feature_imp = np.array(feature_imp)
-np.save("/home/wlu/Desktop/feature_imp_XGB", feature_imp)
+np.save("/home/ubuntu/Weiyi/feature_imp_XGB_hourly", feature_imp)
