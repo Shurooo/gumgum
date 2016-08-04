@@ -57,8 +57,8 @@ bst = xgb.train(param, data_train, num_round, verbose_eval=0)
 
 importance = sorted(bst.get_fscore().iteritems(), key=operator.itemgetter(1), reverse=True)
 
-results = [0, 0, 0, 0, 0, 0]
-for k in range(50, 2501, 50):
+results = [0, 0, 0, 0, 0, 0, 0]
+for k in range(100, 2501, 100):
     print "k = ", k
     selected = [int(item[0][1:]) for item in importance[:k]]
 
@@ -83,5 +83,6 @@ for k in range(50, 2501, 50):
             results[2] = recall
             results[3] = filter_rate
             results[4] = cut
-            results[5] = -5200+127000*filter_rate-850000*(1-recall)
+            results[5] = k
+            results[6] = -5200+127000*filter_rate-850000*(1-recall)
 print results
