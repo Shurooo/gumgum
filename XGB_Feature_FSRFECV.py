@@ -1,7 +1,6 @@
 import os
-import time
+import json
 import numpy as np
-import xgboost as xgb
 from sklearn import metrics
 from sklearn.feature_selection import RFECV
 import XGB_Wrapper as xgbw
@@ -16,7 +15,7 @@ import Sparse_Matrix_IO as smio
 
 
 def get_data(month, day, hour=-1):
-    root = "/mnt/rips2/2016"
+    root = "/home/wlu/Desktop/Data"
     if hour == -1:
         addr_in = os.path.join(root,
                                str(month).rjust(2, "0"),
@@ -40,48 +39,39 @@ data = (6, 4)
 X_train, y_train = get_data(data[0], data[1])
 X_test, y_test = get_data(data[0], data[1]+1)
 
-clf = xgb.XGBClassifier(learning_rate =0.1,
-                         n_estimators=1000,
-                         max_depth=5,
-                         min_child_weight=1,
-                         gamma=0,
-                         subsample=0.8,
-                         colsample_bytree=0.8,
-                         objective= 'binary:logistic',
-                         nthread=6,   # used to be 4
-                         scale_pos_weight=5,   # used to be 1
-                         seed=20)
-
 # data_train = xgb.DMatrix(X_train, label=y_train)
 # data_test = xgb.DMatrix(X_test, label=y_test)
 #
-# param = {'booster':'gbtree',   # Tree, not linear regression
-#          'objective':'binary:logistic',   # Output probabilities
-#          'eval_metric':['auc'],
-#          'bst:max_depth':5,   # Max depth of tree
-#          'bst:eta':.1,   # Learning rate (usually 0.01-0.2)
-#          'bst:gamma':0,   # Larger value --> more conservative
-#          'bst:min_child_weight':1,
-#          'scale_pos_weight':30,   # Often num_neg/num_pos
-#          'subsample':.8,
-#          'silent':1,   # 0 outputs messages, 1 does not
-#          'save_period':0,   # Only saves last model
-#          'nthread':6,   # Number of cores used; otherwise, auto-detect
-#          'seed':25}
-#
-# num_round = 250   # Number of rounds of training, increasing this increases the range of output values
-# clf = xgbw.XGBWrapper(param, num_round, verbose_eval=0)
+param = {'booster':'gbtree',   # Tree, not linear regression
+         'objective':'binary:logistic',   # Output probabilities
+         'eval_metric':['auc'],
+         'bst:max_depth':5,   # Max depth of tree
+         'bst:eta':.1,   # Learning rate (usually 0.01-0.2)
+         'bst:gamma':0,   # Larger value --> more conservative
+         'bst:min_child_weight':1,
+         'scale_pos_weight':30,   # Often num_neg/num_pos
+         'subsample':.8,
+         'silent':1,   # 0 outputs messages, 1 does not
+         'save_period':0,   # Only saves last model
+         'nthread':6,   # Number of cores used; otherwise, auto-detect
+         'seed':25}
 
-selector = RFECV(clf, step=1, cv=5)
+num_round = 250   # Number of rounds of training, increasing this increases the range of output values
+clf = xgbw.XGBWrapper(param, num_round, verbose_eval=0)
+
+selector = RFECV(clf, step=1, cv=5, verbose=1)
 print 'Selector fit...'
 selector = selector.fit(X_train, y_train)
-prob = selector.predict_proba(y_test)
+support = selector.get_support(indices=True)
+with open("/home/ubuntu/Weiyi/RFECV_Features.json", "w") as file_out:
+    json.dump(support, file_out)
+prob = selector.predict_proba(X_test)
 
 # start = time.time()
 # print ">>>>> Start Training"
 # clf.fit(X_train, y_train)
 # print ">>>>> Completed in {} seconds".format(round(time.time()-start, 2))
-# # prob = clf.predict_proba(X_test)
+# prob = clf.predict_proba(X_test)
 # print clf.predict(X_test)
 
 results = [0, 0, 0, 0, 0, 0, 0]

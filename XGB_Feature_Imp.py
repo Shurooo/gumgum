@@ -53,23 +53,23 @@ eval_list = [(data_train,'train'), (data_test,'eval')]
 num_round = 250   # Number of rounds of training, increasing this increases the range of output values
 bst = xgb.train(param, data_train, num_round, verbose_eval=0)
 
-prob = bst.predict(data_test)
-# J score, AUC score, best recall, best filter rate, best cutoff
-results = [0, 0, 0, 0, 0, 0]
-for cutoff in range(10, 15):
-    cut = cutoff/float(100)   # Cutoff in decimal form
-    y_pred = prob > cut   # If y values are greater than the cutoff
-    recall = metrics.recall_score(y_test, y_pred)
-    filter_rate = sum(np.logical_not(y_pred))/float(len(prob))
-
-    if recall*6.7+filter_rate > results[0]:
-        results[0] = recall*6.7+filter_rate
-        results[1] = metrics.roc_auc_score(y_test, y_pred)
-        results[2] = recall
-        results[3] = filter_rate
-        results[4] = cut
-        results[5] = -5200+127000*filter_rate-850000*(1-recall)
-print results
+# prob = bst.predict(data_test)
+# # J score, AUC score, best recall, best filter rate, best cutoff
+# results = [0, 0, 0, 0, 0, 0]
+# for cutoff in range(10, 15):
+#     cut = cutoff/float(100)   # Cutoff in decimal form
+#     y_pred = prob > cut   # If y values are greater than the cutoff
+#     recall = metrics.recall_score(y_test, y_pred)
+#     filter_rate = sum(np.logical_not(y_pred))/float(len(prob))
+#
+#     if recall*6.7+filter_rate > results[0]:
+#         results[0] = recall*6.7+filter_rate
+#         results[1] = metrics.roc_auc_score(y_test, y_pred)
+#         results[2] = recall
+#         results[3] = filter_rate
+#         results[4] = cut
+#         results[5] = -5200+127000*filter_rate-850000*(1-recall)
+# print results
 
 # features = ["f" + str(i) for i in range(0, 2531)]   # Feature names are f0..f2530
 # with open('xgb.fmap', 'w') as file_out:
@@ -78,7 +78,7 @@ print results
 
 # importance = bst.get_fscore(fmap='xgb.fmap')
 # importance = sorted(importance.items(), key=operator.itemgetter(1), reverse=True)
-importance = bst.get_fscore()
+
 
 # df = pd.DataFrame(importance, columns=['feature', 'fscore'])
 # print 'got df = '
