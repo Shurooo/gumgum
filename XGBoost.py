@@ -52,8 +52,7 @@ features = ["f" + str(i) for i in range(0, 2531)]   # Feature names are f0..f253
 feature_imp = []
 create_feature_map(features, feature_imp)
 
-# for data in [(6, i, j) for i in range(4, 5) for j in range(2)]:
-for data in [(6, i) for i in range(4, 6)]:
+for data in [(6, i, j) for i in range(4, 26) for j in range(24)]:
     X_train, y_train = get_data(data[0], data[1])
     X_test, y_test = get_data(data[0], data[1]+1)
 
