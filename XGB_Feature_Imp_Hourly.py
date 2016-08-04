@@ -65,11 +65,7 @@ for data in [(6, i, j) for i in range(4, 25) for j in range(24)]:
     start = time.time()
     print ">>>>> Fitting Model on {}".format(data)
     sys.stdout.flush()
-    bst = xgb.train(param,
-                    data_train,
-                    num_round,
-                    eval_list,
-                    verbose_eval=0)
+    bst = xgb.train(param, data_train, num_round, verbose_eval=0)
     print ">>>>> Completed in {} seconds\n".format(round(time.time()-start, 2))
 
     feature_imp_bitmap = [0]*2531
