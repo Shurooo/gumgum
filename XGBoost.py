@@ -70,6 +70,7 @@ for data in [(6, i) for i in range(4, 6)]:
                     data_train,
                     num_round,
                     eval_list,
+                    verbose_eval=0,
                     early_stopping_rounds=10)   # If error doesn't decrease in n rounds, stop early
     print ">>>>> Completed in {} seconds\n".format(round(time.time()-start, 2))
 
