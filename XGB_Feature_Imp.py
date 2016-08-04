@@ -50,31 +50,38 @@ data = (6, 4)
 X_train, y_train = get_data(data[0], data[1])
 X_test, y_test = get_data(data[0], data[1]+1)
 data_train = xgb.DMatrix(X_train, label=y_train)
-data_test = xgb.DMatrix(X_test, label=y_test)
 
 num_round = 250   # Number of rounds of training, increasing this increases the range of output values
 bst = xgb.train(param, data_train, num_round, verbose_eval=0)
 
-k = 500
-importance = sorted(bst.get_fscore().iteritems(), key=operator.itemgetter(1), reverse=True)[:k]
-selected = [int(item[0][1:]) for item in importance]
 
+importance = sorted(bst.get_fscore().iteritems(), key=operator.itemgetter(1), reverse=True)
 
-
-prob = bst.predict(data_test)
-# J score, AUC score, best recall, best filter rate, best cutoff
 results = [0, 0, 0, 0, 0, 0]
-for cutoff in range(10, 15):
-    cut = cutoff/float(100)   # Cutoff in decimal form
-    y_pred = prob > cut   # If y values are greater than the cutoff
-    recall = metrics.recall_score(y_test, y_pred)
-    filter_rate = sum(np.logical_not(y_pred))/float(len(prob))
+for k in range(50, 2501, 50):
+    print "k = ", k
+    selected = [int(item[0][1:]) for item in importance[:k]]
 
-    if recall*6.7+filter_rate > results[0]:
-        results[0] = recall*6.7+filter_rate
-        results[1] = metrics.roc_auc_score(y_test, y_pred)
-        results[2] = recall
-        results[3] = filter_rate
-        results[4] = cut
-        results[5] = -5200+127000*filter_rate-850000*(1-recall)
+    X_train_Sel = X_train[:, selected]
+    data_train = xgb.DMatrix(X_train_Sel, label=y_train)
+    bst = xgb.train(param, data_train, num_round, verbose_eval=0)
+
+    X_test_Sel = X_test[:, selected]
+    data_test = xgb.DMatrix(X_test_Sel, label=y_test)
+
+    prob = bst.predict(data_test)
+    # J score, AUC score, best recall, best filter rate, best cutoff
+
+    for cutoff in range(10, 15):
+        cut = cutoff/float(100)   # Cutoff in decimal form
+        y_pred = prob > cut   # If y values are greater than the cutoff
+        recall = metrics.recall_score(y_test, y_pred)
+        filter_rate = sum(np.logical_not(y_pred))/float(len(prob))
+        if recall*6.7+filter_rate > results[0]:
+            results[0] = recall*6.7+filter_rate
+            results[1] = metrics.roc_auc_score(y_test, y_pred)
+            results[2] = recall
+            results[3] = filter_rate
+            results[4] = cut
+            results[5] = -5200+127000*filter_rate-850000*(1-recall)
 print results
