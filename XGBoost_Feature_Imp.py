@@ -61,7 +61,7 @@ for data in [(6, i, j) for i in range(4, 25) for j in range(24)]:
 
     eval_list = [(data_train,'train'), (data_test,'eval')]  # Want to train until eval error stops decreasing
 
-    num_round = 1000   # Number of rounds of training, increasing this increases the range of output values
+    num_round = 250   # Number of rounds of training, increasing this increases the range of output values
     start = time.time()
     print ">>>>> Fitting Model on {}".format(data)
     sys.stdout.flush()
@@ -69,8 +69,7 @@ for data in [(6, i, j) for i in range(4, 25) for j in range(24)]:
                     data_train,
                     num_round,
                     eval_list,
-                    verbose_eval=0,
-                    early_stopping_rounds=10)   # If error doesn't decrease in n rounds, stop early
+                    verbose_eval=0)
     print ">>>>> Completed in {} seconds\n".format(round(time.time()-start, 2))
 
     feature_imp_bitmap = [0]*2531

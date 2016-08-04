@@ -1,14 +1,15 @@
 import os
-import xlsxwriter
 import pickle
-import numpy as np
 import time
-from sklearn.ensemble import RandomForestClassifier
-from sklearn import metrics
-from imblearn.over_sampling import SMOTE
-import Undersampling as US
-import Sparse_Matrix_IO as smio
 
+import numpy as np
+import xlsxwriter
+from imblearn.over_sampling import SMOTE
+from sklearn import metrics
+from sklearn.ensemble import RandomForestClassifier
+
+import Sparse_Matrix_IO as smio
+from Legacy import Undersampling as US
 
 __SAVE_MODEL = False
 __LOAD_MODEL = False
