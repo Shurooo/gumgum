@@ -20,15 +20,10 @@ def crawl(date):
     month = date[0]
     day = date[1]
     addr_list = []
-    total_line = 0
     for i in range(2):
-        addr_in = get_addr(month, day+i)
-        addr_list.append(addr_in)
-        with open(addr_in, "r") as file_in:
-            data = smio.load_sparse_csr(file_in)
-            total_line += np.size(data, 0)
+        addr_list.append(get_addr(month, day+i))
 
-    line_indices = sorted(np.random.choice(total_line, num, replace=False))
+    line_indices = sorted(np.random.choice(num*2, num, replace=False))
 
     setoff = 0
     index = 0
