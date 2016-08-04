@@ -49,7 +49,8 @@ if __name__ == '__main__':
     cpus = multiprocessing.cpu_count()
     p = multiprocessing.Pool(cpus)
     start = time.time()
-    for result in p.imap(crawl, [(5, 1)] + [ (6, i) for i in [11, 18]]):
+    # for result in p.imap(crawl, [(5, 1)] + [ (6, i) for i in [11, 18]]):
+    for result in p.imap(crawl, [(6, 1)]):
         pass
 
     print "Completed in {} seconds\n".format(round(time.time()-start, 2))
