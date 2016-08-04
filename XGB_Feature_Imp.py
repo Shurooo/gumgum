@@ -1,4 +1,5 @@
 import os
+import time
 import operator
 import numpy as np
 import pandas as pd
@@ -56,15 +57,16 @@ bst = xgb.train(param, data_train, num_round, verbose_eval=0)
 
 
 importance = sorted(bst.get_fscore().iteritems(), key=operator.itemgetter(1), reverse=True)
-
-results = [0, 0, 0, 0, 0, 0, 0]
+result_all = []
 for k in range(100, 2501, 100):
     print "k = ", k
     selected = [int(item[0][1:]) for item in importance[:k]]
 
     X_train_Sel = X_train[:, selected]
+    start = time.time()
     data_train = xgb.DMatrix(X_train_Sel, label=y_train)
     bst = xgb.train(param, data_train, num_round, verbose_eval=0)
+    train_time = round(time.time() - start, 2)
 
     X_test_Sel = X_test[:, selected]
     data_test = xgb.DMatrix(X_test_Sel, label=y_test)
@@ -72,17 +74,22 @@ for k in range(100, 2501, 100):
     prob = bst.predict(data_test)
     # J score, AUC score, best recall, best filter rate, best cutoff
 
+    score = 0
+    recall_best = 0
+    filter_rate_best = 0
+    net_savings_best = 0
+    cut_best = 0
     for cutoff in range(10, 15):
         cut = cutoff/float(100)   # Cutoff in decimal form
         y_pred = prob > cut   # If y values are greater than the cutoff
         recall = metrics.recall_score(y_test, y_pred)
         filter_rate = sum(np.logical_not(y_pred))/float(len(prob))
-        if recall*6.7+filter_rate > results[0]:
-            results[0] = recall*6.7+filter_rate
-            results[1] = metrics.roc_auc_score(y_test, y_pred)
-            results[2] = recall
-            results[3] = filter_rate
-            results[4] = cut
-            results[5] = k
-            results[6] = -5200+127000*filter_rate-850000*(1-recall)
-print results
+        if recall*6.7+filter_rate > score:
+            score = recall*6.7+filter_rate
+            recall_best = recall
+            filter_rate_best = filter_rate
+            net_savings_best = -5200+127000*filter_rate-850000*(1-recall)
+            cut_best = cut
+    result_all.append([k, train_time, score, recall_best, filter_rate_best, cut_best, net_savings_best])
+print result_all
+np.save("/home/wlu/Desktop/Feature_Imp_Select", np.array(result_all))
