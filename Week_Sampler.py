@@ -21,7 +21,7 @@ def crawl(date):
     day = date[1]
     addr_list = []
     total_line = 0
-    for i in range(7):
+    for i in range(2):
         addr_in = get_addr(month, day+i)
         addr_list.append(addr_in)
         with open(addr_in, "r") as file_in:
