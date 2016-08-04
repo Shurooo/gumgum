@@ -38,7 +38,6 @@ def crawl(date):
         if index >= num:
             break
         setoff += len(X)
-    print res
     X = vstack(res)
     with open("/home/ubuntu/random_samples/week_samp_"+str(month).rjust(2, "0")+str(day).rjust(2, "0")+".npy", "w") as file_out:
         smio.save_sparse_csr(file_out, X)
@@ -48,8 +47,7 @@ if __name__ == '__main__':
     cpus = multiprocessing.cpu_count()
     p = multiprocessing.Pool(cpus)
     start = time.time()
-    # for result in p.imap(crawl, [(5, 1)] + [ (6, i) for i in [11, 18]]):
-    for result in p.imap(crawl, [(6, 4)]):
+    for result in p.imap(crawl, [(5, 1)] + [ (6, i) for i in [11, 18]]):
         pass
 
     print "Completed in {} seconds\n".format(round(time.time()-start, 2))
