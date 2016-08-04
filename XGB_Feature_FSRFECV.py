@@ -16,7 +16,7 @@ import Sparse_Matrix_IO as smio
 
 
 def get_data(month, day, hour=-1):
-    root = "/home/wlu/Desktop/Data"
+    root = "/mnt/rips2/2016"
     if hour == -1:
         addr_in = os.path.join(root,
                                str(month).rjust(2, "0"),
