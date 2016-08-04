@@ -36,6 +36,6 @@ class XGBWrapper:
         param_dict = {"param": self.param, "num_round":self.num_round, "verbose_eval":self.verbose_eval}
         return param_dict
 
-    def predict_prob(self, X):
+    def predict_proba(self, X):
         data_test = xgb.DMatrix(X)
         return self.bst.predict(data_test)

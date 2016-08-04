@@ -55,8 +55,11 @@ data_test = xgb.DMatrix(X_test, label=y_test)
 num_round = 250   # Number of rounds of training, increasing this increases the range of output values
 bst = xgb.train(param, data_train, num_round, verbose_eval=0)
 
-importance = sorted(bst.get_fscore().iteritems(), key=operator.itemgetter(1), reverse=True)
-print importance
+k = 500
+importance = sorted(bst.get_fscore().iteritems(), key=operator.itemgetter(1), reverse=True)[:k]
+selected = [int(item[0][1:]) for item in importance]
+
+
 
 prob = bst.predict(data_test)
 # J score, AUC score, best recall, best filter rate, best cutoff
