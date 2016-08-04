@@ -1,10 +1,12 @@
 import os
+import time
 import numpy as np
 import xgboost as xgb
 from sklearn import metrics
 from sklearn.feature_selection import f_classif
 from sklearn.feature_selection import SelectKBest
 import Sparse_Matrix_IO as smio
+
 
 '''
     Feature Selection source:
@@ -16,7 +18,10 @@ import Sparse_Matrix_IO as smio
 
 
 def get_data(month, day, hour=-1):
-    root = "/home/wlu/Desktop/Data"
+    if "wlu" in os.getcwd():
+        root = "/home/wlu/Desktop/Data"
+    else:
+        root = "/mnt/rips2/2016"
     if hour == -1:
         addr_in = os.path.join(root,
                                str(month).rjust(2, "0"),
@@ -36,21 +41,6 @@ def get_data(month, day, hour=-1):
 
 
 data = (6, 4)
-
-X_train, y_train = get_data(data[0], data[1])
-X_test, y_test = get_data(data[0], data[1]+1)
-
-selectK = SelectKBest(f_classif, k=1000)
-selectK.fit(X_train, y_train)
-
-X_train = selectK.transform(X_train)
-X_test = selectK.transform(X_test)
-
-data_train = xgb.DMatrix(X_train, label=y_train)
-data_test = xgb.DMatrix(X_test, label=y_test)
-
-print selectK.get_support(indices=True)
-
 param = {'booster':'gbtree',   # Tree, not linear regression
          'objective':'binary:logistic',   # Output probabilities
          'eval_metric':['auc'],
@@ -64,10 +54,25 @@ param = {'booster':'gbtree',   # Tree, not linear regression
          'save_period':0,   # Only saves last model
          'nthread':6,   # Number of cores used; otherwise, auto-detect
          'seed':25}
-
 num_round = 250   # Number of rounds of training, increasing this increases the range of output values
+
+X_train, y_train = get_data(data[0], data[1])
+
+print "Start Training"
+strat = time.time()
+selectK = SelectKBest(f_classif, k=1000)
+X_train = selectK.fit_transform(X_train, y_train)
+data_train = xgb.DMatrix(X_train, label=y_train)
 bst = xgb.train(param, data_train, num_round, verbose_eval=0)
+print "Training Completed in {} seconds".format(round(time.time()-strat, 2))
+
+print "Start Testing"
+strat = time.time()
+X_test, y_test = get_data(data[0], data[1]+1)
+X_test = selectK.transform(X_test)
+data_test = xgb.DMatrix(X_test, label=y_test)
 prob = bst.predict(data_test)
+print "Training Completed in {} seconds".format(round(time.time()-strat, 2))
 
 results = [0, 0, 0, 0, 0, 0]
 for cutoff in range(10, 15):
