@@ -39,7 +39,7 @@ def crawl(date):
         if index >= num:
             break
         setoff += len(X)
-    print len(res)
+    print res
     X = vstack(res)
     with open("/home/ubuntu/random_samples/week_samp_"+str(month).rjust(2, "0")+str(day).rjust(2, "0")+".npy", "w") as file_out:
         smio.save_sparse_csr(file_out, X)
