@@ -3,8 +3,7 @@ import sys
 import time
 import multiprocessing
 import numpy as np
-from scipy.sparse import csr_matrix
-from scipy import vstack
+from scipy.sparse import csr_matrix, vstack
 import Sparse_Matrix_IO as smio
 
 
@@ -20,10 +19,10 @@ def crawl(date):
     month = date[0]
     day = date[1]
     addr_list = []
-    for i in range(2):
+    for i in range(7):
         addr_list.append(get_addr(month, day+i))
 
-    line_indices = sorted(np.random.choice(num*2, num, replace=False))
+    line_indices = sorted(np.random.choice(num*7, num, replace=False))
 
     setoff = 0
     index = 0
