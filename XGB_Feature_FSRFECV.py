@@ -62,7 +62,7 @@ param = {'booster':'gbtree',   # Tree, not linear regression
 num_round = 250   # Number of rounds of training, increasing this increases the range of output values
 clf = xgbw.XGBWrapper(param, num_round, verbose_eval=0)
 
-selector = RFE(clf, step=25, n_features_to_select=1000, verbose=2)
+selector = RFE(clf, step=100, n_features_to_select=500, verbose=2)
 print 'Selector fit...'
 selector = selector.fit(X_train, y_train)
 support = selector.get_support(indices=True)
@@ -70,7 +70,7 @@ np.save("/home/ubuntu/Weiyi/RFE_Feature", support)
 prob = selector.predict_proba(X_test)
 
 results = [0, 0, 0, 0, 0, 0, 0]
-for cutoff in range(10, 15):
+for cutoff in range(10, 31):
     cut = cutoff/float(100)   # Cutoff in decimal form
     y_pred = prob > cut   # If y values are greater than the cutoff
     recall = metrics.recall_score(y_test, y_pred)

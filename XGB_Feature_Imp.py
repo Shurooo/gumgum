@@ -32,6 +32,26 @@ def get_data(month, day, hour=-1):
     return X, y
 
 
+def search_cut(prob):
+    score = 0
+    recall_best = 0
+    filter_rate_best = 0
+    net_savings_best = 0
+    cut_best = 0
+    for cutoff in range(0, 31):
+        cut = cutoff/float(100)   # Cutoff in decimal form
+        y_pred = prob > cut   # If y values are greater than the cutoff
+        recall = metrics.recall_score(y_test, y_pred)
+        filter_rate = sum(np.logical_not(y_pred))/float(len(prob))
+        if recall*6.7+filter_rate > score:
+            score = recall*6.7+filter_rate
+            recall_best = recall
+            filter_rate_best = filter_rate
+            net_savings_best = -5200+127000*filter_rate-850000*(1-recall)
+            cut_best = cut
+    return score, recall_best, filter_rate_best, cut_best, net_savings_best
+
+
 param = {'booster':'gbtree',   # Tree, not linear regression
          'objective':'binary:logistic',   # Output probabilities
          'eval_metric':['auc'],
@@ -47,17 +67,25 @@ param = {'booster':'gbtree',   # Tree, not linear regression
          'seed':25}
 
 data = (6, 4)
+result_all = []
 
 X_train, y_train = get_data(data[0], data[1])
 X_test, y_test = get_data(data[0], data[1]+1)
 data_train = xgb.DMatrix(X_train, label=y_train)
+data_test = xgb.DMatrix(X_test, label=y_test)
 
 num_round = 250   # Number of rounds of training, increasing this increases the range of output values
-bst = xgb.train(param, data_train, num_round, verbose_eval=0)
 
+start = time.time()
+bst = xgb.train(param, data_train, num_round, verbose_eval=0)
+train_time = round(time.time() - start, 2)
+
+prob = bst.predict(data_test)
+score, recall, filter_rate, cut, net_savings = search_cut(prob)
+result_all.append([2531, train_time, score, recall, filter_rate, cut, net_savings])
 
 importance = sorted(bst.get_fscore().iteritems(), key=operator.itemgetter(1), reverse=True)
-result_all = []
+
 for k in range(100, 2501, 100):
     print "k = ", k
     selected = [int(item[0][1:]) for item in importance[:k]]
@@ -72,24 +100,7 @@ for k in range(100, 2501, 100):
     data_test = xgb.DMatrix(X_test_Sel, label=y_test)
 
     prob = bst.predict(data_test)
-    # J score, AUC score, best recall, best filter rate, best cutoff
-
-    score = 0
-    recall_best = 0
-    filter_rate_best = 0
-    net_savings_best = 0
-    cut_best = 0
-    for cutoff in range(10, 15):
-        cut = cutoff/float(100)   # Cutoff in decimal form
-        y_pred = prob > cut   # If y values are greater than the cutoff
-        recall = metrics.recall_score(y_test, y_pred)
-        filter_rate = sum(np.logical_not(y_pred))/float(len(prob))
-        if recall*6.7+filter_rate > score:
-            score = recall*6.7+filter_rate
-            recall_best = recall
-            filter_rate_best = filter_rate
-            net_savings_best = -5200+127000*filter_rate-850000*(1-recall)
-            cut_best = cut
-    result_all.append([k, train_time, score, recall_best, filter_rate_best, cut_best, net_savings_best])
+    score, recall, filter_rate, cut, net_savings = search_cut(prob)
+    result_all.append([k, train_time, score, recall, filter_rate, cut, net_savings])
 print result_all
 np.save("/home/wlu/Desktop/Feature_Imp_Select", np.array(result_all))
