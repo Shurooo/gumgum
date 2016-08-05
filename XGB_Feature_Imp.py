@@ -102,11 +102,11 @@ importance = get_feature_imp(bst)
 
 for k in range(100, 2501, 100):
     print "k = ", k
-    selected = importance[:k]
+    selected = sorted(importance[:k])
 
     X_train_Sel = X_train[:, selected]
-    start = time.time()
     data_train = xgb.DMatrix(X_train_Sel, label=y_train)
+    start = time.time()
     bst = xgb.train(param, data_train, num_round, verbose_eval=0)
     train_time = round(time.time() - start, 2)
 
@@ -116,5 +116,5 @@ for k in range(100, 2501, 100):
     prob = bst.predict(data_test)
     score, recall, filter_rate, cut, net_savings = search_cut(prob)
     result_all.append([k, train_time, score, recall, filter_rate, cut, net_savings])
-print result_all
+
 np.save("/home/wlu/Desktop/Feature_Imp_Select", np.array(result_all))
