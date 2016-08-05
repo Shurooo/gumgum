@@ -1,6 +1,6 @@
 import os
+import sys
 import time
-import operator
 import warnings
 import numpy as np
 import xgboost as xgb
@@ -89,6 +89,7 @@ with warnings.catch_warnings():
 
 for k in range(100, 2501, 100):
     print "k = ", k
+    sys.stdout.flush()
     selectK.k = 500
 
     X_train_Sel = selectK.transform(X_train)
@@ -103,5 +104,5 @@ for k in range(100, 2501, 100):
     prob = bst.predict(data_test)
     score, recall, filter_rate, cut, net_savings = search_cut(prob)
     result_all.append([k, train_time, score, recall, filter_rate, cut, net_savings])
-print result_all
+
 np.save("/home/wlu/Desktop/KBest_Select", np.array(result_all))
