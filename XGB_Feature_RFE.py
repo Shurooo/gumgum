@@ -1,6 +1,7 @@
 import os
 import time
 import numpy as np
+import pandas as pd
 import XGB_Wrapper as xgbw
 from sklearn import metrics
 from sklearn.feature_selection import RFE
@@ -97,7 +98,7 @@ for step in [400, 200, 100, 50, 25]:
     train_time = time.time() - start
 
     support = selector.get_support(indices=True)
-    file_name = str(data[0]).rjust(2, "0") + str(data[1]).rjust(2, "0") + "_k" + str(k) + "_s" + str(step),
+    file_name = str(data[0]).rjust(2, "0") + str(data[1]).rjust(2, "0") + "_k" + str(k) + "_s" + str(step)
     addr_out = os.path.join("/home/ubuntu/Weiyi/RFE_Select", file_name)
     np.save(addr_out, support)
 
@@ -108,4 +109,5 @@ for step in [400, 200, 100, 50, 25]:
     score, recall, filter_rate, cut, net_savings = search_cut(prob)
     result_all.append([k, train_time, test_time, score, recall, filter_rate, cut, net_savings, step])
 
-np.save("/home/ubuntu/Weiyi/RFE_Select", np.array(result_all))
+data = pd.DataFrame(np.array(result_all), columns=["k", "train time", "test time", "score", "recall", "filter rate", "cut", "net savings", "step"])
+data.to_csv("/home/ubuntu/Weiyi/RFE_Select/RFE_0604.csv")
