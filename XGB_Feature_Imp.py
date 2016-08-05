@@ -52,6 +52,18 @@ def search_cut(prob):
     return score, recall_best, filter_rate_best, cut_best, net_savings_best
 
 
+def get_feature_imp(bst):
+    imp = bst.get_fscore()
+    imp_all = {}
+    for i in range(feature_len):
+        imp_all.update({"f{}".format(i):0})
+    for key in imp:
+        imp_all[key] = imp[key]
+    imp_sorted = sorted(imp_all.iteritems(), key=operator.itemgetter(1), reverse=True)
+    # return np.array([int(item[0][1:]) for item in imp_sorted])
+    return np.array([int(item[0][1:]) for item in imp_sorted])
+
+
 param = {'booster':'gbtree',   # Tree, not linear regression
          'objective':'binary:logistic',   # Output probabilities
          'eval_metric':['auc'],
@@ -74,6 +86,8 @@ X_test, y_test = get_data(data[0], data[1]+1)
 data_train = xgb.DMatrix(X_train, label=y_train)
 data_test = xgb.DMatrix(X_test, label=y_test)
 
+feature_len = np.size(X_train, 1)
+
 num_round = 250   # Number of rounds of training, increasing this increases the range of output values
 
 start = time.time()
@@ -82,13 +96,13 @@ train_time = round(time.time() - start, 2)
 
 prob = bst.predict(data_test)
 score, recall, filter_rate, cut, net_savings = search_cut(prob)
-result_all.append([2531, train_time, score, recall, filter_rate, cut, net_savings])
+result_all.append([feature_len, train_time, score, recall, filter_rate, cut, net_savings])
 
-importance = sorted(bst.get_fscore().iteritems(), key=operator.itemgetter(1), reverse=True)
+importance = get_feature_imp(bst)
 
 for k in range(100, 2501, 100):
     print "k = ", k
-    selected = [int(item[0][1:]) for item in importance[:k]]
+    selected = importance[:k]
 
     X_train_Sel = X_train[:, selected]
     start = time.time()

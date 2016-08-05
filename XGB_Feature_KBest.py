@@ -1,6 +1,7 @@
 import os
 import time
 import operator
+import warnings
 import numpy as np
 import xgboost as xgb
 from sklearn import metrics
@@ -41,7 +42,28 @@ def get_data(month, day, hour=-1):
     return X, y
 
 
+def search_cut(prob):
+    score = 0
+    recall_best = 0
+    filter_rate_best = 0
+    net_savings_best = 0
+    cut_best = 0
+    for cutoff in range(0, 31):
+        cut = cutoff/float(100)   # Cutoff in decimal form
+        y_pred = prob > cut   # If y values are greater than the cutoff
+        recall = metrics.recall_score(y_test, y_pred)
+        filter_rate = sum(np.logical_not(y_pred))/float(len(prob))
+        if recall*6.7+filter_rate > score:
+            score = recall*6.7+filter_rate
+            recall_best = recall
+            filter_rate_best = filter_rate
+            net_savings_best = -5200+127000*filter_rate-850000*(1-recall)
+            cut_best = cut
+    return score, recall_best, filter_rate_best, cut_best, net_savings_best
+
+
 data = (6, 4)
+result_all = []
 param = {'booster':'gbtree',   # Tree, not linear regression
          'objective':'binary:logistic',   # Output probabilities
          'eval_metric':['auc'],
@@ -58,41 +80,28 @@ param = {'booster':'gbtree',   # Tree, not linear regression
 num_round = 250   # Number of rounds of training, increasing this increases the range of output values
 
 X_train, y_train = get_data(data[0], data[1])
+X_test, y_test = get_data(data[0], data[1]+1)
 
-selectK = SelectKBest(f_classif, k=500)
-selectK.fit(X_train, y_train)
-feature_score = [(i, selectK.scores_[i]) for i in len(selectK.scores_)]
-feature_score = sorted(feature_score, key=operator.itemgetter(1), reverse=True)
-print selectK.get_support(indices=True)
+selectK = SelectKBest(f_classif, k="all")
+with warnings.catch_warnings():
+    warnings.simplefilter("ignore")
+    selectK.fit(X_train, y_train)
 
-# print "Start Training"
-# strat = time.time()
-# selectK = SelectKBest(f_classif, k=1000)
-# X_train = selectK.fit_transform(X_train, y_train)
-# data_train = xgb.DMatrix(X_train, label=y_train)
-# bst = xgb.train(param, data_train, num_round, verbose_eval=0)
-# print "Training Completed in {} seconds".format(round(time.time()-strat, 2))
+for k in range(100, 2501, 100):
+    print "k = ", k
+    selectK.k = 500
 
-# print "Start Testing"
-# strat = time.time()
-# X_test, y_test = get_data(data[0], data[1]+1)
-# X_test = selectK.transform(X_test)
-# data_test = xgb.DMatrix(X_test, label=y_test)
-# prob = bst.predict(data_test)
-# print "Training Completed in {} seconds".format(round(time.time()-strat, 2))
-#
-# results = [0, 0, 0, 0, 0, 0]
-# for cutoff in range(10, 15):
-#     cut = cutoff/float(100)   # Cutoff in decimal form
-#     y_pred = prob > cut   # If y values are greater than the cutoff
-#     recall = metrics.recall_score(y_test, y_pred)
-#     filter_rate = sum(np.logical_not(y_pred))/float(len(prob))
-#
-#     if recall*6.7+filter_rate > results[0]:
-#         results[0] = recall*6.7+filter_rate
-#         results[1] = metrics.roc_auc_score(y_test, y_pred)
-#         results[2] = recall
-#         results[3] = filter_rate
-#         results[4] = cut
-#         results[5] = -5200+127000*filter_rate-850000*(1-recall)
-# print results
+    X_train_Sel = selectK.transform(X_train)
+    start = time.time()
+    data_train = xgb.DMatrix(X_train_Sel, label=y_train)
+    bst = xgb.train(param, data_train, num_round, verbose_eval=0)
+    train_time = round(time.time() - start, 2)
+
+    X_test_Sel = selectK.transform(X_test)
+    data_test = xgb.DMatrix(X_test_Sel, label=y_test)
+
+    prob = bst.predict(data_test)
+    score, recall, filter_rate, cut, net_savings = search_cut(prob)
+    result_all.append([k, train_time, score, recall, filter_rate, cut, net_savings])
+print result_all
+np.save("/home/wlu/Desktop/KBest_Select", np.array(result_all))
