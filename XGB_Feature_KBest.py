@@ -19,11 +19,13 @@ import Sparse_Matrix_IO as smio
 '''
 
 
+if "wlu" in os.getcwd():
+    root = "/home/wlu/Desktop/Data"
+else:
+    root = "/mnt/rips2/2016"
+
+
 def get_data(month, day, hour=-1):
-    if "wlu" in os.getcwd():
-        root = "/home/wlu/Desktop/Data"
-    else:
-        root = "/mnt/rips2/2016"
     if hour == -1:
         addr_in = os.path.join(root,
                                str(month).rjust(2, "0"),
@@ -90,19 +92,23 @@ with warnings.catch_warnings():
 for k in range(100, 2501, 100):
     print "k = ", k
     sys.stdout.flush()
-    selectK.k = 500
+    selectK.k = k
 
     X_train_Sel = selectK.transform(X_train)
-    start = time.time()
     data_train = xgb.DMatrix(X_train_Sel, label=y_train)
+
+    start = time.time()
     bst = xgb.train(param, data_train, num_round, verbose_eval=0)
     train_time = round(time.time() - start, 2)
 
     X_test_Sel = selectK.transform(X_test)
     data_test = xgb.DMatrix(X_test_Sel, label=y_test)
 
+    start = time.time()
     prob = bst.predict(data_test)
+    test_time = round(time.time() - start, 2)
+
     score, recall, filter_rate, cut, net_savings = search_cut(prob)
-    result_all.append([k, train_time, score, recall, filter_rate, cut, net_savings])
+    result_all.append([k, train_time, test_time, score, recall, filter_rate, cut, net_savings])
 
 np.save("/home/wlu/Desktop/KBest_Select", np.array(result_all))

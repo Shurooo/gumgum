@@ -1,9 +1,9 @@
 import os
-import json
+import time
 import numpy as np
+import XGB_Wrapper as xgbw
 from sklearn import metrics
 from sklearn.feature_selection import RFE
-import XGB_Wrapper as xgbw
 import Sparse_Matrix_IO as smio
 
 
@@ -14,11 +14,13 @@ import Sparse_Matrix_IO as smio
 # XGBoost 101 found at http://xgboost.readthedocs.io/en/latest/python/python_intro.html
 
 
+if "wlu" in os.getcwd():
+    root = "/home/wlu/Desktop/Data"
+else:
+    root = "/mnt/rips2/2016"
+
+
 def get_data(month, day, hour=-1):
-    if "wlu" in os.getcwd():
-        root = "/home/wlu/Desktop/Data"
-    else:
-        root = "/mnt/rips2/2016"
     if hour == -1:
         addr_in = os.path.join(root,
                                str(month).rjust(2, "0"),
@@ -35,6 +37,26 @@ def get_data(month, day, hour=-1):
     X = data[:, :-1]
     y = data[:, -1]
     return X, y
+
+
+def search_cut(prob):
+    score = 0
+    recall_best = 0
+    filter_rate_best = 0
+    net_savings_best = 0
+    cut_best = 0
+    for cutoff in range(0, 31):
+        cut = cutoff/float(100)   # Cutoff in decimal form
+        y_pred = prob > cut   # If y values are greater than the cutoff
+        recall = metrics.recall_score(y_test, y_pred)
+        filter_rate = sum(np.logical_not(y_pred))/float(len(prob))
+        if recall*6.7+filter_rate > score:
+            score = recall*6.7+filter_rate
+            recall_best = recall
+            filter_rate_best = filter_rate
+            net_savings_best = -5200+127000*filter_rate-850000*(1-recall)
+            cut_best = cut
+    return score, recall_best, filter_rate_best, cut_best, net_savings_best
 
 
 data = (6, 4)
@@ -62,25 +84,27 @@ param = {'booster':'gbtree',   # Tree, not linear regression
 num_round = 250   # Number of rounds of training, increasing this increases the range of output values
 clf = xgbw.XGBWrapper(param, num_round, verbose_eval=0)
 
-selector = RFE(clf, step=100, n_features_to_select=500, verbose=2)
-print 'Selector fit...'
-selector = selector.fit(X_train, y_train)
-support = selector.get_support(indices=True)
-np.save("/home/ubuntu/Weiyi/RFE_Feature", support)
-prob = selector.predict_proba(X_test)
+k = 500
+step = 25
+result_all = []
 
-results = [0, 0, 0, 0, 0, 0, 0]
-for cutoff in range(10, 31):
-    cut = cutoff/float(100)   # Cutoff in decimal form
-    y_pred = prob > cut   # If y values are greater than the cutoff
-    recall = metrics.recall_score(y_test, y_pred)
-    filter_rate = sum(np.logical_not(y_pred))/float(len(prob))
+for step in [25, 50, 75]:
+    selector = RFE(clf, step=step, n_features_to_select=k, verbose=2)
 
-    if recall*6.7+filter_rate > results[0]:
-        results[0] = recall*6.7+filter_rate
-        results[1] = metrics.roc_auc_score(y_test, y_pred)
-        results[2] = recall
-        results[3] = filter_rate
-        results[4] = cut
-        results[5] = -5200+127000*filter_rate-850000*(1-recall)
-print results
+    print 'Fitting Selector'
+    start = time.time()
+    selector = selector.fit(X_train, y_train)
+    train_time = time.time() - start
+
+    support = selector.get_support(indices=True)
+    file_name = str(data[0]).rjust(2, "0") + str(data[1]).rjust(2, "0") + "_k" + str(k) + "_s" + str(step),
+    np.save(os.path.join("/home/ubuntu/Weiyi/RFE_Select", file_name), support)
+
+    start = time.time()
+    prob = selector.predict_proba(X_test)
+    test_time = round(time.time() - start, 2)
+
+    score, recall, filter_rate, cut, net_savings = search_cut(prob)
+    result_all.append([k, train_time, test_time, score, recall, filter_rate, cut, net_savings, step])
+
+np.save("/home/ubuntu/Weiyi/RFE_Select", np.array(result_all))
