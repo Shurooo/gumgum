@@ -3,10 +3,10 @@ import os
 import paramiko
 
 
-file_name = "XGB_Feature_KBest.py"
+file_name = "Test2.py"
 path_to_upload = "Weiyi"
 overwrite = False
-download = True
+download = False
 download_file = "KBest_Select.npy"
 download_aws = "/home/ubuntu/Weiyi"
 download_local = "/home/wlu/Desktop"

@@ -114,4 +114,5 @@ for k in range(100, 2501, 100):
     result_all.append([k, train_time, test_time, score, recall, filter_rate, cut, net_savings])
 
 data = pd.DataFrame(np.array(result_all), columns=["k", "train time", "test time", "score", "recall", "filter rate", "cut", "net savings"])
-data.to_csv("/home/wlu/Desktop/Feature_Selection/KBest/KBest_{}{}.csv".format(str(data[0]).rjust(2, "0"), str(data[1]).rjust(2, "0")))
+file_out_name = "/home/wlu/Desktop/Feature_Selection/KBest/KBest_{}{}.csv".format(str(data[0]).rjust(2, "0"), str(data[1]).rjust(2, "0"))
+data.to_csv(file_out_name)
