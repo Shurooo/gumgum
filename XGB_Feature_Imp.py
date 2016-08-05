@@ -5,7 +5,6 @@ import numpy as np
 import pandas as pd
 import xgboost as xgb
 from sklearn import metrics
-from matplotlib import pylab as plt
 import Sparse_Matrix_IO as smio
 
 
@@ -78,7 +77,7 @@ param = {'booster':'gbtree',   # Tree, not linear regression
          'nthread':6,   # Number of cores used; otherwise, auto-detect
          'seed':25}
 
-data = (6, 4)
+data = (6, 5)
 result_all = []
 
 X_train, y_train = get_data(data[0], data[1])
@@ -121,4 +120,6 @@ for k in range(100, 2501, 100):
     score, recall, filter_rate, cut, net_savings = search_cut(prob)
     result_all.append([k, train_time, test_time, score, recall, filter_rate, cut, net_savings])
 
-np.save("/home/wlu/Desktop/Feature_Imp_Select_Sorted", np.array(result_all))
+data = pd.DataFrame(np.array(result_all),
+                    columns=["k", "train time", "test time", "score", "recall", "filter rate", "cut", "net savings"])
+data.to_csv("/home/wlu/Desktop/Feature_Selection/Imp/Imp_Select_0605.csv")

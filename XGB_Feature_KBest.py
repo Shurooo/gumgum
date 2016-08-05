@@ -3,6 +3,7 @@ import sys
 import time
 import warnings
 import numpy as np
+import pandas as pd
 import xgboost as xgb
 from sklearn import metrics
 from sklearn.feature_selection import f_classif
@@ -64,7 +65,7 @@ def search_cut(prob):
     return score, recall_best, filter_rate_best, cut_best, net_savings_best
 
 
-data = (6, 4)
+data = (6, 6)
 result_all = []
 param = {'booster':'gbtree',   # Tree, not linear regression
          'objective':'binary:logistic',   # Output probabilities
@@ -111,4 +112,6 @@ for k in range(100, 2501, 100):
     score, recall, filter_rate, cut, net_savings = search_cut(prob)
     result_all.append([k, train_time, test_time, score, recall, filter_rate, cut, net_savings])
 
-np.save("/home/wlu/Desktop/KBest_Select", np.array(result_all))
+data = pd.DataFrame(np.array(result_all),
+                    columns=["k", "train time", "test time", "score", "recall", "filter rate", "cut", "net savings"])
+data.to_csv("/home/wlu/Desktop/Feature_Selection/KBest/KBest_0606.csv")
