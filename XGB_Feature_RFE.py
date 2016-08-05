@@ -88,7 +88,7 @@ k = 500
 step = 25
 result_all = []
 
-for step in [25, 50, 75]:
+for step in [400, 200, 100, 50, 25]:
     selector = RFE(clf, step=step, n_features_to_select=k, verbose=2)
 
     print 'Fitting Selector'
@@ -98,7 +98,8 @@ for step in [25, 50, 75]:
 
     support = selector.get_support(indices=True)
     file_name = str(data[0]).rjust(2, "0") + str(data[1]).rjust(2, "0") + "_k" + str(k) + "_s" + str(step),
-    np.save(os.path.join("/home/ubuntu/Weiyi/RFE_Select", file_name), support)
+    addr_out = os.path.join("/home/ubuntu/Weiyi/RFE_Select", file_name)
+    np.save(addr_out, support)
 
     start = time.time()
     prob = selector.predict_proba(X_test)
