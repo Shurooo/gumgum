@@ -76,8 +76,9 @@ param = {'booster':'gbtree',   # Tree, not linear regression
          'save_period':0,   # Only saves last model
          'nthread':6,   # Number of cores used; otherwise, auto-detect
          'seed':25}
+num_round = 250   # Number of rounds of training, increasing this increases the range of output values
 
-data = (6, 5)
+data = (6, 6)
 result_all = []
 
 X_train, y_train = get_data(data[0], data[1])
@@ -86,8 +87,6 @@ data_train = xgb.DMatrix(X_train, label=y_train)
 data_test = xgb.DMatrix(X_test, label=y_test)
 
 feature_len = np.size(X_train, 1)
-
-num_round = 250   # Number of rounds of training, increasing this increases the range of output values
 
 start = time.time()
 bst = xgb.train(param, data_train, num_round, verbose_eval=0)
@@ -120,6 +119,5 @@ for k in range(100, 2501, 100):
     score, recall, filter_rate, cut, net_savings = search_cut(prob)
     result_all.append([k, train_time, test_time, score, recall, filter_rate, cut, net_savings])
 
-data = pd.DataFrame(np.array(result_all),
-                    columns=["k", "train time", "test time", "score", "recall", "filter rate", "cut", "net savings"])
-data.to_csv("/home/wlu/Desktop/Feature_Selection/Imp/Imp_Select_0605.csv")
+data = pd.DataFrame(np.array(result_all), columns=["k", "train time", "test time", "score", "recall", "filter rate", "cut", "net savings"])
+data.to_csv("/home/wlu/Desktop/Feature_Selection/Imp/Imp_{}{}.csv".format(str(data[0]).rjust(2, "0"), str(data[1]).rjust(2, "0")))

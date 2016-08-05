@@ -92,7 +92,7 @@ result_all = []
 for step in [400, 200, 100, 50, 25]:
     selector = RFE(clf, step=step, n_features_to_select=k, verbose=2)
 
-    print 'Fitting Selector'
+    print "Fitting Selector: k = {}, step = {}".format(k, step)
     start = time.time()
     selector = selector.fit(X_train, y_train)
     train_time = time.time() - start

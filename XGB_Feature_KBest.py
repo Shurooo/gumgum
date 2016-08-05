@@ -65,8 +65,6 @@ def search_cut(prob):
     return score, recall_best, filter_rate_best, cut_best, net_savings_best
 
 
-data = (6, 6)
-result_all = []
 param = {'booster':'gbtree',   # Tree, not linear regression
          'objective':'binary:logistic',   # Output probabilities
          'eval_metric':['auc'],
@@ -81,6 +79,9 @@ param = {'booster':'gbtree',   # Tree, not linear regression
          'nthread':6,   # Number of cores used; otherwise, auto-detect
          'seed':25}
 num_round = 250   # Number of rounds of training, increasing this increases the range of output values
+
+data = (6, 7)
+result_all = []
 
 X_train, y_train = get_data(data[0], data[1])
 X_test, y_test = get_data(data[0], data[1]+1)
@@ -112,6 +113,5 @@ for k in range(100, 2501, 100):
     score, recall, filter_rate, cut, net_savings = search_cut(prob)
     result_all.append([k, train_time, test_time, score, recall, filter_rate, cut, net_savings])
 
-data = pd.DataFrame(np.array(result_all),
-                    columns=["k", "train time", "test time", "score", "recall", "filter rate", "cut", "net savings"])
-data.to_csv("/home/wlu/Desktop/Feature_Selection/KBest/KBest_0606.csv")
+data = pd.DataFrame(np.array(result_all), columns=["k", "train time", "test time", "score", "recall", "filter rate", "cut", "net savings"])
+data.to_csv("/home/wlu/Desktop/Feature_Selection/KBest/KBest_{}{}.csv".format(str(data[0]).rjust(2, "0"), str(data[1]).rjust(2, "0")))
