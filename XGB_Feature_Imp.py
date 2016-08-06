@@ -119,5 +119,5 @@ for k in range(100, 2501, 100):
     score, recall, filter_rate, cut, net_savings = search_cut(prob)
     result_all.append([k, train_time, test_time, score, recall, filter_rate, cut, net_savings])
 
-data = pd.DataFrame(np.array(result_all), columns=["k", "train time", "test time", "score", "recall", "filter rate", "cut", "net savings"])
-data.to_csv("/home/wlu/Desktop/Feature_Selection/Imp/Imp_{}{}.csv".format(str(data[0]).rjust(2, "0"), str(data[1]).rjust(2, "0")))
+result = pd.DataFrame(np.array(result_all), columns=["k", "train time", "test time", "score", "recall", "filter rate", "cut", "net savings"])
+result.to_csv("/home/wlu/Desktop/Feature_Selection/Imp/Imp_{}{}.csv".format(str(data[0]).rjust(2, "0"), str(data[1]).rjust(2, "0")))

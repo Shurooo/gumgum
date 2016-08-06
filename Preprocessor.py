@@ -35,20 +35,20 @@ def get_io_addr_hour():
 
 
 def get_io_addr_day_samp():
-    may = [(5, i) for i in range(1, 8)]
-    # may = []
-    june = [(6, i) for i in range(4, 26)]
+    # may = [(5, i) for i in range(1, 8)]
+    may = []
+    june = [(6, i) for i in range(19, 21)]
     # june = []
-    mode_in = "neg"
+    mode_in = "normal"
 
     if mode_in == "normal":
-        filename_in = "day_samp_raw"
-        filename_out = "day_samp_new.npy"
+        filename_in = "day_samp_large_raw"
+        filename_out = "day_samp_new_large.npy"
     else:
         filename_in = "PosNeg/day_samp_raw_{}".format(mode_in)
         filename_out = "PosNeg/day_samp_new_{}.npy".format(mode_in)
 
-    root = "/mnt/rips2/2016"
+    root = "/mnt/rips2/2016/random_samples"
     list_io_addr = []
     for item in may+june:
         month = item[0]
@@ -114,7 +114,7 @@ def crawl(io_addr):
 if __name__ == '__main__':
     cpus = multiprocessing.cpu_count()
     p = multiprocessing.Pool(cpus)
-    list_io_addr = get_io_addr_hour()
+    list_io_addr = get_io_addr_day_samp()
 
     dumped = 0
     for result in p.imap(crawl, list_io_addr):

@@ -4,6 +4,7 @@ import paramiko
 
 
 file_name = "Test2.py"
+# file_name = "Test2.py"
 path_to_upload = "Weiyi"
 overwrite = False
 download = False
