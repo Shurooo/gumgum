@@ -31,7 +31,7 @@ def get_data(month, day, hour=-1):
     return X, y
 
 
-def search_cut(prob):
+def search_cut(prob, y_test):
     score = 0
     recall_best = 0
     filter_rate_best = 0
@@ -65,7 +65,7 @@ def get_feature_imp(bst):
 
 param = {'booster':'gbtree',   # Tree, not linear regression
          'objective':'binary:logistic',   # Output probabilities
-         'eval_metric':['auc'],
+         # 'eval_metric':['auc'],
          'bst:max_depth':5,   # Max depth of tree
          'bst:eta':.1,   # Learning rate (usually 0.01-0.2)
          'bst:gamma':0,   # Larger value --> more conservative
@@ -78,7 +78,7 @@ param = {'booster':'gbtree',   # Tree, not linear regression
          'seed':25}
 num_round = 250   # Number of rounds of training, increasing this increases the range of output values
 
-data = (6, 6)
+data = (6, 5)
 result_all = []
 
 X_train, y_train = get_data(data[0], data[1])
@@ -89,35 +89,36 @@ data_test = xgb.DMatrix(X_test, label=y_test)
 feature_len = np.size(X_train, 1)
 
 start = time.time()
-bst = xgb.train(param, data_train, num_round, verbose_eval=0)
+bst = xgb.train(param, data_train, num_round)
 train_time = round(time.time() - start, 2)
 
 start = time.time()
 prob = bst.predict(data_test)
 test_time = round(time.time() - start, 2)
-score, recall, filter_rate, cut, net_savings = search_cut(prob)
-result_all.append([feature_len, train_time, test_time, score, recall, filter_rate, cut, net_savings])
-
-importance = get_feature_imp(bst)
-
-for k in range(100, 2501, 100):
-    print "k = ", k
-    selected = sorted(importance[:k])
-
-    X_train_Sel = X_train[:, selected]
-    data_train = xgb.DMatrix(X_train_Sel, label=y_train)
-    start = time.time()
-    bst = xgb.train(param, data_train, num_round, verbose_eval=0)
-    train_time = round(time.time() - start, 2)
-
-    X_test_Sel = X_test[:, selected]
-    data_test = xgb.DMatrix(X_test_Sel, label=y_test)
-    start = time.time()
-    prob = bst.predict(data_test)
-    test_time = round(time.time() - start, 2)
-
-    score, recall, filter_rate, cut, net_savings = search_cut(prob)
-    result_all.append([k, train_time, test_time, score, recall, filter_rate, cut, net_savings])
-
-result = pd.DataFrame(np.array(result_all), columns=["k", "train time", "test time", "score", "recall", "filter rate", "cut", "net savings"])
-result.to_csv("/home/wlu/Desktop/Feature_Selection/Imp/Imp_{}{}.csv".format(str(data[0]).rjust(2, "0"), str(data[1]).rjust(2, "0")))
+print search_cut(prob, y_test)
+# score, recall, filter_rate, cut, net_savings = search_cut(prob)
+# result_all.append([feature_len, train_time, test_time, score, recall, filter_rate, cut, net_savings])
+#
+# importance = get_feature_imp(bst)
+#
+# for k in range(100, 2501, 100):
+#     print "k = ", k
+#     selected = sorted(importance[:k])
+#
+#     X_train_Sel = X_train[:, selected]
+#     data_train = xgb.DMatrix(X_train_Sel, label=y_train)
+#     start = time.time()
+#     bst = xgb.train(param, data_train, num_round, verbose_eval=0)
+#     train_time = round(time.time() - start, 2)
+#
+#     X_test_Sel = X_test[:, selected]
+#     data_test = xgb.DMatrix(X_test_Sel, label=y_test)
+#     start = time.time()
+#     prob = bst.predict(data_test)
+#     test_time = round(time.time() - start, 2)
+#
+#     score, recall, filter_rate, cut, net_savings = search_cut(prob)
+#     result_all.append([k, train_time, test_time, score, recall, filter_rate, cut, net_savings])
+#
+# result = pd.DataFrame(np.array(result_all), columns=["k", "train time", "test time", "score", "recall", "filter rate", "cut", "net savings"])
+# result.to_csv("/home/wlu/Desktop/Feature_Selection/Imp/Imp_{}{}.csv".format(str(data[0]).rjust(2, "0"), str(data[1]).rjust(2, "0")))

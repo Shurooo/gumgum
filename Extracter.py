@@ -1,5 +1,4 @@
 import multiprocessing
-from random import shuffle
 import time
 import json
 import os
@@ -9,12 +8,12 @@ formats_ = [16, 31, 9, 12, 14, 3, 2, 7, 5, 21, 8, 20, 15, 6, 22, 27, 25, 26, 30,
 
 
 def get_io_addr():
-    may = [(5, i, j) for i in range(1, 8) for j in range(24)]
-    june = [(6, i, j) for i in range(4, 26) for j in range(24)]
-    # june = []
+    may = [(5, i, j) for i in range(8, 9) for j in range(24)]
+    # june = [(6, i, j) for i in range(4, 26) for j in range(24)]
+    june = []
 
     filename_in = "part-00000"
-    root_in = "/mnt/rips/2016"
+    root_in = "/mnt/rips2/2016"
     root_out = "/mnt/rips2/2016"
 
     list_dates = may + june
@@ -88,25 +87,17 @@ def crawl(io_addr):
                 except:
                     dumped += 1
 
-        all = pos + neg
-        shuffle(all)
-        with open(addr_out, 'w') as file_out:
-            for line in all:
+        with open(os.path.join(addr_out, "output_pos"), 'w') as file_out:
+            for line in pos:
                 entry = json.dumps(line)
                 file_out.write(entry)
                 file_out.write("\n")
 
-        # with open(os.path.join(addr_out, "output_pos"), 'w') as file_out:
-        #     for line in pos:
-        #         entry = json.dumps(line)
-        #         file_out.write(entry)
-        #         file_out.write("\n")
-        #
-        # with open(os.path.join(addr_out, "output_neg"), 'w') as file_out:
-        #     for line in neg:
-        #         entry = json.dumps(line)
-        #         file_out.write(entry)
-        #         file_out.write("\n")
+        with open(os.path.join(addr_out, "output_neg"), 'w') as file_out:
+            for line in neg:
+                entry = json.dumps(line)
+                file_out.write(entry)
+                file_out.write("\n")
 
     else:
         print "\nFile Missing: {}\n".format(addr_in)
