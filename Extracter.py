@@ -288,7 +288,7 @@ if __name__ == '__main__':
 
     cpus = multiprocessing.cpu_count()
     p = multiprocessing.Pool(cpus)
-    list_io_addr = get_io_addr_random_sample()
+    list_io_addr = get_io_addr()
 
     dumped = 0
     filtered = 0
