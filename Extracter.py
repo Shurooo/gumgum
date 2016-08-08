@@ -8,7 +8,7 @@ formats_ = [16, 31, 9, 12, 14, 3, 2, 7, 5, 21, 8, 20, 15, 6, 22, 27, 25, 26, 30,
 
 
 def get_io_addr():
-    may = [(5, i, j) for i in range(8, 9) for j in range(0)]
+    may = [(5, i, j) for i in range(8, 9) for j in range(1)]
     # june = [(6, i, j) for i in range(4, 26) for j in range(24)]
     june = []
 
