@@ -12,9 +12,9 @@ start = time.time()
 
 
 def get_io_addr_hour():
-    # may = [(5, i, j) for i in range(1, 8) for j in range(24)]
-    may = []
-    june = [(6, i, j) for i in range(4, 26) for j in range(24)]
+    may = [(5, i, j) for i in range(8, 32) for j in range(24)]
+    # may = []
+    june = [(6, i, j) for i in range(1, 4) for j in range(24)]
     # june = []
     root = "/mnt/rips2/2016"
 
@@ -112,9 +112,9 @@ def crawl(io_addr):
 
 
 if __name__ == '__main__':
-    # cpus = multiprocessing.cpu_count()
-    p = multiprocessing.Pool(2)
-    list_io_addr = get_io_addr_day_samp()
+    cpus = multiprocessing.cpu_count()
+    p = multiprocessing.Pool(cpus)
+    list_io_addr = get_io_addr_hour()
 
     dumped = 0
     for result in p.imap(crawl, list_io_addr):
