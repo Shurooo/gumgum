@@ -42,13 +42,13 @@ def get_io_addr_day_samp():
     mode_in = "normal"
 
     if mode_in == "normal":
-        filename_in = "day_samp_large_raw"
-        filename_out = "day_samp_new_large.npy"
+        filename_in = "day_samp_raw"
+        filename_out = "day_samp_new.npy"
     else:
         filename_in = "PosNeg/day_samp_raw_{}".format(mode_in)
         filename_out = "PosNeg/day_samp_new_{}.npy".format(mode_in)
 
-    root = "/mnt/rips2/2016/random_samples"
+    root = "/mnt/rips2/2016"
     list_io_addr = []
     for item in may+june:
         month = item[0]
