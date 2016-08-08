@@ -8,10 +8,10 @@ formats_ = [16, 31, 9, 12, 14, 3, 2, 7, 5, 21, 8, 20, 15, 6, 22, 27, 25, 26, 30,
 
 
 def get_io_addr():
-    # may = [(5, i, j) for i in range(8, 32) for j in range(24)]
-    may = []
-    june = [(6, i, j) for i in range(1, 4) for j in range(24)]
-    # june = []
+    may = [(5, i, j) for i in range(9, 10) for j in range(1)]
+    # may = []
+    # june = [(6, i, j) for i in range(1, 4) for j in range(24)]
+    june = []
 
     filename_in = "part-00000"
     root_in = "/mnt/rips2/2016"
