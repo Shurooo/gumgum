@@ -8,7 +8,7 @@ formats_ = [16, 31, 9, 12, 14, 3, 2, 7, 5, 21, 8, 20, 15, 6, 22, 27, 25, 26, 30,
 
 
 def get_io_addr():
-    may = [(5, i, j) for i in range(8, 9) for j in range(1)]
+    may = [(5, i, j) for i in range(8, 32) for j in range(24)]
     # june = [(6, i, j) for i in range(4, 26) for j in range(24)]
     june = []
 
@@ -286,8 +286,8 @@ def auction_bidrequest_impressions_process(bidreq, bid_responded, result_bid, re
 if __name__ == '__main__':
     start = time.time()
 
-    cpus = multiprocessing.cpu_count()
-    p = multiprocessing.Pool(cpus)
+    # cpus = multiprocessing.cpu_count()
+    p = multiprocessing.Pool(2)
     list_io_addr = get_io_addr()
 
     dumped = 0
