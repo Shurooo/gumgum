@@ -22,6 +22,16 @@ def process(entry, result):
     day = pst_t.weekday()
     sd.binarize(result, day, 7)
 
+    if day == 5 or day == 6:
+        result.append(1)
+    else:
+        result.append(0)
+
+    if day == 4 or day == 5:
+        result.append(1)
+    else:
+        result.append(0)
+
     try:
         utc_t = pytz.utc.localize(datetime.utcfromtimestamp(t))
         country = entry["cc"]
@@ -51,8 +61,11 @@ def get_header():
     minute = ("minute", 60)
     hour = ("hour", 24)
     day = ("day", 7)
-
+    weekend = ("weekend", 1)
+    fri_or_sat = ("fri_or_sat", 1)
+    local_hour = ("local_hour", 24)
+    local_day = ("local_day", 7)
     country = ("country", len(countries_)+1)
     region = ("region", len(regions_)+1)
 
-    return [minute, hour, day, country, region]
+    return [minute, hour, day, weekend, fri_or_sat, local_hour, local_day, country, region]
