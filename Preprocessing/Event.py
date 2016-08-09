@@ -1,26 +1,44 @@
 import Shared as sd
+import pytz
 from datetime import datetime
 
 
 countries_ = ["None", "US", "GB", "CA", "DE", "FR", "NL", "IT"]
 regions_ = sd.get_dict("region")
+region_timezone_ = sd.get_dict_json("region_timezone.json")
 
 
 def process(entry, result):
     # Event - time
     t = entry["t"] / 1000
 
-    min = datetime.fromtimestamp(t).minute
+    pst_t = datetime.fromtimestamp(t)
+    min = pst_t.minute
     sd.binarize(result, min, 60)
 
-    hour = datetime.fromtimestamp(t).hour
+    hour = pst_t.hour
     sd.binarize(result, hour, 24)
 
-    day = datetime.fromtimestamp(t).weekday()
+    day = pst_t.weekday()
     sd.binarize(result, day, 7)
 
-    hour_of_week = day*24+hour
-    sd.binarize(result, hour_of_week, 7*24)
+    try:
+        utc_t = pytz.utc.localize(datetime.utcfromtimestamp(t))
+        country = entry["cc"]
+        if country in ["US", "CA", "AU"]:
+            tz = region_timezone_[entry["rg"]]
+        else:
+            tz = pytz.timezone(pytz.country_timezones(country)[0])
+
+        local_t = tz.normalize(utc_t.astimezone(tz))
+
+        local_hour = local_t.hour
+        sd.binarize(result, local_hour, 24)
+
+        local_day = local_t.weekday()
+        sd.binarize(result, local_day, 7)
+    except:
+        result.extend([0]*31)
 
     # Event - country
     sd.add_to_result(result, entry["cc"], countries_)
@@ -33,8 +51,8 @@ def get_header():
     minute = ("minute", 60)
     hour = ("hour", 24)
     day = ("day", 7)
-    hour_of_week = ("hour_of_week", 168)
+
     country = ("country", len(countries_)+1)
     region = ("region", len(regions_)+1)
 
-    return [minute, hour, day, hour_of_week, country, region]
+    return [minute, hour, day, country, region]

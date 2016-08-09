@@ -85,7 +85,7 @@ result_all = []
 X_train, y_train = get_data(data[0], data[1])
 X_test, y_test = get_data(data[0], data[1]+1)
 
-selectK = SelectKBest(f_classif, k=500)
+selectK = SelectKBest(f_classif, k=1000)
 with warnings.catch_warnings():
     warnings.simplefilter("ignore")
     selectK.fit(X_train, y_train)
