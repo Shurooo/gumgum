@@ -46,7 +46,7 @@ def get_io_addr_day_samp():
         filename_out = "day_samp_newer.npy"
     else:
         filename_in = "PosNeg/day_samp_raw_{}".format(mode_in)
-        filename_out = "PosNeg/day_samp_new_{}.npy".format(mode_in)
+        filename_out = "PosNeg/day_samp_newer_{}.npy".format(mode_in)
 
     root = "/mnt/rips2/2016"
     list_io_addr = []
