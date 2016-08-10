@@ -5,14 +5,14 @@ import multiprocessing
 import numpy as np
 
 
-num = 500000
+num = 1000000
 start = time.time()
 
 
 def get_io_addr():
     # may = [(5, i) for i in range(1, 8)]
     may = []
-    june = [(6, i) for i in range(19, 21)]
+    june = [(6, i) for i in range(19, 20)]
     # june = []
     list_dates = may + june
 
