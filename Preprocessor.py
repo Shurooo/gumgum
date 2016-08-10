@@ -12,9 +12,9 @@ start = time.time()
 
 
 def get_io_addr_hour():
-    # may = [(5, i, j) for i in range(8, 32) for j in range(24)]
-    may = []
-    june = [(6, i, j) for i in range(19, 26) for j in range(24)]
+    may = [(5, i, j) for i in range(1, 32) for j in range(24)]
+    # may = []
+    june = [(6, i, j) for i in range(1, 26) for j in range(24)]
     # june = []
     root = "/mnt/rips2/2016"
 
@@ -27,8 +27,8 @@ def get_io_addr_hour():
                                str(month).rjust(2, "0"),
                                str(day).rjust(2, "0"),
                                str(hour).rjust(2, "0"))
-        addr_in = os.path.join(addr_io, "output_neg_raw")
-        addr_out = os.path.join(addr_io, "output_new_neg.npy")
+        addr_in = os.path.join(addr_io, "output_raw")
+        addr_out = os.path.join(addr_io, "output_newer.npy")
         list_io_addr.append((addr_in, addr_out))
 
     return list_io_addr
