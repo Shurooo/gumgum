@@ -93,8 +93,8 @@ for day in range(5, 26):
         warnings.simplefilter("ignore")
         selectK.fit(X_train, y_train)
 
-    # for k in range(100, 2001, 100) + [2058]:
-    for k in range(2051, 2055):
+    for k in range(100, 2001, 100) + [2058]:
+    # for k in range(2051, 2055):
         print "k = ", k
         sys.stdout.flush()
         selectK.k = k
@@ -117,5 +117,5 @@ for day in range(5, 26):
         result_all.append([k, train_time, test_time, score, recall, filter_rate, cut, net_savings])
 
     result = pd.DataFrame(np.array(result_all), columns=["k", "train time", "test time", "score", "recall", "filter rate", "cut", "net savings"])
-    file_out_name = "/home/wlu/Desktop/Feature_Selection/KBest/KBest_{}{}_Test.csv".format(str(data[0]).rjust(2, "0"), str(data[1]).rjust(2, "0"))
+    file_out_name = "/home/wlu/Desktop/Feature_Selection/KBest/KBest_{}{}.csv".format(str(data[0]).rjust(2, "0"), str(data[1]).rjust(2, "0"))
     result.to_csv(file_out_name)

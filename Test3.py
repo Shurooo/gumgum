@@ -1,3 +1,41 @@
+import os
+import json
+import multiprocessing
+
+
+root = "/mnt/rips2/2016"
+
+
+def crawl(date):
+    day = date[0]
+    hour = date[1]
+    addr = os.path.join(root,
+                        str(6).rjust(2, "0"),
+                        str(day).rjust(2, "0"),
+                        str(hour).rjust(2, "0"))
+
+    count = 0
+    for suffix in ["pos", "neg"]:
+        with open(os.path.join(addr, "output_"+suffix), "r") as file_in:
+            entries = list(file_in)
+            count += len(entries)
+
+    return hour, count
+
+
+if __name__ == '__main__':
+    date = [(i, j) for i in range(4, 26) for j in range(24)]
+    cpus = multiprocessing.cpu_count()
+    p = multiprocessing.Pool(cpus)
+
+    imp_count = [0]*23
+    for result in p.imap(crawl, date):
+        imp_count[result[0]] += result[1]
+
+    with open("/home/ubuntu/Weiyi/hourly_imp_count.json", "w") as file_out:
+        json.dump(file_out, imp_count)
+
+
 # import os
 # import time
 # import multiprocessing
