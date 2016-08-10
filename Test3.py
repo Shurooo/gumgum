@@ -7,6 +7,7 @@ root = "/mnt/rips2/2016"
 
 
 def crawl(date):
+    print "Processing {}".format(date)
     day = date[0]
     hour = date[1]
     addr = os.path.join(root,
