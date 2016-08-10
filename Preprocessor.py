@@ -39,7 +39,7 @@ def get_io_addr_day_samp():
     may = []
     june = [(6, i) for i in range(19, 26)]
     # june = []
-    mode_in = "pos"
+    mode_in = "neg"
 
     if mode_in == "normal":
         filename_in = "day_samp_raw"
