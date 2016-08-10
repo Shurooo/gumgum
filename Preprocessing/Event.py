@@ -36,12 +36,11 @@ def process(entry, result):
         utc_t = pytz.utc.localize(datetime.utcfromtimestamp(t))
         country = entry["cc"]
         if country in ["US", "CA", "AU"]:
-            tz = region_timezone_[entry["rg"]]
+            tz = pytz.timezone(region_timezone_[entry["rg"]])
         else:
             tz = pytz.timezone(pytz.country_timezones(country)[0])
 
         local_t = tz.normalize(utc_t.astimezone(tz))
-
         local_hour = local_t.hour
         sd.binarize(result, local_hour, 24)
 
