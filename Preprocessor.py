@@ -35,10 +35,10 @@ def get_io_addr_hour():
 
 
 def get_io_addr_day_samp():
-    may = [(5, i) for i in range(1, 2)]
+    may = [(5, i) for i in range(2, 32)]
     # may = []
-    # june = [(6, i) for i in range(1, 4)]
-    june = []
+    june = [(6, i) for i in range(1, 26)]
+    # june = []
     mode_in = "normal"
 
     if mode_in == "normal":
