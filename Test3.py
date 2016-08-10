@@ -34,7 +34,7 @@ if __name__ == '__main__':
         imp_count[result[0]] += result[1]
 
     with open("/home/ubuntu/Weiyi/hourly_imp_count.json", "w") as file_out:
-        json.dump(file_out, imp_count)
+        json.dump(imp_count, file_out)
 
 
 # import os
