@@ -28,7 +28,7 @@ if __name__ == '__main__':
     cpus = multiprocessing.cpu_count()
     p = multiprocessing.Pool(cpus)
 
-    imp_count = [0]*23
+    imp_count = [0]*24
     for result in p.imap(crawl, date):
         imp_count[result[0]] += result[1]
 
