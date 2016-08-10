@@ -114,7 +114,7 @@ def crawl(io_addr):
 if __name__ == '__main__':
     # cpus = multiprocessing.cpu_count()
     p = multiprocessing.Pool(8)
-    list_io_addr = get_io_addr_day_samp()
+    list_io_addr = get_io_addr_hour()
 
     dumped = 0
     for result in p.imap(crawl, list_io_addr):
