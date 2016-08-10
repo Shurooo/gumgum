@@ -1,15 +1,3 @@
-from Preprocessor import crawl
-
-
-io_addr_list = [("/mnt/rips2/2016/random_samples/06/19/day_samp_large_raw", "/mnt/rips2/2016/random_samples/06/19/day_samp_large_newer.npy"),
-                ("/mnt/rips2/2016/random_samples/06/20/day_samp_large_raw", "/mnt/rips2/2016/random_samples/06/20/day_samp_large_newer.npy")]
-
-for io_addr in io_addr_list:
-    crawl(io_addr)
-
-
-
-
 # import os
 # import time
 # import multiprocessing
