@@ -69,7 +69,7 @@ param = {'booster':'gbtree',   # Tree, not linear regression
          'objective':'binary:logistic',   # Output probabilities
          'eval_metric':['auc'],
          'bst:max_depth':5,   # Max depth of tree
-         'bst:eta':0.05,   # Learning rate (usually 0.01-0.2)
+         'bst:eta':eta,   # Learning rate (usually 0.01-0.2)
          'bst:gamma':0,   # Larger value --> more conservative
          'bst:min_child_weight':1,
          'scale_pos_weight':30,   # Often num_neg/num_pos

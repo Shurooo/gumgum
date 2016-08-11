@@ -1,4 +1,5 @@
 import os
+import csv
 import time
 import operator
 import numpy as np
@@ -17,7 +18,7 @@ def get_data(month, day, hour=-1):
         addr_in = os.path.join(root,
                                str(month).rjust(2, "0"),
                                str(day).rjust(2, "0"),
-                               "day_samp_new.npy")
+                               "day_samp_newer.npy")
     else:
         addr_in = os.path.join(root,
                                str(month).rjust(2, "0"),
@@ -51,7 +52,7 @@ def search_cut(prob, y_test):
     return score, recall_best, filter_rate_best, cut_best, net_savings_best
 
 
-def get_feature_imp(bst):
+def get_feature_imp(bst, feature_len):
     imp = bst.get_fscore()
     imp_all = {}
     for i in range(feature_len):
@@ -60,14 +61,15 @@ def get_feature_imp(bst):
         imp_all[key] = imp[key]
     imp_sorted = sorted(imp_all.iteritems(), key=operator.itemgetter(1), reverse=True)
     # return np.array([int(item[0][1:]) for item in imp_sorted])
-    return np.array([int(item[0][1:]) for item in imp_sorted])
+    return imp_sorted
 
 
+eta = 0.05
 param = {'booster':'gbtree',   # Tree, not linear regression
          'objective':'binary:logistic',   # Output probabilities
          # 'eval_metric':['auc'],
          'bst:max_depth':5,   # Max depth of tree
-         'bst:eta':.1,   # Learning rate (usually 0.01-0.2)
+         'bst:eta':eta,   # Learning rate (usually 0.01-0.2)
          'bst:gamma':0,   # Larger value --> more conservative
          'bst:min_child_weight':1,
          'scale_pos_weight':30,   # Often num_neg/num_pos
@@ -76,30 +78,46 @@ param = {'booster':'gbtree',   # Tree, not linear regression
          'save_period':0,   # Only saves last model
          'nthread':6,   # Number of cores used; otherwise, auto-detect
          'seed':25}
-num_round = 250   # Number of rounds of training, increasing this increases the range of output values
+num_round = int(250*(0.2/float(eta)))   # Number of rounds of training, increasing this increases the range of output values
 
-data = (6, 5)
-result_all = []
+imp_count = [0]*2058
+# result_all = []
 
-X_train, y_train = get_data(data[0], data[1])
-X_test, y_test = get_data(data[0], data[1]+1)
-data_train = xgb.DMatrix(X_train, label=y_train)
-data_test = xgb.DMatrix(X_test, label=y_test)
+month = 6
+for day in range(4, 11):
+    X_train, y_train = get_data(month, day)
+    data_train = xgb.DMatrix(X_train, label=y_train)
 
-feature_len = np.size(X_train, 1)
+    # feature_len = np.size(X_train, 1)
 
-start = time.time()
-bst = xgb.train(param, data_train, num_round)
-train_time = round(time.time() - start, 2)
+    start = time.time()
+    print "Training"
+    bst = xgb.train(param, data_train, num_round)
+    print "Done Training in {} Seconds".format(round(time.time()-start, 2))
+    train_time = round(time.time() - start, 2)
 
-start = time.time()
-prob = bst.predict(data_test)
-test_time = round(time.time() - start, 2)
-print search_cut(prob, y_test)
+    imp = bst.get_fscore()
+    for key in imp:
+        index = int(key[1:])
+        imp_count[index] += imp[key]
+
+with open("/home/wlu/Desktop/XGB_Feature_Importance_Count_Newer.csv", "w") as file_out:
+    wr = csv.writer(file_out)
+    for i in range(len(imp_count)):
+        wr.writerow((i, imp_count[i]))
+
+
+# X_test, y_test = get_data(data[0], data[1]+1)
+# data_test = xgb.DMatrix(X_test, label=y_test)
+
+# start = time.time()
+# prob = bst.predict(data_test)
+# test_time = round(time.time() - start, 2)
+# print search_cut(prob, y_test)
 # score, recall, filter_rate, cut, net_savings = search_cut(prob)
 # result_all.append([feature_len, train_time, test_time, score, recall, filter_rate, cut, net_savings])
 #
-# importance = get_feature_imp(bst)
+# importance = get_feature_imp(bst, feature_len)
 #
 # for k in range(100, 2501, 100):
 #     print "k = ", k

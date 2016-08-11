@@ -3,9 +3,9 @@ import os
 import paramiko
 
 
-file_name = "Test2.py"
+file_name = "XGB_Simple.py"
 # file_name = "Test2.py"
-path_to_upload = "Weiyi"
+path_to_upload = "Weiyi/gumgum"
 overwrite = False
 download = False
 download_file = "KBest_Select.npy"
