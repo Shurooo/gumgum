@@ -27,8 +27,8 @@ def get_io_addr_hour():
                                str(month).rjust(2, "0"),
                                str(day).rjust(2, "0"),
                                str(hour).rjust(2, "0"))
-        addr_in = os.path.join(addr_io, "output_pos")
-        addr_out = os.path.join(addr_io, "output_pos_newer.npy")
+        addr_in = os.path.join(addr_io, "output_neg_raw")
+        addr_out = os.path.join(addr_io, "output_neg_newer.npy")
         list_io_addr.append((addr_in, addr_out))
 
     return list_io_addr
