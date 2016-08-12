@@ -31,7 +31,7 @@ def crawl(addr_day):
 
     for suffix in ["pos", "neg"]:
         list_path_in = []
-        for hour in range(0, 24):
+        for hour in range(24):
             hour_str = str(hour).rjust(2, "0")
             list_path_in.append(os.path.join(root, addr_day, hour_str, "output_" + suffix))
 
@@ -42,22 +42,28 @@ def crawl(addr_day):
                 for line in file_in:
                     line_count += 1
                 total_line += line_count
-        line_indices = sorted(np.random.choice(total_line, num, replace=False))
+        if total_line > num:
+            line_indices = sorted(np.random.choice(total_line, num, replace=False))
 
-        setoff = 0
-        index = 0
-        res = []
-        for path_in in list_path_in:
-            with open(path_in, "r") as file_in:
-                for line in file_in:
-                    if line_indices[index]-setoff == 0:
-                        res.append(line)
-                        index += 1
-                    setoff += 1
-                    if index >= num:
-                        break
-            if index >= num:
-                break
+            setoff = 0
+            index = 0
+            res = []
+            for path_in in list_path_in:
+                with open(path_in, "r") as file_in:
+                    for line in file_in:
+                        if line_indices[index]-setoff == 0:
+                            res.append(line)
+                            index += 1
+                        setoff += 1
+                        if index >= num:
+                            break
+                if index >= num:
+                    break
+        else:
+            res = []
+            for path_in in list_path_in:
+                with open(path_in, "r") as file_in:
+                    res.extend(list(file_in))
 
         path_out = os.path.join(root, addr_day, "PosNeg", "day_samp_raw_" + suffix)
         with open(path_out, "w") as file_out:
