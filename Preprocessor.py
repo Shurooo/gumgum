@@ -35,10 +35,10 @@ def get_io_addr_hour():
 
 
 def get_io_addr_day_samp():
-    may = [(5, i) for i in range(2, 14)]
-    # may = []
-    # june = [(6, i) for i in range(4, 26)]
-    june = []
+    may = [(5, i) for i in range(1, 32)]
+    may = []
+    june = [(6, i) for i in range(1, 4)]
+    # june = []
     mode_in = "pos"
 
     if mode_in == "normal":
@@ -112,8 +112,8 @@ def crawl(io_addr):
 
 
 if __name__ == '__main__':
-    # cpus = multiprocessing.cpu_count()
-    p = multiprocessing.Pool(8)
+    cpus = multiprocessing.cpu_count()
+    p = multiprocessing.Pool(cpus)
     list_io_addr = get_io_addr_day_samp()
 
     dumped = 0
