@@ -37,9 +37,9 @@ def get_io_addr_hour():
 def get_io_addr_day_samp():
     may = [(5, i) for i in range(1, 32)]
     # may = []
-    # june = [(6, i) for i in range(1, 4)]
-    june = []
-    mode_in = "pos"
+    june = [(6, i) for i in range(1, 4)]
+    # june = []
+    mode_in = "neg"
 
     if mode_in == "normal":
         filename_in = "day_samp_raw"
