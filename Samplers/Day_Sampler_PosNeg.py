@@ -9,10 +9,10 @@ start = time.time()
 
 
 def get_io_addr():
-    may = [(5, i) for i in range(14, 32)]
+    may = [(5, i) for i in range(13, 14)]
     # may = []
-    june = [(6, i) for i in range(1, 4)]
-    # june = []
+    # june = [(6, i) for i in range(1, 4)]
+    june = []
     list_dates = may + june
 
     list_io_addr = []
