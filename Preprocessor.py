@@ -38,7 +38,7 @@ def get_io_addr_day_samp():
     may = [(5, i) for i in range(1, 2)]
     # may = []
     # june = [(6, i) for i in range(4, 26)]
-    # june = []
+    june = []
     mode_in = "pos"
 
     if mode_in == "normal":
