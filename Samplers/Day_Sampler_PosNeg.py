@@ -9,10 +9,10 @@ start = time.time()
 
 
 def get_io_addr():
-    may = [(5, i) for i in range(8, 32)]
+    may = [(5, i) for i in range(8, 9)]
     # may = []
-    june = [(6, i) for i in range(1, 4)]
-    # june = []
+    # june = [(6, i) for i in range(1, 4)]
+    june = []
     list_dates = may + june
 
     list_io_addr = []
@@ -59,7 +59,7 @@ def crawl(addr_day):
             if index >= num:
                 break
 
-        path_out = os.path.join(root, addr_day, "day_samp_raw_" + suffix)
+        path_out = os.path.join(root, addr_day, "PosNeg", "day_samp_raw_" + suffix)
         with open(path_out, "w") as file_out:
             for line in res:
                 file_out.write(line)
