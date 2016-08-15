@@ -3,7 +3,7 @@ import os
 import paramiko
 
 
-file_name = "XGB_Simple.py"
+file_name = "RF_Driver.py"
 # file_name = "Test2.py"
 path_to_upload = "Weiyi/gumgum"
 overwrite = False
