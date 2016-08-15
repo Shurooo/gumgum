@@ -48,7 +48,7 @@ def test(addr_test, clf):
     total = tp+fp+tn+fn
     recall = round(tp / float(tp+fn), 4)
     filtered = round(float(tn+fn) / total, 4)
-    net_savings = round(127000*filtered - 5200 - 850000*(1-recall), 2)
+    net_savings = round(123000*filtered - 5200 - 600000*(1-recall), 2)
 
     return [tn, fp, fn, tp], recall, filtered, net_savings
 
