@@ -4,15 +4,15 @@ import multiprocessing
 import numpy as np
 
 
-num = 100000
+num = 250000
 start = time.time()
 
 
 def get_io_addr():
-    may = [(5, i) for i in range(13, 14)]
-    # may = []
-    # june = [(6, i) for i in range(1, 4)]
-    june = []
+    # may = [(5, i) for i in range(13, 14)]
+    may = []
+    june = [(6, i) for i in range(19, 26)]
+    # june = []
     list_dates = may + june
 
     list_io_addr = []
@@ -65,7 +65,7 @@ def crawl(addr_day):
                 with open(path_in, "r") as file_in:
                     res.extend(list(file_in))
 
-        path_out = os.path.join(root, addr_day, "PosNeg", "day_samp_raw_" + suffix)
+        path_out = os.path.join(root, addr_day, "PosNeg", "day_samp_raw_large_" + suffix)
         with open(path_out, "w") as file_out:
             for line in res:
                 file_out.write(line)
