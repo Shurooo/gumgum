@@ -35,9 +35,9 @@ def get_io_addr_hour():
 
 
 def get_io_addr_day_samp():
-    may = [(5, i) for i in range(1, 32)]
-    # may = []
-    june = [(6, i) for i in range(1, 4)]
+    # may = [(5, i) for i in range(1, 32)]
+    may = []
+    june = [(6, i) for i in range(19, 26)]
     # june = []
     mode_in = "neg"
 
@@ -45,8 +45,8 @@ def get_io_addr_day_samp():
         filename_in = "day_samp_raw"
         filename_out = "day_samp_newer.npy"
     else:
-        filename_in = "PosNeg/day_samp_raw_{}".format(mode_in)
-        filename_out = "PosNeg/day_samp_newer_{}.npy".format(mode_in)
+        filename_in = "PosNeg/day_samp_raw_large_{}".format(mode_in)
+        filename_out = "PosNeg/day_samp_newer_large_{}.npy".format(mode_in)
 
     root = "/mnt/rips2/2016"
     list_io_addr = []
