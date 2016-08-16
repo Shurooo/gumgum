@@ -3,8 +3,7 @@ import os
 import paramiko
 
 
-file_name = "RF_Driver.py"
-# file_name = "Test2.py"
+file_name = "Bernoulli_Hourly.py"
 path_to_upload = "Weiyi/gumgum"
 overwrite = False
 download = False
