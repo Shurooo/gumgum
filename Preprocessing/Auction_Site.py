@@ -1,13 +1,23 @@
-import Shared as sd
+"""
+Define the method to parse variables "typeid", "cat", "pcat", and "bti".
+"""
 
+import Shared as sd
 
 domains_ = sd.get_dict("domain")
 browsers_ = [1, 2, 10, 13, 5, 11, 12, 7]
 
 
 def process(entry, result):
+    """
+    Given a JSON object formatted by Extractor.py, parse variables "typeid", "cat", "pcat", and "bti", and the results to the list of possible results.
+    :param entry: the JSON object that represents one impression
+    :param result: the list of possible results
+    :return: None
+    """
+
     # Auction - Site - typeid
-    if entry["typeid"] == -1:
+    if entry["typeid"] == -1:   # In Extractor.py, typeid is set to -1 if it is missing
         result.extend([0]*3)
         result.append(1)    # Use the last column to indicate missing site object
     else:
@@ -53,6 +63,10 @@ def IAB_parser(str):
 
 
 def get_hearder():
+    """
+    Return the names of features extracted in this section, and the number of variables used to represent each feature.
+    :return: a list of tuples containing the feature names and the lengths of the corresponding features
+    """
     site_typeid = ("site_typeid", 4)
     site_cat = ("site_cat", 27)
     site_pcat = ("site_pcat", 27)

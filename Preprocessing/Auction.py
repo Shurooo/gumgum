@@ -1,11 +1,21 @@
-import Shared as sd
+"""
+Define the method to parse variables "margin", "tmax", and "bkc"
+"""
 
+import Shared as sd
 
 margins_ = [3.5, 2.45, 3.0, 2.0, 1.65, 0.85, 1.25, 0.45, 0.25, 0.15, 0.1, 4.5, 0.0, 4.0]
 bkcids_ = sd.get_dict("bkc")
 
 
 def process(entry, result):
+    """
+    Given a JSON object formatted by Extractor.py, parse variables "margin", "tmax", and "bkc", and the results to the list of possible results.
+    :param entry: the JSON object that represents one impression
+    :param result: the list of possible results
+    :return: the value of margin, which will be used when processing bid floor
+    """
+
     # Auction - margin
     margin = round(float(entry["margin"]), 2)
     sd.add_to_result(result, margin, margins_)
@@ -18,18 +28,19 @@ def process(entry, result):
             result.append(1)
         else:
             result.append(0)
-
         if tmax % 10 == 0:
             result.append(1)
         else:
             result.append(0)
 
+        # Determine if tmax is less than or equal to 500, and if tmax is less than or equal to 700
         for thres in [500, 700]:
             if tmax <= thres:
                 result.append(1)
             else:
                 result.append(0)
 
+        # Determine if tmax equal to any of the values in tmax_list
         index = 0
         tmax_list = [30, 45, 50, 70, 85, 1000]
         for item in tmax_list:
@@ -44,10 +55,12 @@ def process(entry, result):
         else:
             result.append(0)
 
+        # Add one variable to indicate tmax is not mssing
         result.append(0)
     else:
+        # If tmax is missing, use the last variable to indicate so
         result.extend([0]*11)
-        result.append(1)    # Use the last column to indicate missing tmax
+        result.append(1)
 
     # Auction - bkc
     bkc_result = [0]*(len(bkcids_)+2)
@@ -68,6 +81,10 @@ def process(entry, result):
 
 
 def get_header():
+    """
+    Return the names of features extracted in this section, and the number of variables used to represent each feature.
+    :return: a list of tuples containing the feature names and the lengths of the corresponding features
+    """
     margin = ("margin", len(margins_)+1)
     tmax = ("tmax", 12)
     bkc = ("bkc", len(bkcids_)+2)

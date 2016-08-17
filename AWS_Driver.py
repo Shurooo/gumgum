@@ -3,7 +3,7 @@ import os
 import paramiko
 
 
-file_name = "Bernoulli_Hourly.py"
+file_name = "Bernoulli_Simple.py"
 path_to_upload = "Weiyi/gumgum"
 overwrite = False
 download = False
