@@ -39,11 +39,11 @@ def get_io_addr_day_samp():
     may = []
     june = [(6, i) for i in range(19, 26)]
     # june = []
-    mode_in = "pos"
+    mode_in = "normal"
 
     if mode_in == "normal":
         filename_in = "day_samp_raw"
-        filename_out = "day_samp_newer.npy"
+        filename_out = "day_samp_newer_bin.npy"
     else:
         filename_in = "PosNeg/day_samp_raw_large_{}".format(mode_in)
         filename_out = "PosNeg/day_samp_newer_large_{}.npy".format(mode_in)
@@ -90,7 +90,7 @@ def crawl(io_addr):
                 try:
                     entry = json.loads(line)
                     result = []
-                    Driver.process(entry, result)
+                    Driver.process(entry, result, mode="bin")
                     data_sparse_list.append(csr_matrix(result))
 
                 except:
